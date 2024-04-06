@@ -1,0 +1,71 @@
+{
+  "name": "jpli",
+  "version": "1.0.0",
+  "description": "JPL interpreter",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "jpl": "repl.js"
+  },
+  "files": [
+    "lib",
+    "src",
+    "repl.js"
+  ],
+  "scripts": {
+    "build:clean": "rimraf ./lib",
+    "prebuild": "npm run build:clean",
+    "build": "babel src -d lib",
+    "lint": "eslint src --report-unused-disable-directives",
+    "prepare": "npm run lint && npm run build",
+    "preversion": "git diff HEAD --name-only --exit-code || (echo -\\> unclean working directory && exit 1)",
+    "postversion": "cross-env git commit -am$npm_package_version",
+    "prettify": "prettier --write src/**",
+    "start": "npm run build >/dev/null && ./repl.js",
+    "repl": "./repl.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2manyvcos/jpl"
+  },
+  "keywords": [
+    "jpl",
+    "jpli",
+    "json",
+    "cli"
+  ],
+  "author": "Aaron Burmeister",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2manyvcos/jpl/issues"
+  },
+  "homepage": "https://github.com/2manyvcos/jpl",
+  "devDependencies": {
+    "@babel/cli": "^7.22.15",
+    "@babel/core": "^7.24.4",
+    "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.18.6",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "immer": "^10.0.2",
+    "luxon": "^3.4.3"
+  }
+}
