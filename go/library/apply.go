@@ -1,34 +1,34 @@
 package library
 
-type ObjectEntry struct {
+type ObjectEntry[Value any] struct {
 	Key     string
-	Value   any
+	Value   Value
 	NoValue bool
 }
 
-type ArrayEntry struct {
+type ArrayEntry[Value any] struct {
 	Index int
-	Value any
+	Value Value
 }
 
-func ObjectEntries(source map[string]any) []ObjectEntry {
-	result := make([]ObjectEntry, 0, len(source))
+func ObjectEntries[Value any](source map[string]Value) []ObjectEntry[Value] {
+	result := make([]ObjectEntry[Value], 0, len(source))
 	for key, value := range source {
-		result = append(result, ObjectEntry{key, value, false})
+		result = append(result, ObjectEntry[Value]{key, value, false})
 	}
 	return result
 }
 
-func ArrayEntries(source []any) []ArrayEntry {
-	result := make([]ArrayEntry, 0, len(source))
+func ArrayEntries[Value any](source []Value) []ArrayEntry[Value] {
+	result := make([]ArrayEntry[Value], 0, len(source))
 	for i, value := range source {
-		result = append(result, ArrayEntry{i, value})
+		result = append(result, ArrayEntry[Value]{i, value})
 	}
 	return result
 }
 
 // Apply all changes immutably to the source object.
-func ApplyObject(source map[string]any, changes []ObjectEntry) map[string]any {
+func ApplyObject[Value any](source map[string]Value, changes []ObjectEntry[Value]) map[string]Value {
 	result := source
 	unchanged := true
 
@@ -64,7 +64,7 @@ func ApplyObject(source map[string]any, changes []ObjectEntry) map[string]any {
 
 // Apply all changes immutably to the source array.
 // Indices can be negative to be applied from the end of the array.
-func ApplyArray(source []any, changes []ArrayEntry, filler any) []any {
+func ApplyArray[Value any](source []Value, changes []ArrayEntry[Value], filler Value) []Value {
 	result := source
 	unchanged := true
 
@@ -81,7 +81,7 @@ func ApplyArray(source []any, changes []ArrayEntry, filler any) []any {
 			suf := i + 1 - len(result)
 			if suf > 0 {
 				total := len(result) + suf
-				nextResult := make([]any, total)
+				nextResult := make([]Value, total)
 				for i := copy(nextResult, result); i < total; i++ {
 					nextResult[i] = filler
 				}
@@ -92,7 +92,7 @@ func ApplyArray(source []any, changes []ArrayEntry, filler any) []any {
 			pre := -i
 			if pre > 0 {
 				total := pre + len(result)
-				nextResult := make([]any, total)
+				nextResult := make([]Value, total)
 				for i := 0; i < pre; i++ {
 					nextResult[i] = filler
 				}
@@ -112,11 +112,6 @@ func ApplyArray(source []any, changes []ArrayEntry, filler any) []any {
 	return result
 }
 
-type combinationIndex struct {
-	max, current int
-	values       []any
-}
-
 // Create all possible combinations immutably.
 // If the specified `combinations` array is empty, the resulting array contains a single empty array.
 // This function has essentially the same base functionality as the `mux` function, but uses a more performant approach for generating immutable arrays as it reduces the number of necessary array copies.
@@ -130,14 +125,14 @@ type combinationIndex struct {
 // If the values of `source` are equal to the values of one of the combinations, it is used instead of a copy in the output array, e.g.:
 // `let i = [1, 2]; applyCombinations(i, [[1], [2]])[0] == i`
 // - `true`
-func ApplyCombinations(source []any, combinations [][]any) []any {
+func ApplyCombinations[Value any](source []Value, combinations [][]Value) [][]Value {
 	l := len(combinations)
 	total := 1
-	indices := make([]*combinationIndex, l)
+	indices := make([]*iteratorIndex[Value], l)
 	for i, entry := range combinations {
 		count := len(entry)
 		total *= count
-		indices[i] = &combinationIndex{count, 0, entry}
+		indices[i] = &iteratorIndex[Value]{count, 0, entry}
 	}
 	if total == 0 {
 		return nil
@@ -146,10 +141,10 @@ func ApplyCombinations(source []any, combinations [][]any) []any {
 	if sl := len(s); sl > l {
 		s = s[:l]
 	} else if sl < l {
-		s = make([]any, l)
+		s = make([]Value, l)
 		copy(s, source)
 	}
-	out := make([]any, total)
+	out := make([][]Value, total)
 	var c int
 	for {
 		result := s

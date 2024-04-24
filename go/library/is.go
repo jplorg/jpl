@@ -4,7 +4,7 @@ import "reflect"
 
 // Check if both values are the same.
 //
-// Slices and maps are compared by memory address,
+// []any and map[string]any are compared by memory address,
 // primitives by value.
 func Is(a, b any) bool {
 	// TODO: what about JPLTypes and functions?

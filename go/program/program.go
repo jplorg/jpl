@@ -8,6 +8,7 @@ import (
 	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/2manyvcos/jpl/go/library"
 	"github.com/2manyvcos/jpl/go/runtime"
 )
 
@@ -90,7 +91,7 @@ func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, er
 		Runtime: config.ApplyRuntimeDefaults(options.Runtime, p.runtimeOptions),
 	})
 
-	normalizedInputs, err := r.NormalizeValues(inputs, "program inputs")
+	normalizedInputs, err := library.NormalizeValues(inputs, "program inputs")
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, er
 		return nil, err
 	}
 
-	stripped, err := r.StripJSON(outputs)
+	stripped, err := library.StripJSON(outputs)
 	if err != nil {
 		return nil, err
 	}
