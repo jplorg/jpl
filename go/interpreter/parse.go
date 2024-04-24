@@ -1,6 +1,8 @@
 package interpreter
 
-import "github.com/2manyvcos/jpl/go/definition"
+import (
+	"github.com/2manyvcos/jpl/go/definition"
+)
 
 type ParserContext struct {
 	Interpreter JPLInterpreter
@@ -585,7 +587,10 @@ func opIf(src string, i int, c *ParserContext) (n int, result definition.Pipe, e
 		}
 		n = iM
 		if !isM {
-			return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "if statement", Message: "expected 'then'"})
+			return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+				Operator: "if statement",
+				Message:  "expected 'then'",
+			})
 		}
 
 		var opsThen definition.Pipe
@@ -625,7 +630,10 @@ func opIf(src string, i int, c *ParserContext) (n int, result definition.Pipe, e
 	}
 	n = iM
 	if !isM {
-		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "if statement", Message: "expected 'end'"})
+		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+			Operator: "if statement",
+			Message:  "expected 'end'",
+		})
 	}
 
 	return n, definition.Pipe{{OP: definition.OP_IF, Params: definition.JPLInstructionParams{Ifs: ifs, Else: opsElse}}}, nil
@@ -713,7 +721,10 @@ func opNamedFunctionDefinition(src string, i int, c *ParserContext) (n int, resu
 		return 0, nil, err
 	}
 
-	return n, definition.Pipe{{OP: definition.OP_VARIABLE_DEFINITION, Params: definition.JPLInstructionParams{Name: name, Pipe: definition.Pipe{{OP: definition.OP_FUNCTION_DEFINITION, Params: definition.JPLInstructionParams{ArgNames: argNames, Pipe: ops}}}}}}, nil
+	return n, definition.Pipe{{
+		OP:     definition.OP_VARIABLE_DEFINITION,
+		Params: definition.JPLInstructionParams{Name: name, Pipe: definition.Pipe{{OP: definition.OP_FUNCTION_DEFINITION, Params: definition.JPLInstructionParams{ArgNames: argNames, Pipe: ops}}}},
+	}}, nil
 }
 
 // Parse function definition at i
@@ -744,6 +755,74 @@ func opFunctionDefinition(src string, i int, c *ParserContext) (n int, result de
 
 // Parse variable definition at i
 func opVariableAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+	n = i
+
+	iV, isV, name, _, err := safeVariable(src, n, c)
+	if err != nil {
+		return 0, nil, err
+	}
+	if !isV {
+		return opValueAccess(src, n, c)
+	}
+	n = iV
+
+	iAc, isAc, operations, canAssign, err := access(src, n, c, accessOptions{})
+	if err != nil {
+		return 0, nil, err
+	}
+	if isAc {
+		n = iAc
+	} else {
+		operations = nil
+		canAssign = true
+	}
+
+	if !canAssign {
+		ops := definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}}
+
+		if len(operations) == 0 {
+			return n, ops, nil
+		}
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+	}
+
+	var opAssignment *definition.JPLAssignment
+	iAs, isAs, opAssignment, err := assignment(src, n, c)
+	if err != nil {
+		return 0, nil, err
+	}
+	if !isAs {
+		ops := definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}}
+
+		if len(operations) == 0 {
+			return n, ops, nil
+		}
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+	}
+	n = iAs
+
+	if len(operations) == 0 && opAssignment.OP == definition.OPU_SET {
+		return n, definition.Pipe{{OP: definition.OP_VARIABLE_DEFINITION, Params: definition.JPLInstructionParams{Name: name, Pipe: opAssignment.Params.Pipe}}}, nil
+	}
+
+	return n, definition.Pipe{{
+		OP: definition.OP_VARIABLE_DEFINITION,
+		Params: definition.JPLInstructionParams{
+			Name: name,
+			Pipe: definition.Pipe{{
+				OP: definition.OP_ASSIGNMENT,
+				Params: definition.JPLInstructionParams{
+					Pipe:       definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}},
+					Operations: operations,
+					Assignment: opAssignment,
+				},
+			}},
+		},
+	}}, nil
+}
+
+// Parse variable access at i
+func opValueAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
 	panic("TODO:")
 }
 
@@ -757,7 +836,10 @@ func functionHeader(src string, i int, c *ParserContext) (n int, argNames []stri
 	}
 	n = iM
 	if !isM {
-		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "function definition", Message: "expected '('"})
+		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+			Operator: "function definition",
+			Message:  "expected '('",
+		})
 	}
 
 	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ")"})
@@ -773,7 +855,10 @@ func functionHeader(src string, i int, c *ParserContext) (n int, argNames []stri
 				return 0, nil, err
 			}
 			if !isV {
-				return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "function definition", Message: "expected argument name"})
+				return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+					Operator: "function definition",
+					Message:  "expected argument name",
+				})
 			}
 			n = iV
 			argNames = append(argNames, name)
@@ -793,7 +878,10 @@ func functionHeader(src string, i int, c *ParserContext) (n int, argNames []stri
 			}
 			n = iM
 			if !isM {
-				return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "function definition", Message: "expected ',' or ')'"})
+				return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+					Operator: "function definition",
+					Message:  "expected ',' or ')'",
+				})
 			}
 		}
 	}
@@ -804,10 +892,424 @@ func functionHeader(src string, i int, c *ParserContext) (n int, argNames []stri
 	}
 	n = iM
 	if !isM {
-		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{Operator: "function definition", Message: "expected ':'"})
+		return 0, nil, errorUnexpectedToken(src, n, c, errorOptions{
+			Operator: "function definition",
+			Message:  "expected ':'",
+		})
 	}
 
 	return n, argNames, nil
+}
+
+type accessOptions struct {
+	Identity bool
+}
+
+// Parse access at i
+func access(src string, i int, c *ParserContext, options accessOptions) (n int, is bool, operations []definition.JPLOperation, canAssign bool, err error) {
+	n = i
+
+	canAssign = true
+	for {
+		iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "."})
+		if err != nil {
+			return 0, false, nil, false, err
+		}
+		isIdentity := options.Identity && len(operations) == 0
+		if !isIdentity && isM {
+			n = iM
+
+			iV, isV, name, _, err := safeVariable(src, n, c)
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if !isV {
+				return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+					Operator: "field access operator",
+					Message:  "expected field name",
+				})
+			}
+			n = iV
+
+			var optional bool
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+				optional = true
+			}
+			operations = append(operations, definition.JPLOperation{OP: definition.OPA_FIELD, Params: definition.JPLOperationParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional}})
+			continue
+		}
+
+		iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "["})
+		if err != nil {
+			return 0, false, nil, false, err
+		}
+		if isM {
+			n = iM
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+			if isM {
+				n = iM
+
+				var optional bool
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				if isM {
+					n = iM
+					optional = true
+				}
+				operations = append(operations, definition.JPLOperation{OP: definition.OPA_ITER, Params: definition.JPLOperationParams{Optional: optional}})
+				continue
+			}
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ":"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				if isM {
+					n = iM
+
+					var optional bool
+					iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+					if err != nil {
+						return 0, false, nil, false, err
+					}
+					if isM {
+						n = iM
+						optional = true
+					}
+					operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
+					continue
+				}
+
+				var opsRight definition.Pipe
+				if n, opsRight, err = opPipe(src, n, c); err != nil {
+					return 0, false, nil, false, err
+				}
+
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				n = iM
+				if !isM {
+					return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+						Operator: "array slice operator",
+						Message:  "expected ']'",
+					})
+				}
+
+				var optional bool
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				if isM {
+					n = iM
+					optional = true
+				}
+				operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: opsRight, Optional: optional}})
+				continue
+			}
+
+			var opsLeft definition.Pipe
+			if n, opsLeft, err = opPipe(src, n, c); err != nil {
+				return 0, false, nil, false, err
+			}
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+
+				var optional bool
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				if isM {
+					n = iM
+					optional = true
+				}
+				operations = append(operations, definition.JPLOperation{OP: definition.OPA_FIELD, Params: definition.JPLOperationParams{Pipe: opsLeft, Optional: optional}})
+				continue
+			}
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ":"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if !isM {
+				return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+					Operator: "variable access operator",
+					Message:  "expected ':' or ']'",
+				})
+			}
+			n = iM
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+
+				var optional bool
+				iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+				if err != nil {
+					return 0, false, nil, false, err
+				}
+				if isM {
+					n = iM
+					optional = true
+				}
+				operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: opsLeft, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
+				continue
+			}
+
+			var opsRight definition.Pipe
+			if n, opsRight, err = opPipe(src, n, c); err != nil {
+				return 0, false, nil, false, err
+			}
+
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "]"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			n = iM
+			if !isM {
+				return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+					Operator: "array slice operator",
+					Message:  "expected ']'",
+				})
+			}
+
+			var optional bool
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+				optional = true
+			}
+			operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: opsLeft, To: opsRight, Optional: optional}})
+			continue
+		}
+
+		var bound bool
+		iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "->"})
+		if err != nil {
+			return 0, false, nil, false, err
+		}
+		if isM {
+			n = iM
+			bound = true
+		}
+
+		iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "("})
+		if err != nil {
+			return 0, false, nil, false, err
+		}
+		if !isM && bound {
+			return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+				Operator: "bound function call",
+				Message:  "expected '('",
+			})
+		}
+		if isM {
+			n = iM
+
+			var args []definition.Pipe
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ")"})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+			} else {
+				for {
+					var opsArg definition.Pipe
+					if n, opsArg, err = opSubPipe(src, n, c); err != nil {
+						return 0, false, nil, false, err
+					}
+					args = append(args, opsArg)
+
+					iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ")"})
+					if err != nil {
+						return 0, false, nil, false, err
+					}
+					if isM {
+						n = iM
+						break
+					}
+
+					iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: ","})
+					if err != nil {
+						return 0, false, nil, false, err
+					}
+					n = iM
+					if !isM {
+						return 0, false, nil, false, errorUnexpectedToken(src, n, c, errorOptions{
+							Operator: "function call",
+							Message:  "expected ',' or ')'",
+						})
+					}
+				}
+			}
+
+			var optional bool
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+			if err != nil {
+				return 0, false, nil, false, err
+			}
+			if isM {
+				n = iM
+				optional = true
+			}
+			operations = append(operations, definition.JPLOperation{OP: definition.OPA_FUNCTION, Params: definition.JPLOperationParams{Args: args, Bound: bound, Optional: optional}})
+			canAssign = false
+			continue
+		}
+
+		break
+	}
+
+	return n, len(operations) > 0, operations, canAssign, nil
+}
+
+// Parse assignment at i
+func assignment(src string, i int, c *ParserContext) (n int, is bool, assignment *definition.JPLAssignment, err error) {
+	n = i
+
+	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "=", NotBeforeSet: "="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_SET, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "|="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_UPDATE, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "+="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_ADDITION, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "-="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_SUBTRACTION, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "*="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_MULTIPLICATION, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "/="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_DIVISION, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "%="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_REMAINDER, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?="})
+	if err != nil {
+		return 0, false, nil, err
+	}
+	if isM {
+		n = iM
+
+		var ops definition.Pipe
+		if n, ops, err = opSubRoute(src, n, c); err != nil {
+			return 0, false, nil, err
+		}
+		return n, true, &definition.JPLAssignment{OP: definition.OPU_NULL_COALESCENCE, Params: definition.JPLAssignmentParams{Pipe: ops}}, nil
+	}
+
+	return n, false, nil, nil
 }
 
 // Parse number at i
