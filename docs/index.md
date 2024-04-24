@@ -12,4 +12,5 @@ JPL is a programming language for complex JSON processing with a focus on integr
 
 ## Implementations
 
+- [Golang](../go/README.md)
 - [JavaScript](../js/README.md)
