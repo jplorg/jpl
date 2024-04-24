@@ -8,11 +8,11 @@ export default {
     );
   },
 
-  /** { name: string, value: function } */
+  /** { name: string, pipe: function } */
   map(runtime, params) {
     return {
       name: runtime.assertType(params.name, 'string'),
-      pipe: call(params.value),
+      pipe: call(params.pipe),
     };
   },
 };

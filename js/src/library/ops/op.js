@@ -113,7 +113,7 @@ export const OP_NULL_COALESCENCE = '??';
 /**
  * { value: number }
  *
- * { value: string }
+ * { value: number }
  */
 export const OP_NUMBER = 'nbr';
 
@@ -139,9 +139,9 @@ export const OP_OR = 'or';
 export const OP_OUTPUT_CONCAT = ',';
 
 /**
- * { value: string }
+ * { string: string }
  *
- * { value: string }
+ * { string: string }
  */
 export const OP_STRING = '""';
 
@@ -160,7 +160,7 @@ export const OP_TRY = 'try';
 export const OP_VARIABLE = 'var';
 
 /**
- * { name: string, value: function }
+ * { name: string, pipe: function }
  *
  * { name: string, pipe: [op] }
  */

@@ -162,7 +162,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
       if (m.is) ({ i: n, is: optional } = m);
       selectors.push({
         op: OPA_FIELD,
-        params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
+        params: { pipe: [{ op: OP_STRING, params: { string: name } }], optional },
       });
       continue;
     }
@@ -460,7 +460,7 @@ export function parseNumber(src, i, c) {
 
   ({ i: n } = walkWhitespace(src, n, c));
 
-  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { value } }] };
+  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { number: +value } }] };
 }
 
 /** Parse string at i */
@@ -628,7 +628,7 @@ export async function parseString(src, i, c) {
   ({ i: n } = walkWhitespace(src, n, c));
 
   if (interpolations.length === 0)
-    return { i: n, is: true, ops: [{ op: OP_STRING, params: { value } }] };
+    return { i: n, is: true, ops: [{ op: OP_STRING, params: { string: value } }] };
 
   return {
     i: n,
@@ -1233,7 +1233,7 @@ export async function opValueAccess(src, i, c) {
 
       selectors.push({
         op: OPA_FIELD,
-        params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
+        params: { pipe: [{ op: OP_STRING, params: { string: name } }], optional },
       });
     }
   }
@@ -1379,7 +1379,7 @@ export async function opObjectConstructor(src, i, c) {
         }
 
         fields.push({
-          key: [{ op: OP_STRING, params: { value: name } }],
+          key: [{ op: OP_STRING, params: { string: name } }],
           value: opsValue,
           optional: false,
         });

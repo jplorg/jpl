@@ -44,5 +44,5 @@ type JPLRuntime interface {
 	ExecuteInstructions(instructions definition.Pipe, inputs []any, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)
 
 	// Execute the specified OP
-	OP(op definition.JPLOP, params map[string]any, inputs []any, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)
+	OP(op definition.JPLOP, params JPLInstructionParams, inputs []any, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)
 }

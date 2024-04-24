@@ -41,7 +41,7 @@ func (r *runtime) CreateScope(presets *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntime
 func (r *runtime) Execute(inputs []any) ([]any, jpl.JPLError) {
 	varEntries, err := library.MuxOne([][]*library.ObjectEntry[any]{library.ObjectEntries(r.Options().Vars)}, jpl.IOMuxerFunc[*library.ObjectEntry[any], *library.ObjectEntry[any]](func(args ...*library.ObjectEntry[any]) (result *library.ObjectEntry[any], err jpl.JPLError) {
 		result = args[0]
-		result.Value, err = library.NormalizeValue(args[0])
+		result.Value, err = library.NormalizeValue(result.Value)
 		return
 	}))
 	if err != nil {
@@ -96,7 +96,7 @@ func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any
 	}))
 }
 
-func (r *runtime) OP(op definition.JPLOP, params map[string]any, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
+func (r *runtime) OP(op definition.JPLOP, params jpl.JPLInstructionParams, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
 	operator := r.Program().OPs()[op]
 	if operator == nil {
 		return nil, library.NewFatalError("invalid op '" + string(op) + "'")

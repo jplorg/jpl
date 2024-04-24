@@ -32,7 +32,9 @@ type JPLInstructionParams struct {
 	Pipes          []Pipe             `json:"params,omitempty"`
 	Selectors      []JPLSelector      `json:"selectors,omitempty"`
 	Try            Pipe               `json:"try,omitempty"`
-	Value          string             `json:"value,omitempty"`
+	Value          any                `json:"value,omitempty"`
+	String         string             `json:"string,omitempty"`
+	Number         float64            `json:"number,omitempty"`
 }
 
 type JPLComparison struct {

@@ -83,9 +83,9 @@ const OP_NOT = JPLOP("not")
 // { pipes: [[op]] }
 const OP_NULL_COALESCENCE = JPLOP("??")
 
-// { value: number }
+// { number: number }
 //
-// { value: string }
+// { number: number }
 const OP_NUMBER = JPLOP("nbr")
 
 // { fields: [{ key: function, value: function, optional: boolean }] }
@@ -103,9 +103,9 @@ const OP_OR = JPLOP("or")
 // { pipes: [[op]] }
 const OP_OUTPUT_CONCAT = JPLOP(",")
 
-// { value: string }
+// { string: string }
 //
-// { value: string }
+// { string: string }
 const OP_STRING = JPLOP(`""`)
 
 // { try: function, catch: function }
@@ -118,7 +118,7 @@ const OP_TRY = JPLOP("try")
 // { name: string }
 const OP_VARIABLE = JPLOP("var")
 
-// { name: string, value: function }
+// { name: string, pipe: function }
 //
 // { name: string, pipe: [op] }
 const OP_VARIABLE_DEFINITION = JPLOP("va=")

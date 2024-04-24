@@ -8,6 +8,7 @@ import (
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
 	"github.com/2manyvcos/jpl/go/library"
+	"github.com/2manyvcos/jpl/go/program/ops"
 	"github.com/2manyvcos/jpl/go/runtime"
 )
 
@@ -57,7 +58,7 @@ func NewProgram(programDefinition definition.JPLDefinition, options *jpl.JPLProg
 		runtimeOptions: options.Runtime,
 
 		definition: programDefinition,
-		ops:        OPs,
+		ops:        ops.OPs,
 	}, nil
 }
 

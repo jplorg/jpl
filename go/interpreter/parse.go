@@ -156,7 +156,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 				n = iM
 				optional = true
 			}
-			selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_FIELD, Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional}})
+			selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_FIELD, Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{String: name}}}, Optional: optional}})
 			continue
 		}
 
@@ -591,11 +591,18 @@ func parseNumber(src string, i int, c *ParserContext) (n int, is bool, result de
 		}
 	}
 
+	var number float64
+	if parsed, err := strconv.ParseFloat(value, 64); err != nil {
+		return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "number", Message: "error parsing number: " + err.Error()})
+	} else {
+		number = parsed
+	}
+
 	if n, _, err = walkWhitespace(src, n, c); err != nil {
 		return 0, false, nil, err
 	}
 
-	return n, true, definition.Pipe{{OP: definition.OP_NUMBER, Params: definition.JPLInstructionParams{Value: value}}}, nil
+	return n, true, definition.Pipe{{OP: definition.OP_NUMBER, Params: definition.JPLInstructionParams{Number: number}}}, nil
 }
 
 // Parse string at i
@@ -738,7 +745,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 				}
 				parsed, err := strconv.ParseUint(hexVal, 16, 16)
 				if err != nil {
-					panic(err)
+					return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: "error parsing hex code: " + err.Error()})
 				}
 				r := rune(parsed)
 				// parse utf16
@@ -761,7 +768,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 						}
 						parsed, err = strconv.ParseUint(hexVal, 16, 16)
 						if err != nil {
-							panic(err)
+							return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: "error parsing hex code: " + err.Error()})
 						}
 						r2 := rune(parsed)
 						// if the second rune is no utf16 surrogate, we append each rune individually to the result value
@@ -810,7 +817,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 	}
 
 	if len(interpolations) == 0 {
-		return n, true, definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: string(value)}}}, nil
+		return n, true, definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{String: string(value)}}}, nil
 	}
 
 	return n, true, definition.Pipe{{OP: definition.OP_INTERPOLATED_STRING, Params: definition.JPLInstructionParams{Interpolations: interpolations, After: string(value)}}}, nil
@@ -1638,7 +1645,7 @@ func opValueAccess(src string, i int, c *ParserContext) (n int, result definitio
 
 			selectors = append(selectors, definition.JPLSelector{
 				OP:     definition.OPA_FIELD,
-				Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional},
+				Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{String: name}}}, Optional: optional},
 			})
 		}
 	}
@@ -1849,7 +1856,7 @@ func opObjectConstructor(src string, i int, c *ParserContext) (n int, result def
 				}
 
 				fields = append(fields, definition.JPLField{
-					Key:      definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}},
+					Key:      definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{String: name}}},
 					Value:    opsValue,
 					Optional: false,
 				})

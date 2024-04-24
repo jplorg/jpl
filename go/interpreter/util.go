@@ -273,3 +273,17 @@ func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOpti
 	errorMessage += "\n" + description
 	return library.NewSyntaxError(errorMessage)
 }
+
+// Throw an error caused by an generic parser error at i
+func errorGeneric(src string, i int, c *ParserContext, options errorOptions) jpl.JPLSyntaxError {
+	errorMessage := "error"
+	if options.Operator != "" {
+		errorMessage += " while parsing " + options.Operator
+	}
+	if options.Message != "" {
+		errorMessage += ": " + options.Message
+	}
+	_, description := highlightLocation(src, i, c, highlightOptions{})
+	errorMessage += "\n" + description
+	return library.NewSyntaxError(errorMessage)
+}
