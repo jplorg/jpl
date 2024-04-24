@@ -223,7 +223,6 @@ export async function opEquality(src, i, c) {
   ({ i: n, ops } = await opComparison(src, n, c));
 
   const comparisons = [];
-
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '==' });
     if (m.is) {
@@ -231,7 +230,6 @@ export async function opEquality(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opComparison(src, n, c));
-
       comparisons.push({ op: OPC_EQUAL, params: { by: opsBy } });
       continue;
     }
@@ -242,7 +240,6 @@ export async function opEquality(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opComparison(src, n, c));
-
       comparisons.push({ op: OPC_UNEQUAL, params: { by: opsBy } });
       continue;
     }
@@ -263,7 +260,6 @@ export async function opComparison(src, i, c) {
   ({ i: n, ops } = await opNot(src, n, c));
 
   const comparisons = [];
-
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '<=' });
     if (m.is) {
@@ -271,7 +267,6 @@ export async function opComparison(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNot(src, n, c));
-
       comparisons.push({ op: OPC_LESSEQUAL, params: { by: opsBy } });
       continue;
     }
@@ -282,7 +277,6 @@ export async function opComparison(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNot(src, n, c));
-
       comparisons.push({ op: OPC_LESS, params: { by: opsBy } });
       continue;
     }
@@ -293,7 +287,6 @@ export async function opComparison(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNot(src, n, c));
-
       comparisons.push({ op: OPC_GREATEREQUAL, params: { by: opsBy } });
       continue;
     }
@@ -304,7 +297,6 @@ export async function opComparison(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNot(src, n, c));
-
       comparisons.push({ op: OPC_GREATER, params: { by: opsBy } });
       continue;
     }
@@ -356,7 +348,6 @@ export async function opDifference(src, i, c) {
   ({ i: n, ops } = await opMultiplication(src, n, c));
 
   const operations = [];
-
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '+', notBeforeSet: '=' });
     if (m.is) {
@@ -364,7 +355,6 @@ export async function opDifference(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opMultiplication(src, n, c));
-
       operations.push({ op: OPM_ADDITION, params: { by: opsBy } });
       continue;
     }
@@ -375,7 +365,6 @@ export async function opDifference(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opMultiplication(src, n, c));
-
       operations.push({ op: OPM_SUBTRACTION, params: { by: opsBy } });
       continue;
     }
@@ -396,7 +385,6 @@ export async function opMultiplication(src, i, c) {
   ({ i: n, ops } = await opNullCoalescence(src, n, c));
 
   const operations = [];
-
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '*', notBeforeSet: '=' });
     if (m.is) {
@@ -404,7 +392,6 @@ export async function opMultiplication(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNullCoalescence(src, n, c));
-
       operations.push({ op: OPM_MULTIPLICATION, params: { by: opsBy } });
       continue;
     }
@@ -415,7 +402,6 @@ export async function opMultiplication(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNullCoalescence(src, n, c));
-
       operations.push({ op: OPM_DIVISION, params: { by: opsBy } });
       continue;
     }
@@ -426,7 +412,6 @@ export async function opMultiplication(src, i, c) {
 
       let opsBy;
       ({ i: n, ops: opsBy } = await opNullCoalescence(src, n, c));
-
       operations.push({ op: OPM_REMAINDER, params: { by: opsBy } });
       continue;
     }
@@ -445,10 +430,8 @@ export async function opNullCoalescence(src, i, c) {
 
   const pipes = [];
   for (;;) {
-    const result = await opNegation(src, n, c);
     let ops;
-    ({ i: n, ops } = result);
-
+    ({ i: n, ops } = await opNegation(src, n, c));
     pipes.push(ops);
 
     const m = matchWord(src, n, c, { phrase: '??' });
@@ -498,7 +481,6 @@ export async function opIf(src, i, c) {
 
     let opsThen;
     ({ i: n, ops: opsThen } = await opPipe(src, n, c));
-
     ifs.push({ if: opsIf, then: opsThen });
 
     m = matchWord(src, n, c, { spaceBefore: true, phrase: 'elif', spaceAfter: true });
@@ -941,7 +923,6 @@ export function functionHeader(src, i, c) {
     });
 
   const argNames = [];
-
   m = matchWord(src, n, c, { phrase: ')' });
   if (m.is) ({ i: n } = m);
   else
@@ -954,7 +935,6 @@ export function functionHeader(src, i, c) {
         });
       let name;
       ({ i: n, value: name } = v);
-
       argNames.push(name);
 
       m = matchWord(src, n, c, { phrase: ')' });
@@ -989,7 +969,6 @@ export async function access(src, i, c, { identity } = {}) {
 
   const operations = [];
   let canAssign = true;
-
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '.' });
     const isIdentity = identity && operations.length === 0;
@@ -1008,7 +987,6 @@ export async function access(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-
       operations.push({
         op: OPA_FIELD,
         params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
@@ -1027,7 +1005,6 @@ export async function access(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-
         operations.push({ op: OPA_ITER, params: { optional } });
         continue;
       }
@@ -1043,7 +1020,6 @@ export async function access(src, i, c, { identity } = {}) {
           let optional;
           m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
           if (m.is) ({ i: n, is: optional } = m);
-
           operations.push({
             op: OPA_SLICE,
             params: { from: [{ op: OP_CONSTANT_NULL }], to: [{ op: OP_CONSTANT_NULL }], optional },
@@ -1065,7 +1041,6 @@ export async function access(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-
         operations.push({
           op: OPA_SLICE,
           params: { from: [{ op: OP_CONSTANT_NULL }], to: opsRight, optional },
@@ -1083,7 +1058,6 @@ export async function access(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-
         operations.push({ op: OPA_FIELD, params: { pipe: opsLeft, optional } });
         continue;
       }
@@ -1103,7 +1077,6 @@ export async function access(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-
         operations.push({
           op: OPA_SLICE,
           params: { from: opsLeft, to: [{ op: OP_CONSTANT_NULL }], optional },
@@ -1125,7 +1098,6 @@ export async function access(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-
       operations.push({ op: OPA_SLICE, params: { from: opsLeft, to: opsRight, optional } });
       continue;
     }
@@ -1145,14 +1117,12 @@ export async function access(src, i, c, { identity } = {}) {
       ({ i: n } = m);
 
       const args = [];
-
       m = matchWord(src, n, c, { phrase: ')' });
       if (m.is) ({ i: n } = m);
       else
         for (;;) {
           let opsArg;
           ({ i: n, ops: opsArg } = await opSubPipe(src, n, c));
-
           args.push(opsArg);
 
           m = matchWord(src, n, c, { phrase: ')' });
@@ -1173,7 +1143,6 @@ export async function access(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-
       operations.push({ op: OPA_FUNCTION, params: { args, bound, optional } });
       canAssign = false;
       continue;
@@ -1195,7 +1164,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_SET, params: { pipe: ops } } };
   }
 
@@ -1205,7 +1173,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_UPDATE, params: { pipe: ops } } };
   }
 
@@ -1215,7 +1182,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_ADDITION, params: { pipe: ops } } };
   }
 
@@ -1225,7 +1191,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_SUBTRACTION, params: { pipe: ops } } };
   }
 
@@ -1235,7 +1200,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_MULTIPLICATION, params: { pipe: ops } } };
   }
 
@@ -1245,7 +1209,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_DIVISION, params: { pipe: ops } } };
   }
 
@@ -1255,7 +1218,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_REMAINDER, params: { pipe: ops } } };
   }
 
@@ -1265,7 +1227,6 @@ export async function assignment(src, i, c) {
 
     let ops;
     ({ i: n, ops } = await opSubRoute(src, n, c));
-
     return { i: n, is: true, assignment: { op: OPU_NULL_COALESCENCE, params: { pipe: ops } } };
   }
 
@@ -1342,7 +1303,6 @@ export async function string(src, i, c) {
   const multilineString = boundary === '`';
 
   const interpolations = [];
-
   for (;;) {
     let m = match(src, n, c, { phrase: boundary });
     if (m.is) {
@@ -1377,7 +1337,6 @@ export async function string(src, i, c) {
             operator: 'string interpolation',
             message: "expected ')'",
           });
-
         interpolations.push({ before: value, pipe: ops });
         value = '';
         continue;
