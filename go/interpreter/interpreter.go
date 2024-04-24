@@ -13,6 +13,7 @@ func NewInterpreter(options *config.JPLInterpreterConfig) jpl.JPLInterpreter {
 	if options == nil {
 		options = new(config.JPLInterpreterConfig)
 	}
+
 	return &interpreter{
 		Options: config.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
 
