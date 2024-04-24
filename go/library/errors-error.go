@@ -1,5 +1,6 @@
 package library
 
+// Generic JPL error type
 type JPLError interface {
 	error
 	JPLErrorName() string

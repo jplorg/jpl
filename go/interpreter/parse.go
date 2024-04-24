@@ -5,7 +5,7 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/library/definition"
 )
 
 type ParserContext struct {

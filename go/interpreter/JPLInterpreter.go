@@ -2,7 +2,7 @@ package interpreter
 
 import (
 	"github.com/2manyvcos/jpl/go/config"
-	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/library/definition"
 	"github.com/2manyvcos/jpl/go/program"
 )
 
@@ -43,18 +43,24 @@ type interpreter struct {
 }
 
 func (i *interpreter) Parse(source string, options *Options) (program.JPLProgram, error) {
+	if options == nil {
+		options = new(Options)
+	}
+
 	instructions, err := i.ParseInstructions(source)
 	if err != nil {
 		return nil, err
 	}
 
-	if options == nil {
-		options = new(Options)
+	definition := definition.JPLDefinition{
+		Version:      definition.DEFINITION_VERSION,
+		Instructions: instructions,
 	}
-	return program.NewProgram(instructions, &program.Options{
+
+	return program.NewProgram(definition, &program.Options{
 		Program: config.ApplyProgramDefaults(options.Program, i.ProgramOptions),
 		Runtime: config.ApplyRuntimeDefaults(options.Runtime, i.RuntimeOptions),
-	}), nil
+	})
 }
 
 func (i *interpreter) ParseInstructions(source string) (definition.Pipe, error) {

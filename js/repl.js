@@ -29,6 +29,7 @@ function readHistory() {
       .readFileSync(historyFile)
       .toString()
       .split(/\r?\n|\r/)
+      .filter(Boolean)
       .reverse();
   } catch (err) {
     return [];
@@ -38,7 +39,9 @@ function readHistory() {
 if (historyFile) {
   rl.on('history', (history) => {
     try {
-      fs.writeFileSync(historyFile, [...history].reverse().join('\n'), { mode: 0o600 });
+      fs.writeFileSync(historyFile, history.filter(Boolean).reverse().join('\n') + '\n', {
+        mode: 0o600,
+      });
     } catch (err) {
       // ignore
     }
@@ -91,6 +94,12 @@ async function handle(input) {
 
   let line = input;
   const t = line.trimStart();
+
+  if (!t) {
+    rl.prompt();
+    return undefined;
+  }
+
   if (replKeys.some((replKey) => t.startsWith(replKey))) {
     const command = (t[1] ?? ' ').toLowerCase();
 
@@ -119,11 +128,10 @@ async function handle(input) {
 
       case 'i':
         try {
-          console.log(JSON.stringify((await jpl.parse(line)).instructions, null, 2));
+          console.log(JSON.stringify((await jpl.parse(line)).definition, null, 2));
         } catch (err) {
-          if (jpl.JPLSyntaxError.is(err))
-            console.error(`${err.name ?? 'JPLError'}: ${err.message}`);
-          else console.error(err.stack);
+          if (jpl.JPLSyntaxError.is(err)) console.log(`${err.name ?? 'JPLError'}: ${err.message}`);
+          else console.log(err.stack);
         }
         break;
 
@@ -148,8 +156,8 @@ async function handle(input) {
       if (measureTime) console.log(`-> took ${diff / 1000}s`);
     } catch (err) {
       if (jpl.JPLSyntaxError.is(err) || jpl.JPLExecutionError.is(err))
-        console.error(`${err.name ?? 'JPLError'}: ${err.message}`);
-      else console.error(err.stack);
+        console.log(`${err.name ?? 'JPLError'}: ${err.message}`);
+      else console.log(err.stack);
     }
   }
 
@@ -171,8 +179,8 @@ function parseBool(input, defaultValue) {
   return null;
 }
 
-function printBool(value, defaultValue) {
-  return `boolean (${value ?? defaultValue ? 'on' : 'off'})`;
+function printBool(value) {
+  return `boolean (${value ? 'on' : 'off'})`;
 }
 
 function printHelp() {

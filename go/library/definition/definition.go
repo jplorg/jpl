@@ -1,5 +1,14 @@
 package definition
 
+const DEFINITION_VERSION_MAJOR = 1
+const DEFINITION_VERSION_MINOR = 0
+const DEFINITION_VERSION = "1.0"
+
+type JPLDefinition struct {
+	Version      string           `json:"version"`
+	Instructions []JPLInstruction `json:"instructions"`
+}
+
 type Pipe = []JPLInstruction
 
 type JPLInstruction struct {

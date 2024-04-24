@@ -1,4 +1,5 @@
 import applyDefaults from '../applyDefaults';
+import { DEFINITION_VERSION } from '../library';
 import JPLProgram, { applyProgramDefaults } from '../program';
 import { applyRuntimeDefaults } from '../runtime';
 import { parseEntrypoint } from './parse';
@@ -22,7 +23,12 @@ class JPLInterpreter {
   parse = async (source, options) => {
     const instructions = await this.parseInstructions(source);
 
-    return new JPLProgram(instructions, {
+    const programDefinition = {
+      version: DEFINITION_VERSION,
+      instructions,
+    };
+
+    return new JPLProgram(programDefinition, {
       program: applyProgramDefaults(options?.program, this.programOptions),
       runtime: applyRuntimeDefaults(options?.runtime, this.runtimeOptions),
     });

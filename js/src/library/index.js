@@ -1,5 +1,10 @@
 export { applyArray, applyCombinations, applyObject } from './apply';
 export { default as compareStrings } from './compareStrings';
+export {
+  DEFINITION_VERSION,
+  DEFINITION_VERSION_MAJOR,
+  DEFINITION_VERSION_MINOR,
+} from './definition';
 export { adaptError, default as adaptErrors, adaptErrorsAsync } from './errors/adaptErrors';
 export { default as JPLErrorEnclosure } from './errors/enclosure';
 export { default as JPLError } from './errors/error';
