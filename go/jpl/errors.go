@@ -6,6 +6,12 @@ type JPLError interface {
 	JPLErrorName() string
 }
 
+// JPL error type for wrapping errors that should be handled elsewhere
+type JPLErrorEnclosure interface {
+	JPLError
+	JPLEnclosedError() JPLError
+}
+
 // JPL error type for syntax errors
 type JPLSyntaxError interface {
 	JPLError
