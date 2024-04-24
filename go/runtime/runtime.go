@@ -39,14 +39,14 @@ func (r *runtime) CreateScope(presets *library.RuntimeScopeConfig) library.Runti
 	return library.NewRuntimeScope(presets)
 }
 
-func (r *runtime) Execute(inputs []any) ([]any, error) {
+func (r *runtime) Execute(inputs []any) ([]any, library.JPLError) {
 	panic("TODO:")
 }
 
-func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, error) {
+func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, library.JPLError) {
 	panic("TODO:")
 }
 
-func (r *runtime) OP(op definition.JPLOP, params map[string]any, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, error) {
+func (r *runtime) OP(op definition.JPLOP, params map[string]any, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, library.JPLError) {
 	panic("TODO:")
 }
