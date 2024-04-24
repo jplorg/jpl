@@ -6,10 +6,10 @@ export default {
     return runtime.executeInstructions(params.pipe, [input], scope, next);
   },
 
-  /** { value: function } */
+  /** { pipe: function } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
     };
   },
 };

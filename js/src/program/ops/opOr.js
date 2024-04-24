@@ -23,10 +23,10 @@ export default {
     return iter(0);
   },
 
-  /** { conditions: [function] } */
+  /** { pipes: [function] } */
   map(runtime, params) {
     return {
-      pipes: runtime.muxOne([params.conditions], (condition) => call(condition)),
+      pipes: runtime.muxOne([params.pipes], (condition) => call(condition)),
     };
   },
 };

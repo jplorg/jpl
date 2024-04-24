@@ -28,10 +28,10 @@ export default {
     return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
   },
 
-  /** { value: function, selectors: [opa] } */
+  /** { pipe: function, selectors: [opa] } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
         const operator = ops[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);

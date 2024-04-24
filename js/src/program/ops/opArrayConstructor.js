@@ -7,10 +7,10 @@ export default {
     return next(outputs, scope);
   },
 
-  /** { value: function } */
+  /** { pipe: function } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
     };
   },
 };

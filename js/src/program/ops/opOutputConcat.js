@@ -8,10 +8,10 @@ export default {
     );
   },
 
-  /** { values: [function] } */
+  /** { pipes: [function] } */
   map(runtime, params) {
     return {
-      pipes: runtime.muxOne([params.values], (value) => call(value)),
+      pipes: runtime.muxOne([params.pipes], (value) => call(value)),
     };
   },
 };

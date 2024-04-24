@@ -58,10 +58,10 @@ export default {
     );
   },
 
-  /** { value: function, selectors: [opa], assignment: opu } */
+  /** { pipe: function, selectors: [opa], assignment: opu } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
         const operator = opsAccess[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);

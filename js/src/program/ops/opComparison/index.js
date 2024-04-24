@@ -38,10 +38,10 @@ export default {
     return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
   },
 
-  /** { value: function, comparisons: [opc] } */
+  /** { pipe: function, comparisons: [opc] } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       comparisons: runtime.muxOne([params.comparisons], ({ op, params: opParams }) => {
         const operator = ops[op];
         if (!operator) throw new JPLFatalError(`invalid OPC '${op}'`);

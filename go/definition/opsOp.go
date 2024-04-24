@@ -3,32 +3,32 @@ package definition
 // JPL operator type
 type JPLOP string
 
-// { value: function, selectors: [opa] }
+// { pipe: function, selectors: [opa] }
 //
 // { pipe: [op], selectors: [opa] }
 const OP_ACCESS = JPLOP("$.")
 
-// { conditions: [function] }
+// { pipes: [function] }
 //
 // { pipes: [[op]] }
 const OP_AND = JPLOP("and")
 
-// { value: function }
+// { pipe: function }
 //
 // { pipe: [op] }
 const OP_ARRAY_CONSTRUCTOR = JPLOP("[]")
 
-// { value: function, selectors: [opa], assignment: opu }
+// { pipe: function, selectors: [opa], assignment: opu }
 //
 // { pipe: [op], selectors: [opa], assignment: [opu] }
 const OP_ASSIGNMENT = JPLOP("$=")
 
-// { value: function, operations: [opm] }
+// { pipe: function, operations: [opm] }
 //
 // { pipe: [op], operations: [opm] }
 const OP_CALCULATION = JPLOP("clc")
 
-// { value: function, comparisons: [opc] }
+// { pipe: function, comparisons: [opc] }
 //
 // { pipe: [op], comparisons: [opc] }
 const OP_COMPARISON = JPLOP("cmp")
@@ -53,7 +53,7 @@ const OP_CONSTANT_NULL = JPLOP("nul")
 // {}
 const OP_CONSTANT_TRUE = JPLOP("tru")
 
-// { argNames: [string], value: [op] }
+// { argNames: [string], pipe: function }
 //
 // { argNames: [string], pipe: [op] }
 const OP_FUNCTION_DEFINITION = JPLOP("fun")
@@ -63,7 +63,7 @@ const OP_FUNCTION_DEFINITION = JPLOP("fun")
 // { ifs: [{ if: [op], then: [op] }], else: [op] }
 const OP_IF = JPLOP("if")
 
-// { interpolations: [{ before: string, value: function }], after: string }
+// { interpolations: [{ before: string, pipe: function }], after: string }
 //
 // { interpolations: [{ before: string, pipe: [op] }], after: string }
 const OP_INTERPOLATED_STRING = JPLOP(`"$"`)
@@ -78,7 +78,7 @@ const OP_NEGATION = JPLOP("neg")
 // {}
 const OP_NOT = JPLOP("not")
 
-// { values: [function] }
+// { pipes: [function] }
 //
 // { pipes: [[op]] }
 const OP_NULL_COALESCENCE = JPLOP("??")
@@ -93,12 +93,12 @@ const OP_NUMBER = JPLOP("nbr")
 // { fields: [{ key: [op], value: [op], optional: boolean }] }
 const OP_OBJECT_CONSTRUCTOR = JPLOP("{}")
 
-// { conditions: [function] }
+// { pipes: [function] }
 //
 // { pipes: [[op]] }
 const OP_OR = JPLOP("or")
 
-// { values: [function] }
+// { pipes: [function] }
 //
 // { pipes: [[op]] }
 const OP_OUTPUT_CONCAT = JPLOP(",")

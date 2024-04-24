@@ -147,10 +147,10 @@ export default {
     });
   },
 
-  /** { value: function, optional: boolean } */
+  /** { pipe: function, optional: boolean } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       optional: runtime.assertType(params.optional, 'boolean'),
     };
   },

@@ -12,12 +12,12 @@ export default {
     return runtime.muxAll(interpolations, (...parts) => next(parts.join('') + params.after, scope));
   },
 
-  /** { interpolations: [{ before: string, value: function }], after: string } */
+  /** { interpolations: [{ before: string, pipe: function }], after: string } */
   map(runtime, params) {
     return {
       interpolations: runtime.muxOne([params.interpolations], (entry) => ({
         before: runtime.assertType(params.before, 'string'),
-        pipe: call(entry.value),
+        pipe: call(entry.pipe),
       })),
       after: runtime.assertType(params.after, 'string'),
     };

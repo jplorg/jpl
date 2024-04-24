@@ -27,10 +27,10 @@ export default {
     return iter(0);
   },
 
-  /** { values: [function] } */
+  /** { pipes: [function] } */
   map(runtime, params) {
     return {
-      pipes: runtime.muxOne([params.values], (option) => call(option)),
+      pipes: runtime.muxOne([params.pipes], (option) => call(option)),
     };
   },
 };

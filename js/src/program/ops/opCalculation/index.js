@@ -36,10 +36,10 @@ export default {
     return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
   },
 
-  /** { value: function, operations: [opm] } */
+  /** { pipe: function, operations: [opm] } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       operations: runtime.muxOne([params.operations], ({ op, params: opParams }) => {
         const operator = ops[op];
         if (!operator) throw new JPLFatalError(`invalid OPM '${op}'`);
