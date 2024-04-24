@@ -48,7 +48,7 @@ export function orphanFunction(argNames, instructions, presets) {
  * `next` must be called for each single result, which produces an array of results itself.
  * All resulting results must be returned as a single array.
  *
- * It is recommended to check the provided RuntimeSignal in asynchronous routines to stop the routine when execution has been canceled:
+ * It is recommended to check the provided JPLRuntimeSignal in asynchronous routines to stop the routine when execution has been canceled:
  * ```
  * signal.checkHealth();
  * ```

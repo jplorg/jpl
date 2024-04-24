@@ -14,6 +14,7 @@ import (
 
 	gojpl "github.com/2manyvcos/jpl/go"
 	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/2manyvcos/jpl/go/library"
 	"github.com/chzyer/readline"
 )
 
@@ -48,16 +49,15 @@ func main() {
 	fmt.Println("Welcome to JPL.")
 	fmt.Printf("Type \"%ch\" for more information.\n\n", defaultReplKey)
 
-	// TODO: Is this the way to define functions?
-	gojpl.Options.Runtime.Vars["exit"] = func() []any {
+	gojpl.Options.Runtime.Vars["exit"] = library.NativeFunction(func(runtime jpl.JPLRuntime, input any, args ...any) ([]any, error) {
 		rl.Close()
 		os.Exit(0)
-		return nil
-	}
-	gojpl.Options.Runtime.Vars["clear"] = func() []any {
+		return nil, nil
+	})
+	gojpl.Options.Runtime.Vars["clear"] = library.NativeFunction(func(runtime jpl.JPLRuntime, input any, args ...any) ([]any, error) {
 		readline.ClearScreen(rl)
-		return nil
-	}
+		return nil, nil
+	})
 
 	for {
 		line, err := rl.Readline()

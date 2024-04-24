@@ -2,34 +2,6 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-// JPL muxer
-type IMuxer[Input any] interface {
-	Mux(args ...Input) jpl.JPLError
-}
-
-type IMuxerFunc[Input any] func(args ...Input) jpl.JPLError
-
-// IMuxerFunc implements IMuxer
-var _ IMuxer[any] = IMuxerFunc[any](nil)
-
-func (p IMuxerFunc[Input]) Mux(args ...Input) jpl.JPLError {
-	return p(args...)
-}
-
-// JPL muxer
-type IOMuxer[Input any, Output any] interface {
-	Mux(args ...Input) (Output, jpl.JPLError)
-}
-
-type IOMuxerFunc[Input any, Output any] func(args ...Input) (Output, jpl.JPLError)
-
-// IOMuxerFunc implements IOMuxer
-var _ IOMuxer[any, any] = IOMuxerFunc[any, any](nil)
-
-func (p IOMuxerFunc[Input, Output]) Mux(args ...Input) (Output, jpl.JPLError) {
-	return p(args...)
-}
-
 // Multiplex the specified array of arguments by calling cb for all possible combinations of arguments.
 //
 // `mux([[1,2], [3,4]], cb)` for example yields:
@@ -37,7 +9,7 @@ func (p IOMuxerFunc[Input, Output]) Mux(args ...Input) (Output, jpl.JPLError) {
 // - `cb(1, 4)`
 // - `cb(2, 3)`
 // - `cb(2, 4)`
-func Mux[Input any](args [][]Input, cb IMuxer[Input]) jpl.JPLError {
+func Mux[Input any](args [][]Input, cb jpl.IMuxer[Input]) jpl.JPLError {
 	argCount := len(args)
 	if argCount == 1 {
 		for _, arg := range args[0] {
@@ -87,7 +59,7 @@ func Mux[Input any](args [][]Input, cb IMuxer[Input]) jpl.JPLError {
 }
 
 // Multiplex the specified array of arguments and return the results produced by the callbacks
-func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([]Output, jpl.JPLError) {
+func MuxOne[Input any, Output any](args [][]Input, cb jpl.IOMuxer[Input, Output]) ([]Output, jpl.JPLError) {
 	argCount := len(args)
 	if argCount == 1 {
 		inputs := args[0]
@@ -142,7 +114,7 @@ func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([
 }
 
 // Multiplex the specified array of arguments and return a single array of all merged result arrays produced by the callbacks
-func MuxAll[Input any, Output any](args [][]Input, cb IOMuxer[Input, []Output]) ([]Output, jpl.JPLError) {
+func MuxAll[Input any, Output any](args [][]Input, cb jpl.IOMuxer[Input, []Output]) ([]Output, jpl.JPLError) {
 	segments, err := MuxOne(args, cb)
 	if err != nil {
 		return nil, err

@@ -1,7 +1,7 @@
 import JPLFatalError from './errors/fatal';
 
 /** Runtime signal for managing execution lifecycle */
-class RuntimeSignal {
+class JPLRuntimeSignal {
   constructor(parent) {
     this._parent = parent;
     this._exited = false;
@@ -27,7 +27,7 @@ class RuntimeSignal {
 
   /**
    * Request the current runtime area to be exited.
-   * This also involves all child areas (introduced using `RuntimeSignal.next`).
+   * This also involves all child areas (introduced using `JPLRuntimeSignal.next`).
    */
   exit = () => {
     if (this.exited) return;
@@ -61,7 +61,7 @@ class RuntimeSignal {
   };
 
   /** Inherit the next child area for the current one */
-  next = () => new RuntimeSignal(this);
+  next = () => new JPLRuntimeSignal(this);
 }
 
-export default RuntimeSignal;
+export default JPLRuntimeSignal;

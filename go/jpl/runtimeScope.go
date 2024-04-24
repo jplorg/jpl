@@ -11,7 +11,7 @@ type JPLRuntimeSignal interface {
 	CheckHealth() JPLFatalError
 
 	// Request the current runtime area to be exited.
-	// This also involves all child areas (introduced using `RuntimeSignal.next`).
+	// This also involves all child areas (introduced using `JPLRuntimeSignal.next`).
 	Exit()
 
 	// Subscribe for when the current runtime area is requested to be exited.

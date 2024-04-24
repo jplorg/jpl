@@ -1,5 +1,5 @@
 import { applyObject } from './apply';
-import RuntimeSignal from './runtimeSignal';
+import JPLRuntimeSignal from './runtimeSignal';
 
 /**
  * Runtime scope for managing contextual runtime information.
@@ -10,7 +10,7 @@ import RuntimeSignal from './runtimeSignal';
 class JPLRuntimeScope {
   constructor(presets = {}) {
     this._state = {
-      signal: presets.signal ?? new RuntimeSignal(),
+      signal: presets.signal ?? new JPLRuntimeSignal(),
       vars: presets.vars ?? {},
     };
   }
