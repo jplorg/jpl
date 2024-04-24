@@ -5,6 +5,11 @@
 - durations
 - intervals?
 
+## JPLType handling
+
+- Allow JPLTypes to handle alteration operations themselves,
+  giving them more fine grained control without loosing context
+
 ## Encoding
 
 - highlightLocation does not handle unicode codepoints and \r\n correctly
