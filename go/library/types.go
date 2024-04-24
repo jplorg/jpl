@@ -399,7 +399,7 @@ var RawStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) 
 		}
 		return v, false, nil
 	case []any:
-		changes := make([]ArrayEntry[any], len(v))
+		changes := make([]*ArrayEntry[any], len(v))
 		for i, entry := range v {
 			key := strconv.Itoa(i)
 			result, remove, err := iter(&key, entry)
@@ -408,11 +408,11 @@ var RawStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) 
 			} else if remove {
 				result = nil
 			}
-			changes[i] = ArrayEntry[any]{i, result}
+			changes[i] = &ArrayEntry[any]{i, result}
 		}
 		return ApplyArray(v, changes, nil), false, nil
 	case map[string]any:
-		changes := make([]ObjectEntry[any], 0, len(v))
+		changes := make([]*ObjectEntry[any], 0, len(v))
 		for i, entry := range v {
 			result, remove, err := iter(&i, entry)
 			if err != nil {
@@ -420,7 +420,7 @@ var RawStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) 
 			} else if remove {
 				result = nil
 			}
-			changes = append(changes, ObjectEntry[any]{i, result, remove})
+			changes = append(changes, &ObjectEntry[any]{i, result, remove})
 		}
 		return ApplyObject(v, changes), false, nil
 	case nil:

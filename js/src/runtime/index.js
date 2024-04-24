@@ -6,7 +6,6 @@ import {
   adaptErrorsAsync,
   applyObject,
   assertType,
-  compareStrings,
   mux,
   muxAll,
   muxAsync,
@@ -150,14 +149,34 @@ class JPLRuntime {
   /** Compare the specified normalized values */
   compare = compare.bind(this);
 
-  /** Compare the specified normalized values */
-  compareStrings = (a, b) => compareStrings(this.unwrapValue(a), this.unwrapValue(b));
+  /** Compare the specified normalized strings based on their unicode code points */
+  compareStrings = (a, b) => {
+    const ta = this.type(a);
+    if (ta !== 'string') throw new JPLFatalError(`unexpected type ${ta}`);
+    const tb = this.type(b);
+    if (tb !== 'string') throw new JPLFatalError(`unexpected type ${tb}`);
+    return compareStrings(this.unwrapValue(a), this.unwrapValue(b));
+  };
 
-  /** Compare the specified normalized values */
-  compareArrays = (a, b) => compareArrays.call(this, this.unwrapValue(a), this.unwrapValue(b));
+  /** Compare the specified normalized arrays based on their lexical order */
+  compareArrays = (a, b) => {
+    const ta = this.type(a);
+    if (ta !== 'array') throw new JPLFatalError(`unexpected type ${ta}`);
+    const tb = this.type(b);
+    if (tb !== 'array') throw new JPLFatalError(`unexpected type ${tb}`);
 
-  /** Compare the specified normalized values */
-  compareObjects = (a, b) => compareObjects.call(this, this.unwrapValue(a), this.unwrapValue(b));
+    return compareArrays.call(this, this.unwrapValue(a), this.unwrapValue(b));
+  };
+
+  /** Compare the specified normalized objects */
+  compareObjects = (a, b) => {
+    const ta = this.type(a);
+    if (ta !== 'object') throw new JPLFatalError(`unexpected type ${ta}`);
+    const tb = this.type(b);
+    if (tb !== 'object') throw new JPLFatalError(`unexpected type ${tb}`);
+
+    return compareObjects.call(this, this.unwrapValue(a), this.unwrapValue(b));
+  };
 
   /** Determine if the specified normalized values can be considered to be equal */
   equals = (a, b) => this.compare(a, b) === 0;
@@ -210,6 +229,7 @@ class JPLRuntime {
 
 export default JPLRuntime;
 
+/** Compare the specified normalized values */
 function compare(a, b) {
   const ta = this.type(a);
   const tb = this.type(b);
@@ -242,17 +262,40 @@ function compare(a, b) {
   }
 }
 
-/** Compare the specified arrays based on their lexical order */
-function compareArrays(a, b) {
-  const len = Math.min(a.length, b.length);
-  for (let i = 0; i < len; i += 1) {
-    const c = compare.call(this, a[i], b[i]);
-    if (c < 0 || c > 0) return c;
+/** Compare the specified normalized strings based on their unicode code points */
+function compareStrings(a, b) {
+  const min = Math.min(a.length, b.length);
+  let i = 0;
+  // eslint-disable-next-line no-unused-vars
+  for (const _ of a) {
+    if (i >= min) {
+      break;
+    }
+    const cp1 = a.codePointAt(i);
+    const cp2 = b.codePointAt(i);
+    const order = cp1 - cp2;
+    if (order !== 0) {
+      return order;
+    }
+    i += 1;
+    if (cp1 > 0xffff) {
+      i += 1;
+    }
   }
   return a.length - b.length;
 }
 
-/** Compare the specified objects */
+/** Compare the specified normalized arrays based on their lexical order */
+function compareArrays(a, b) {
+  const min = Math.min(a.length, b.length);
+  for (let i = 0; i < min; i += 1) {
+    const c = compare.call(this, a[i], b[i]);
+    if (c !== 0) return c;
+  }
+  return a.length - b.length;
+}
+
+/** Compare the specified normalized objects */
 function compareObjects(a, b) {
   const aKeys = Object.keys(a).sort(compareStrings);
   const bKeys = Object.keys(b).sort(compareStrings);

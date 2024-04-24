@@ -39,7 +39,7 @@ func (r *runtime) CreateScope(presets *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntime
 }
 
 func (r *runtime) Execute(inputs []any) ([]any, jpl.JPLError) {
-	varEntries, err := library.MuxOne([][]library.ObjectEntry[any]{library.ObjectEntries(r.Options().Vars)}, jpl.IOMuxerFunc[library.ObjectEntry[any], library.ObjectEntry[any]](func(args ...library.ObjectEntry[any]) (result library.ObjectEntry[any], err jpl.JPLError) {
+	varEntries, err := library.MuxOne([][]*library.ObjectEntry[any]{library.ObjectEntries(r.Options().Vars)}, jpl.IOMuxerFunc[*library.ObjectEntry[any], *library.ObjectEntry[any]](func(args ...*library.ObjectEntry[any]) (result *library.ObjectEntry[any], err jpl.JPLError) {
 		result = args[0]
 		result.Value, err = library.NormalizeValue(args[0])
 		return

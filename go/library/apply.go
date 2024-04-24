@@ -11,15 +11,15 @@ type ArrayEntry[Value any] struct {
 	Value Value
 }
 
-func ObjectEntries[Value any](source map[string]Value) []ObjectEntry[Value] {
-	result := make([]ObjectEntry[Value], 0, len(source))
+func ObjectEntries[Value any](source map[string]Value) []*ObjectEntry[Value] {
+	result := make([]*ObjectEntry[Value], 0, len(source))
 	for key, value := range source {
-		result = append(result, ObjectEntry[Value]{key, value, false})
+		result = append(result, &ObjectEntry[Value]{key, value, false})
 	}
 	return result
 }
 
-func ObjectFromEntries[Value any](entries []ObjectEntry[Value]) map[string]Value {
+func ObjectFromEntries[Value any](entries []*ObjectEntry[Value]) map[string]Value {
 	result := make(map[string]Value, len(entries))
 	for _, entry := range entries {
 		if entry.NoValue {
@@ -31,16 +31,16 @@ func ObjectFromEntries[Value any](entries []ObjectEntry[Value]) map[string]Value
 	return result
 }
 
-func ArrayEntries[Value any](source []Value) []ArrayEntry[Value] {
-	result := make([]ArrayEntry[Value], 0, len(source))
+func ArrayEntries[Value any](source []Value) []*ArrayEntry[Value] {
+	result := make([]*ArrayEntry[Value], 0, len(source))
 	for i, value := range source {
-		result = append(result, ArrayEntry[Value]{i, value})
+		result = append(result, &ArrayEntry[Value]{i, value})
 	}
 	return result
 }
 
 // Apply all changes immutably to the source object.
-func ApplyObject[Value any](source map[string]Value, changes []ObjectEntry[Value]) map[string]Value {
+func ApplyObject[Value any](source map[string]Value, changes []*ObjectEntry[Value]) map[string]Value {
 	result := source
 	unchanged := true
 
@@ -76,7 +76,7 @@ func ApplyObject[Value any](source map[string]Value, changes []ObjectEntry[Value
 
 // Apply all changes immutably to the source array.
 // Indices can be negative to be applied from the end of the array.
-func ApplyArray[Value any](source []Value, changes []ArrayEntry[Value], filler Value) []Value {
+func ApplyArray[Value any](source []Value, changes []*ArrayEntry[Value], filler Value) []Value {
 	result := source
 	unchanged := true
 
@@ -94,7 +94,7 @@ func ApplyArray[Value any](source []Value, changes []ArrayEntry[Value], filler V
 			if suf > 0 {
 				total := len(result) + suf
 				nextResult := make([]Value, total)
-				for i := copy(nextResult, result); i < total; i++ {
+				for i := copy(nextResult, result); i < total; i += 1 {
 					nextResult[i] = filler
 				}
 				result = nextResult
@@ -105,7 +105,7 @@ func ApplyArray[Value any](source []Value, changes []ArrayEntry[Value], filler V
 			if pre > 0 {
 				total := pre + len(result)
 				nextResult := make([]Value, total)
-				for i := 0; i < pre; i++ {
+				for i := 0; i < pre; i += 1 {
 					nextResult[i] = filler
 				}
 				copy(nextResult[pre:], result)
@@ -188,20 +188,4 @@ func ApplyCombinations[Value any](source []Value, combinations [][]Value) [][]Va
 		}
 	}
 	return out
-}
-
-// Copy the specified map
-func copyMap[Value any](source map[string]Value) (result map[string]Value) {
-	result = make(map[string]Value, len(source))
-	for key, value := range source {
-		result[key] = value
-	}
-	return
-}
-
-// Copy the specified slice
-func copySlice[Value any](source []Value) (result []Value) {
-	result = make([]Value, len(source))
-	copy(result, source)
-	return
 }

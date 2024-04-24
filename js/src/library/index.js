@@ -1,5 +1,4 @@
 export { applyArray, applyCombinations, applyObject } from './apply';
-export { default as compareStrings } from './compareStrings';
 export {
   DEFINITION_VERSION,
   DEFINITION_VERSION_MAJOR,
