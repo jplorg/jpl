@@ -83,6 +83,560 @@ export function parseProgram(src, i, c) {
   return opPipe(src, n, c);
 }
 
+/** Parse function header at i */
+export function parseFunctionHeader(src, i, c) {
+  let n = i;
+
+  let m = matchWord(src, n, c, { phrase: '(' });
+  ({ i: n } = m);
+  if (!m.is)
+    return errorUnexpectedToken(src, n, c, {
+      operator: 'function definition',
+      message: "expected '('",
+    });
+
+  const argNames = [];
+  m = matchWord(src, n, c, { phrase: ')' });
+  if (m.is) ({ i: n } = m);
+  else
+    for (;;) {
+      const v = safeVariable(src, n, c);
+      if (!v.is)
+        return errorUnexpectedToken(src, n, c, {
+          operator: 'function definition',
+          message: 'expected argument name',
+        });
+      let name;
+      ({ i: n, value: name } = v);
+      argNames.push(name);
+
+      m = matchWord(src, n, c, { phrase: ')' });
+      if (m.is) {
+        ({ i: n } = m);
+        break;
+      }
+
+      m = matchWord(src, n, c, { phrase: ',' });
+      ({ i: n } = m);
+      if (!m.is)
+        return errorUnexpectedToken(src, n, c, {
+          operator: 'function definition',
+          message: "expected ',' or ')'",
+        });
+    }
+
+  m = matchWord(src, n, c, { phrase: ':' });
+  ({ i: n } = m);
+  if (!m.is)
+    return errorUnexpectedToken(src, n, c, {
+      operator: 'function definition',
+      message: "expected ':'",
+    });
+
+  return { i: n, argNames };
+}
+
+/** Parse access at i */
+export async function parseAccess(src, i, c, { identity } = {}) {
+  let n = i;
+
+  const operations = [];
+  let canAssign = true;
+  for (;;) {
+    let m = matchWord(src, n, c, { phrase: '.' });
+    const isIdentity = identity && operations.length === 0;
+    if (!isIdentity && m.is) {
+      ({ i: n } = m);
+
+      const v = safeVariable(src, n, c);
+      if (!v.is)
+        return errorUnexpectedToken(src, n, c, {
+          operator: 'field access operator',
+          message: 'expected field name',
+        });
+      let name;
+      ({ i: n, value: name } = v);
+
+      let optional;
+      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+      if (m.is) ({ i: n, is: optional } = m);
+      operations.push({
+        op: OPA_FIELD,
+        params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
+      });
+      continue;
+    }
+
+    m = matchWord(src, n, c, { phrase: '[' });
+    if (m.is) {
+      ({ i: n } = m);
+
+      m = matchWord(src, n, c, { phrase: ']' });
+      if (m.is) {
+        ({ i: n } = m);
+
+        let optional;
+        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+        if (m.is) ({ i: n, is: optional } = m);
+        operations.push({ op: OPA_ITER, params: { optional } });
+        continue;
+      }
+
+      m = matchWord(src, n, c, { phrase: ':' });
+      if (m.is) {
+        ({ i: n } = m);
+
+        m = matchWord(src, n, c, { phrase: ']' });
+        if (m.is) {
+          ({ i: n } = m);
+
+          let optional;
+          m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+          if (m.is) ({ i: n, is: optional } = m);
+          operations.push({
+            op: OPA_SLICE,
+            params: { from: [{ op: OP_CONSTANT_NULL }], to: [{ op: OP_CONSTANT_NULL }], optional },
+          });
+          continue;
+        }
+
+        let opsRight;
+        ({ i: n, ops: opsRight } = await opPipe(src, n, c));
+
+        m = matchWord(src, n, c, { phrase: ']' });
+        ({ i: n } = m);
+        if (!m.is)
+          return errorUnexpectedToken(src, n, c, {
+            operator: 'array slice operator',
+            message: "expected ']'",
+          });
+
+        let optional;
+        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+        if (m.is) ({ i: n, is: optional } = m);
+        operations.push({
+          op: OPA_SLICE,
+          params: { from: [{ op: OP_CONSTANT_NULL }], to: opsRight, optional },
+        });
+        continue;
+      }
+
+      let opsLeft;
+      ({ i: n, ops: opsLeft } = await opPipe(src, n, c));
+
+      m = matchWord(src, n, c, { phrase: ']' });
+      if (m.is) {
+        ({ i: n } = m);
+
+        let optional;
+        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+        if (m.is) ({ i: n, is: optional } = m);
+        operations.push({ op: OPA_FIELD, params: { pipe: opsLeft, optional } });
+        continue;
+      }
+
+      m = matchWord(src, n, c, { phrase: ':' });
+      if (!m.is)
+        return errorUnexpectedToken(src, n, c, {
+          operator: 'variable access operator',
+          message: "expected ':' or ']'",
+        });
+      ({ i: n } = m);
+
+      m = matchWord(src, n, c, { phrase: ']' });
+      if (m.is) {
+        ({ i: n } = m);
+
+        let optional;
+        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+        if (m.is) ({ i: n, is: optional } = m);
+        operations.push({
+          op: OPA_SLICE,
+          params: { from: opsLeft, to: [{ op: OP_CONSTANT_NULL }], optional },
+        });
+        continue;
+      }
+
+      let opsRight;
+      ({ i: n, ops: opsRight } = await opPipe(src, n, c));
+
+      m = matchWord(src, n, c, { phrase: ']' });
+      ({ i: n } = m);
+      if (!m.is)
+        return errorUnexpectedToken(src, n, c, {
+          operator: 'array slice operator',
+          message: "expected ']'",
+        });
+
+      let optional;
+      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+      if (m.is) ({ i: n, is: optional } = m);
+      operations.push({ op: OPA_SLICE, params: { from: opsLeft, to: opsRight, optional } });
+      continue;
+    }
+
+    let bound;
+    m = matchWord(src, n, c, { phrase: '->' });
+    if (m.is) ({ i: n, is: bound } = m);
+
+    m = matchWord(src, n, c, { phrase: '(' });
+    if (!m.is && bound) {
+      return errorUnexpectedToken(src, n, c, {
+        operator: 'bound function call',
+        message: "expected '('",
+      });
+    }
+    if (m.is) {
+      ({ i: n } = m);
+
+      const args = [];
+      m = matchWord(src, n, c, { phrase: ')' });
+      if (m.is) ({ i: n } = m);
+      else
+        for (;;) {
+          let opsArg;
+          ({ i: n, ops: opsArg } = await opSubPipe(src, n, c));
+          args.push(opsArg);
+
+          m = matchWord(src, n, c, { phrase: ')' });
+          if (m.is) {
+            ({ i: n } = m);
+            break;
+          }
+
+          m = matchWord(src, n, c, { phrase: ',' });
+          ({ i: n } = m);
+          if (!m.is)
+            return errorUnexpectedToken(src, n, c, {
+              operator: 'function call',
+              message: "expected ',' or ')'",
+            });
+        }
+
+      let optional;
+      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
+      if (m.is) ({ i: n, is: optional } = m);
+      operations.push({ op: OPA_FUNCTION, params: { args, bound, optional } });
+      canAssign = false;
+      continue;
+    }
+
+    break;
+  }
+
+  return { i: n, is: operations.length > 0, operations, canAssign };
+}
+
+/** Parse assignment at i */
+export async function parseAssignment(src, i, c) {
+  let n = i;
+
+  let m = matchWord(src, n, c, { phrase: '=', notBeforeSet: '=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_SET, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '|=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_UPDATE, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '+=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_ADDITION, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '-=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_SUBTRACTION, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '*=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_MULTIPLICATION, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '/=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_DIVISION, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '%=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_REMAINDER, params: { pipe: ops } } };
+  }
+
+  m = matchWord(src, n, c, { phrase: '?=' });
+  if (m.is) {
+    ({ i: n } = m);
+
+    let ops;
+    ({ i: n, ops } = await opSubRoute(src, n, c));
+    return { i: n, is: true, assignment: { op: OPU_NULL_COALESCENCE, params: { pipe: ops } } };
+  }
+
+  return { i: n, is: false };
+}
+
+/** Parse number at i */
+export function parseNumber(src, i, c) {
+  let n = i;
+  let is = false;
+  let value = '';
+
+  for (;;) {
+    const set = matchSet(src, n, c, { set: '0123456789' });
+    if (!set.is) break;
+    ({ i: n } = set);
+    is = true;
+    value += set.value;
+  }
+
+  if (!is) return { i: n, is: false };
+
+  const m = match(src, n, c, { phrase: '.' });
+  if (m.is) {
+    ({ i: n } = m);
+    value += '.';
+
+    for (;;) {
+      const set = matchSet(src, n, c, { set: '0123456789' });
+      if (!set.is) break;
+      ({ i: n } = set);
+      value += set.value;
+    }
+  }
+
+  let set = matchSet(src, n, c, { set: 'eE' });
+  if (set.is) {
+    ({ i: n } = set);
+    value += set.value;
+
+    set = matchSet(src, n, c, { set: '+-' });
+    if (set.is) {
+      ({ i: n } = set);
+      value += set.value;
+    }
+
+    let isE;
+    for (;;) {
+      set = matchSet(src, n, c, { set: '0123456789' });
+      if (!set.is) break;
+      ({ i: n } = set);
+      isE = true;
+      value += set.value;
+    }
+    if (!isE)
+      return errorUnexpectedToken(src, n, c, { operator: 'number', message: 'expected digit' });
+  }
+
+  ({ i: n } = walkWhitespace(src, n, c));
+
+  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { value } }] };
+}
+
+/** Parse string at i */
+export async function parseString(src, i, c) {
+  let n = i;
+  let value = '';
+
+  const set = matchSet(src, n, c, { set: '"\'`' });
+  if (!set.is) return { i: n, is: false };
+  let boundary;
+  ({ i: n, value: boundary } = set);
+
+  const multilineString = boundary === '`';
+
+  const interpolations = [];
+  for (;;) {
+    let m = match(src, n, c, { phrase: boundary });
+    if (m.is) {
+      ({ i: n } = m);
+      break;
+    }
+
+    const end = eot(src, n, c);
+    if (end.is) {
+      ({ i: n } = end);
+      return errorUnexpectedToken(src, n, c, {
+        operator: 'string',
+        message: 'incomplete string literal',
+      });
+    }
+
+    m = match(src, n, c, { phrase: '\\' });
+    if (m.is) {
+      ({ i: n } = m);
+
+      m = matchWord(src, n, c, { phrase: '(' });
+      if (m.is) {
+        ({ i: n } = m);
+
+        let ops;
+        ({ i: n, ops } = await opPipe(src, n, c));
+
+        m = match(src, n, c, { phrase: ')' });
+        ({ i: n } = m);
+        if (!m.is)
+          return errorUnexpectedToken(src, n, c, {
+            operator: 'string interpolation',
+            message: "expected ')'",
+          });
+        interpolations.push({ before: value, pipe: ops });
+        value = '';
+        continue;
+      }
+
+      if (multilineString) {
+        switch (src[n]) {
+          case '\n':
+            n += 1;
+            continue;
+
+          case '\r':
+            n += 1;
+            if (!eot(src, n, c).is && src[n] === '\n') n += 1;
+            continue;
+
+          default:
+        }
+      }
+
+      switch (src[n]) {
+        case '"':
+          value += '"';
+          n += 1;
+          continue;
+
+        case "'":
+          value += "'";
+          n += 1;
+          continue;
+
+        case '`':
+          value += '`';
+          n += 1;
+          continue;
+
+        case '\\':
+          value += '\\';
+          n += 1;
+          continue;
+
+        case '/':
+          value += '/';
+          n += 1;
+          continue;
+
+        case 'b':
+          value += '\b';
+          n += 1;
+          continue;
+
+        case 'f':
+          value += '\f';
+          n += 1;
+          continue;
+
+        case 'n':
+          value += '\n';
+          n += 1;
+          continue;
+
+        case 'r':
+          value += '\r';
+          n += 1;
+          continue;
+
+        case 't':
+          value += '\t';
+          n += 1;
+          continue;
+
+        case 'u': {
+          n += 1;
+          let hexVal = '';
+          for (let j = 0; j < 4; j += 1) {
+            m = hex(src, n, c);
+            ({ i: n } = m);
+            if (!m.is)
+              return errorUnexpectedToken(src, n, c, {
+                operator: 'string',
+                message: 'incomplete unicode escape sequence: expected hex digit',
+              });
+            hexVal += m.value;
+          }
+          value += String.fromCodePoint(parseInt(hexVal, 16));
+          continue;
+        }
+
+        default:
+          return errorUnexpectedToken(src, n, c, {
+            operator: 'string',
+            message: 'invalid escape sequence',
+          });
+      }
+    }
+
+    if (multilineString) {
+      switch (src[n]) {
+        case '\n':
+        case '\r':
+        case '\t':
+          value += src[n];
+          n += 1;
+          continue;
+
+        default:
+      }
+    }
+
+    if (src.charCodeAt(n) < 0x20) return errorUnexpectedToken(src, n, c, { operator: 'string' });
+
+    value += src[n];
+    n += 1;
+  }
+
+  ({ i: n } = walkWhitespace(src, n, c));
+
+  if (interpolations.length === 0)
+    return { i: n, is: true, ops: [{ op: OP_STRING, params: { value } }] };
+
+  return {
+    i: n,
+    is: true,
+    ops: [{ op: OP_INTERPOLATED_STRING, params: { interpolations, after: value } }],
+  };
+}
+
 /** Parse pipe at i */
 export async function opPipe(src, i, c) {
   // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.
@@ -536,7 +1090,7 @@ export function opConstant(src, i, c) {
 export async function opNumber(src, i, c) {
   let n = i;
 
-  const result = await number(src, n, c);
+  const result = await parseNumber(src, n, c);
   if (!result.is) return opNamedFunctionDefinition(src, n, c);
   ({ i: n } = result);
 
@@ -557,7 +1111,7 @@ export async function opNamedFunctionDefinition(src, i, c) {
   ({ i: n, value: name } = v);
 
   let argNames;
-  ({ i: n, argNames } = await functionHeader(src, n, c));
+  ({ i: n, argNames } = await parseFunctionHeader(src, n, c));
 
   let ops;
   ({ i: n, ops } = await opSubRoute(src, n, c));
@@ -582,7 +1136,7 @@ export async function opFunctionDefinition(src, i, c) {
   ({ i: n } = m);
 
   let argNames;
-  ({ i: n, argNames } = await functionHeader(src, n, c));
+  ({ i: n, argNames } = await parseFunctionHeader(src, n, c));
 
   let ops;
   ({ i: n, ops } = await opSubRoute(src, n, c));
@@ -601,7 +1155,7 @@ export async function opVariableAccess(src, i, c) {
 
   let operations;
   let canAssign;
-  const ac = await access(src, n, c);
+  const ac = await parseAccess(src, n, c);
   if (ac.is) ({ i: n, operations, canAssign } = ac);
   else {
     operations = [];
@@ -615,7 +1169,7 @@ export async function opVariableAccess(src, i, c) {
     return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
   }
 
-  const as = await assignment(src, n, c);
+  const as = await parseAssignment(src, n, c);
   if (!as.is) {
     const ops = [{ op: OP_VARIABLE, params: { name } }];
 
@@ -684,7 +1238,9 @@ export async function opValueAccess(src, i, c) {
     }
   }
 
-  const ac = await access(src, n, c, { identity: ops.length === 0 && operations.length === 0 });
+  const ac = await parseAccess(src, n, c, {
+    identity: ops.length === 0 && operations.length === 0,
+  });
   let canAssign;
   if (ac.is) {
     ({ i: n, canAssign } = ac);
@@ -695,7 +1251,7 @@ export async function opValueAccess(src, i, c) {
 
   if (!canAssign) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
 
-  const as = await assignment(src, n, c);
+  const as = await parseAssignment(src, n, c);
   if (!as.is) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
   let opAssignment;
   ({ i: n, assignment: opAssignment } = as);
@@ -762,7 +1318,7 @@ export async function opObjectConstructor(src, i, c) {
         continue;
       }
 
-      const s = await string(src, n, c);
+      const s = await parseString(src, n, c);
       if (s.is) {
         let opsKey;
         ({ i: n, ops: opsKey } = s);
@@ -885,11 +1441,11 @@ export async function opArrayConstructor(src, i, c) {
 export async function opStringLiteral(src, i, c) {
   let n = i;
 
-  const result = await string(src, n, c);
-  if (!result.is) return opGroup(src, n, c);
-  ({ i: n } = result);
+  const s = await parseString(src, n, c);
+  if (!s.is) return opGroup(src, n, c);
+  ({ i: n } = s);
 
-  return { i: n, ops: result.ops };
+  return { i: n, ops: s.ops };
 }
 
 /** Parse group at i */
@@ -908,558 +1464,4 @@ export async function opGroup(src, i, c) {
   if (!m.is) return errorUnexpectedToken(src, n, c, { operator: 'group', message: "expected ')'" });
 
   return { i: n, ops };
-}
-
-/** Parse function header at i */
-export function functionHeader(src, i, c) {
-  let n = i;
-
-  let m = matchWord(src, n, c, { phrase: '(' });
-  ({ i: n } = m);
-  if (!m.is)
-    return errorUnexpectedToken(src, n, c, {
-      operator: 'function definition',
-      message: "expected '('",
-    });
-
-  const argNames = [];
-  m = matchWord(src, n, c, { phrase: ')' });
-  if (m.is) ({ i: n } = m);
-  else
-    for (;;) {
-      const v = safeVariable(src, n, c);
-      if (!v.is)
-        return errorUnexpectedToken(src, n, c, {
-          operator: 'function definition',
-          message: 'expected argument name',
-        });
-      let name;
-      ({ i: n, value: name } = v);
-      argNames.push(name);
-
-      m = matchWord(src, n, c, { phrase: ')' });
-      if (m.is) {
-        ({ i: n } = m);
-        break;
-      }
-
-      m = matchWord(src, n, c, { phrase: ',' });
-      ({ i: n } = m);
-      if (!m.is)
-        return errorUnexpectedToken(src, n, c, {
-          operator: 'function definition',
-          message: "expected ',' or ')'",
-        });
-    }
-
-  m = matchWord(src, n, c, { phrase: ':' });
-  ({ i: n } = m);
-  if (!m.is)
-    return errorUnexpectedToken(src, n, c, {
-      operator: 'function definition',
-      message: "expected ':'",
-    });
-
-  return { i: n, argNames };
-}
-
-/** Parse access at i */
-export async function access(src, i, c, { identity } = {}) {
-  let n = i;
-
-  const operations = [];
-  let canAssign = true;
-  for (;;) {
-    let m = matchWord(src, n, c, { phrase: '.' });
-    const isIdentity = identity && operations.length === 0;
-    if (!isIdentity && m.is) {
-      ({ i: n } = m);
-
-      const v = safeVariable(src, n, c);
-      if (!v.is)
-        return errorUnexpectedToken(src, n, c, {
-          operator: 'field access operator',
-          message: 'expected field name',
-        });
-      let name;
-      ({ i: n, value: name } = v);
-
-      let optional;
-      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-      if (m.is) ({ i: n, is: optional } = m);
-      operations.push({
-        op: OPA_FIELD,
-        params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
-      });
-      continue;
-    }
-
-    m = matchWord(src, n, c, { phrase: '[' });
-    if (m.is) {
-      ({ i: n } = m);
-
-      m = matchWord(src, n, c, { phrase: ']' });
-      if (m.is) {
-        ({ i: n } = m);
-
-        let optional;
-        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-        if (m.is) ({ i: n, is: optional } = m);
-        operations.push({ op: OPA_ITER, params: { optional } });
-        continue;
-      }
-
-      m = matchWord(src, n, c, { phrase: ':' });
-      if (m.is) {
-        ({ i: n } = m);
-
-        m = matchWord(src, n, c, { phrase: ']' });
-        if (m.is) {
-          ({ i: n } = m);
-
-          let optional;
-          m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-          if (m.is) ({ i: n, is: optional } = m);
-          operations.push({
-            op: OPA_SLICE,
-            params: { from: [{ op: OP_CONSTANT_NULL }], to: [{ op: OP_CONSTANT_NULL }], optional },
-          });
-          continue;
-        }
-
-        let opsRight;
-        ({ i: n, ops: opsRight } = await opPipe(src, n, c));
-
-        m = matchWord(src, n, c, { phrase: ']' });
-        ({ i: n } = m);
-        if (!m.is)
-          return errorUnexpectedToken(src, n, c, {
-            operator: 'array slice operator',
-            message: "expected ']'",
-          });
-
-        let optional;
-        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-        if (m.is) ({ i: n, is: optional } = m);
-        operations.push({
-          op: OPA_SLICE,
-          params: { from: [{ op: OP_CONSTANT_NULL }], to: opsRight, optional },
-        });
-        continue;
-      }
-
-      let opsLeft;
-      ({ i: n, ops: opsLeft } = await opPipe(src, n, c));
-
-      m = matchWord(src, n, c, { phrase: ']' });
-      if (m.is) {
-        ({ i: n } = m);
-
-        let optional;
-        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-        if (m.is) ({ i: n, is: optional } = m);
-        operations.push({ op: OPA_FIELD, params: { pipe: opsLeft, optional } });
-        continue;
-      }
-
-      m = matchWord(src, n, c, { phrase: ':' });
-      if (!m.is)
-        return errorUnexpectedToken(src, n, c, {
-          operator: 'variable access operator',
-          message: "expected ':' or ']'",
-        });
-      ({ i: n } = m);
-
-      m = matchWord(src, n, c, { phrase: ']' });
-      if (m.is) {
-        ({ i: n } = m);
-
-        let optional;
-        m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-        if (m.is) ({ i: n, is: optional } = m);
-        operations.push({
-          op: OPA_SLICE,
-          params: { from: opsLeft, to: [{ op: OP_CONSTANT_NULL }], optional },
-        });
-        continue;
-      }
-
-      let opsRight;
-      ({ i: n, ops: opsRight } = await opPipe(src, n, c));
-
-      m = matchWord(src, n, c, { phrase: ']' });
-      ({ i: n } = m);
-      if (!m.is)
-        return errorUnexpectedToken(src, n, c, {
-          operator: 'array slice operator',
-          message: "expected ']'",
-        });
-
-      let optional;
-      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-      if (m.is) ({ i: n, is: optional } = m);
-      operations.push({ op: OPA_SLICE, params: { from: opsLeft, to: opsRight, optional } });
-      continue;
-    }
-
-    let bound;
-    m = matchWord(src, n, c, { phrase: '->' });
-    if (m.is) ({ i: n, is: bound } = m);
-
-    m = matchWord(src, n, c, { phrase: '(' });
-    if (!m.is && bound) {
-      return errorUnexpectedToken(src, n, c, {
-        operator: 'bound function call',
-        message: "expected '('",
-      });
-    }
-    if (m.is) {
-      ({ i: n } = m);
-
-      const args = [];
-      m = matchWord(src, n, c, { phrase: ')' });
-      if (m.is) ({ i: n } = m);
-      else
-        for (;;) {
-          let opsArg;
-          ({ i: n, ops: opsArg } = await opSubPipe(src, n, c));
-          args.push(opsArg);
-
-          m = matchWord(src, n, c, { phrase: ')' });
-          if (m.is) {
-            ({ i: n } = m);
-            break;
-          }
-
-          m = matchWord(src, n, c, { phrase: ',' });
-          ({ i: n } = m);
-          if (!m.is)
-            return errorUnexpectedToken(src, n, c, {
-              operator: 'function call',
-              message: "expected ',' or ')'",
-            });
-        }
-
-      let optional;
-      m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
-      if (m.is) ({ i: n, is: optional } = m);
-      operations.push({ op: OPA_FUNCTION, params: { args, bound, optional } });
-      canAssign = false;
-      continue;
-    }
-
-    break;
-  }
-
-  return { i: n, is: operations.length > 0, operations, canAssign };
-}
-
-/** Parse assignment at i */
-export async function assignment(src, i, c) {
-  let n = i;
-
-  let m = matchWord(src, n, c, { phrase: '=', notBeforeSet: '=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_SET, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '|=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_UPDATE, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '+=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_ADDITION, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '-=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_SUBTRACTION, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '*=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_MULTIPLICATION, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '/=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_DIVISION, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '%=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_REMAINDER, params: { pipe: ops } } };
-  }
-
-  m = matchWord(src, n, c, { phrase: '?=' });
-  if (m.is) {
-    ({ i: n } = m);
-
-    let ops;
-    ({ i: n, ops } = await opSubRoute(src, n, c));
-    return { i: n, is: true, assignment: { op: OPU_NULL_COALESCENCE, params: { pipe: ops } } };
-  }
-
-  return { i: n, is: false };
-}
-
-/** Parse number at i */
-export function number(src, i, c) {
-  let n = i;
-  let is = false;
-  let value = '';
-
-  for (;;) {
-    const set = matchSet(src, n, c, { set: '0123456789' });
-    if (!set.is) break;
-    ({ i: n } = set);
-    is = true;
-    value += set.value;
-  }
-
-  if (!is) return { i: n, is: false };
-
-  const m = match(src, n, c, { phrase: '.' });
-  if (m.is) {
-    ({ i: n } = m);
-    value += '.';
-
-    for (;;) {
-      const set = matchSet(src, n, c, { set: '0123456789' });
-      if (!set.is) break;
-      ({ i: n } = set);
-      value += set.value;
-    }
-  }
-
-  let set = matchSet(src, n, c, { set: 'eE' });
-  if (set.is) {
-    ({ i: n } = set);
-    value += set.value;
-
-    set = matchSet(src, n, c, { set: '+-' });
-    if (set.is) {
-      ({ i: n } = set);
-      value += set.value;
-    }
-
-    let isE;
-    for (;;) {
-      set = matchSet(src, n, c, { set: '0123456789' });
-      if (!set.is) break;
-      ({ i: n } = set);
-      isE = true;
-      value += set.value;
-    }
-    if (!isE)
-      return errorUnexpectedToken(src, n, c, { operator: 'number', message: 'expected digit' });
-  }
-
-  ({ i: n } = walkWhitespace(src, n, c));
-
-  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { value } }] };
-}
-
-/** Parse string at i */
-export async function string(src, i, c) {
-  let n = i;
-  let value = '';
-
-  const set = matchSet(src, n, c, { set: '"\'`' });
-  if (!set.is) return { i: n, is: false };
-  let boundary;
-  ({ i: n, value: boundary } = set);
-
-  const multilineString = boundary === '`';
-
-  const interpolations = [];
-  for (;;) {
-    let m = match(src, n, c, { phrase: boundary });
-    if (m.is) {
-      ({ i: n } = m);
-      break;
-    }
-
-    const end = eot(src, n, c);
-    if (end.is) {
-      ({ i: n } = end);
-      return errorUnexpectedToken(src, n, c, {
-        operator: 'string',
-        message: 'incomplete string literal',
-      });
-    }
-
-    m = match(src, n, c, { phrase: '\\' });
-    if (m.is) {
-      ({ i: n } = m);
-
-      m = matchWord(src, n, c, { phrase: '(' });
-      if (m.is) {
-        ({ i: n } = m);
-
-        let ops;
-        ({ i: n, ops } = await opPipe(src, n, c));
-
-        m = match(src, n, c, { phrase: ')' });
-        ({ i: n } = m);
-        if (!m.is)
-          return errorUnexpectedToken(src, n, c, {
-            operator: 'string interpolation',
-            message: "expected ')'",
-          });
-        interpolations.push({ before: value, pipe: ops });
-        value = '';
-        continue;
-      }
-
-      if (multilineString) {
-        switch (src[n]) {
-          case '\n':
-            n += 1;
-            continue;
-
-          case '\r':
-            n += 1;
-            if (!eot(src, n, c).is && src[n] === '\n') n += 1;
-            continue;
-
-          default:
-        }
-      }
-
-      switch (src[n]) {
-        case '"':
-          value += '"';
-          n += 1;
-          continue;
-
-        case "'":
-          value += "'";
-          n += 1;
-          continue;
-
-        case '`':
-          value += '`';
-          n += 1;
-          continue;
-
-        case '\\':
-          value += '\\';
-          n += 1;
-          continue;
-
-        case '/':
-          value += '/';
-          n += 1;
-          continue;
-
-        case 'b':
-          value += '\b';
-          n += 1;
-          continue;
-
-        case 'f':
-          value += '\f';
-          n += 1;
-          continue;
-
-        case 'n':
-          value += '\n';
-          n += 1;
-          continue;
-
-        case 'r':
-          value += '\r';
-          n += 1;
-          continue;
-
-        case 't':
-          value += '\t';
-          n += 1;
-          continue;
-
-        case 'u': {
-          n += 1;
-          let hexVal = '';
-          for (let j = 0; j < 4; j += 1) {
-            m = hex(src, n, c);
-            ({ i: n } = m);
-            if (!m.is)
-              return errorUnexpectedToken(src, n, c, {
-                operator: 'string',
-                message: 'incomplete unicode escape sequence: expected hex digit',
-              });
-            hexVal += m.value;
-          }
-          value += String.fromCharCode(parseInt(hexVal, 16));
-          continue;
-        }
-
-        default:
-          return errorUnexpectedToken(src, n, c, {
-            operator: 'string',
-            message: 'invalid escape sequence',
-          });
-      }
-    }
-
-    if (multilineString) {
-      switch (src[n]) {
-        case '\n':
-        case '\r':
-        case '\t':
-          value += src[n];
-          n += 1;
-          continue;
-
-        default:
-      }
-    }
-
-    if (src.charCodeAt(n) < 0x20) return errorUnexpectedToken(src, n, c, { operator: 'string' });
-
-    value += src[n];
-    n += 1;
-  }
-
-  ({ i: n } = walkWhitespace(src, n, c));
-
-  if (interpolations.length === 0)
-    return { i: n, is: true, ops: [{ op: OP_STRING, params: { value } }] };
-
-  return {
-    i: n,
-    is: true,
-    ops: [{ op: OP_INTERPOLATED_STRING, params: { interpolations, after: value } }],
-  };
 }
