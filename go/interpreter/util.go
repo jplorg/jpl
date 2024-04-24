@@ -202,7 +202,7 @@ func safeVariable(src string, i int, c *ParserContext) (n int, is bool, value st
 }
 
 // Check if i is at the end of src
-func eot(src string, i int, c *ParserContext) (n int, is bool) {
+func eot(src string, i int, _ *ParserContext) (n int, is bool) {
 	if l := len(src); i >= l {
 		return l, true
 	}
@@ -210,7 +210,7 @@ func eot(src string, i int, c *ParserContext) (n int, is bool) {
 }
 
 // Get (zero based) line and column for i
-func whereIs(src string, i int, c *ParserContext) (n int, line int, column int) {
+func whereIs(src string, i int, _ *ParserContext) (n int, line int, column int) {
 	lines := regexp.MustCompile(`\r?\n|\r`).Split(src[0:i], -1)
 	line = len(lines) - 1
 	currentLine := lines[line]
@@ -222,7 +222,7 @@ type highlightOptions struct {
 }
 
 // Get a descriptive text highlighting i
-func highlightLocation(src string, i int, c *ParserContext, options highlightOptions) (n int, value string) {
+func highlightLocation(src string, i int, _ *ParserContext, options highlightOptions) (n int, value string) {
 	area := options.Area
 	if area <= 0 {
 		area = 25

@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console */
-
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const readline = require('readline');
-
 const { default: jpl } = require('./lib');
 const pkg = require('./package.json');
 

@@ -2,8 +2,7 @@ package library
 
 type JPLError interface {
 	error
-	Name() string
-	JPLError() bool
+	JPLErrorName() string
 }
 
 func NewJPLError(message string, name string) JPLError {
@@ -23,10 +22,6 @@ func (e jplError) Error() string {
 	return e.message
 }
 
-func (e jplError) Name() string {
+func (e jplError) JPLErrorName() string {
 	return e.name
-}
-
-func (e jplError) JPLError() bool {
-	return true
 }

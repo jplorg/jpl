@@ -5,9 +5,9 @@
 - durations
 - intervals?
 
-## Unicode
+## Debugging
 
-- highlightlocation should look at runes rather than bytes
+- highlightLocation does not handle unicode codepoints and \r\n correctly
 
 ## Cross compatibility
 
