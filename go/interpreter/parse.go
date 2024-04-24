@@ -823,6 +823,81 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 
 // Parse variable access at i
 func opValueAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+	n = i
+
+	var operations []definition.JPLOperation
+
+	var ops definition.Pipe
+	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "."})
+	if err != nil {
+		return 0, nil, err
+	}
+	if !isM {
+		if n, ops, err = opObjectConstructor(src, n, c); err != nil {
+			return 0, nil, err
+		}
+	} else {
+		n = iM
+		ops = nil
+
+		iV, isV, name, _, err := safeVariable(src, n, c)
+		if err != nil {
+			return 0, nil, err
+		}
+		if isV {
+			n = iV
+
+			var optional bool
+			iM, isM, err = matchWord(src, n, c, matchOptions{Phrase: "?", NotBeforeSet: "?="})
+			if err != nil {
+				return 0, nil, err
+			}
+			if isM {
+				n = iM
+				optional = true
+			}
+
+			operations = append(operations, definition.JPLOperation{
+				OP:     definition.OPA_FIELD,
+				Params: definition.JPLOperationParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional},
+			})
+		}
+	}
+
+	iAc, isAc, operationsAc, canAssign, err := access(src, n, c, accessOptions{Identity: len(ops) == 0 && len(operations) == 0})
+	if err != nil {
+		return 0, nil, err
+	}
+	if isAc {
+		n = iAc
+		operations = append(operations, operationsAc...)
+	} else {
+		canAssign = len(operations) > 0
+	}
+
+	if len(operations) == 0 {
+		return n, ops, nil
+	}
+
+	if !canAssign {
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+	}
+
+	var opAssignment *definition.JPLAssignment
+	iAs, isAs, opAssignment, err := assignment(src, n, c)
+	if err != nil {
+		return 0, nil, err
+	}
+	if !isAs {
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+	}
+	n = iAs
+
+	return n, definition.Pipe{{OP: definition.OP_ASSIGNMENT, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations, Assignment: opAssignment}}}, nil
+}
+
+// Parse object constructor at i
+func opObjectConstructor(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
 	panic("TODO:")
 }
 
