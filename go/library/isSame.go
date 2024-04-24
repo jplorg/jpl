@@ -1,16 +1,30 @@
 package library
 
-import "reflect"
+import (
+	"reflect"
+
+	"github.com/2manyvcos/jpl/go/jpl"
+)
 
 // Check if both values are the same.
 //
 // []any and map[string]any are compared by memory address,
 // primitives by value.
-func Is(a, b any) bool {
-	// TODO: what about JPLTypes and functions?
+func IsSame(a, b any) bool {
+	aType, aOk := a.(jpl.JPLType)
+	bType, bOk := a.(jpl.JPLType)
+	if aOk || bOk {
+		return aOk && bOk && reflect.TypeOf(a) == reflect.TypeOf(b) && aType.IsSame(bType)
+	}
 
-	_, aOk := a.(map[string]any)
-	_, bOk := b.(map[string]any)
+	_, aOk = a.(jpl.JPLFunc)
+	_, bOk = b.(jpl.JPLFunc)
+	if aOk || bOk {
+		return aOk && bOk && reflect.ValueOf(a).Pointer() == reflect.ValueOf(b).Pointer()
+	}
+
+	_, aOk = a.(map[string]any)
+	_, bOk = b.(map[string]any)
 	if aOk || bOk {
 		return aOk && bOk && reflect.ValueOf(a).Pointer() == reflect.ValueOf(b).Pointer()
 	}

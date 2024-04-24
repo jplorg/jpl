@@ -47,7 +47,7 @@ func ApplyObject[Value any](source map[string]Value, changes []ObjectEntry[Value
 			continue
 		}
 
-		if value, exists := result[change.Key]; exists && Is(value, change.Value) {
+		if value, exists := result[change.Key]; exists && IsSame(value, change.Value) {
 			continue
 		}
 		if unchanged {
@@ -74,7 +74,7 @@ func ApplyArray[Value any](source []Value, changes []ArrayEntry[Value], filler V
 			i = len(result) + change.Index
 		}
 
-		if i >= 0 && i < len(result) && Is(result[i], change.Value) {
+		if i >= 0 && i < len(result) && IsSame(result[i], change.Value) {
 			continue
 		}
 		if change.Index >= 0 {
@@ -151,7 +151,7 @@ func ApplyCombinations[Value any](source []Value, combinations [][]Value) [][]Va
 		unchanged := true
 		for i, index := range indices {
 			v := index.values[index.current]
-			if Is(result[i], v) {
+			if IsSame(result[i], v) {
 				continue
 			}
 			if unchanged {
