@@ -8,8 +8,9 @@ import (
 
 // Check if both values are the same.
 //
-// []any and map[string]any are compared by memory address,
-// primitives by value.
+// JPLTypes are compared by type and `JPLType.IsSame`,
+// JPLFuncs, []any and map[string]any are compared by memory address,
+// and other comparable values using `==`.
 func IsSame(a, b any) bool {
 	aType, aOk := a.(jpl.JPLType)
 	bType, bOk := a.(jpl.JPLType)
