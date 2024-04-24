@@ -7,6 +7,7 @@ import (
 
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/2manyvcos/jpl/go/library"
 )
 
 type ParserContext struct {
@@ -15,7 +16,7 @@ type ParserContext struct {
 
 // Parse a single program at i.
 // Throws an error if src contains additional content.
-func parseEntrypoint(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func parseEntrypoint(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iResult, opsResult, err := parseProgram(src, n, c)
@@ -32,7 +33,7 @@ func parseEntrypoint(src string, i int, c *ParserContext) (n int, result definit
 }
 
 // Parse program at i
-func parseProgram(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func parseProgram(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	if n, _, err = walkWhitespace(src, n, c); err != nil {
@@ -43,7 +44,7 @@ func parseProgram(src string, i int, c *ParserContext) (n int, result definition
 }
 
 // Parse function header at i
-func parseFunctionHeader(src string, i int, c *ParserContext) (n int, argNames []string, err error) {
+func parseFunctionHeader(src string, i int, c *ParserContext) (n int, argNames []string, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "("})
@@ -122,7 +123,7 @@ type accessOptions struct {
 }
 
 // Parse access at i
-func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n int, is bool, selectors []definition.JPLSelector, canAssign bool, err error) {
+func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n int, is bool, selectors []definition.JPLSelector, canAssign bool, err library.JPLSyntaxError) {
 	n = i
 
 	canAssign = true
@@ -413,7 +414,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 }
 
 // Parse assignment at i
-func parseAssignment(src string, i int, c *ParserContext) (n int, is bool, assignment *definition.JPLAssignment, err error) {
+func parseAssignment(src string, i int, c *ParserContext) (n int, is bool, assignment *definition.JPLAssignment, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "=", NotBeforeSet: "="})
@@ -532,7 +533,7 @@ func parseAssignment(src string, i int, c *ParserContext) (n int, is bool, assig
 }
 
 // Parse number at i
-func parseNumber(src string, i int, c *ParserContext) (n int, is bool, result definition.Pipe, err error) {
+func parseNumber(src string, i int, c *ParserContext) (n int, is bool, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 	var value string
 
@@ -599,7 +600,7 @@ func parseNumber(src string, i int, c *ParserContext) (n int, is bool, result de
 }
 
 // Parse string at i
-func parseString(src string, i int, c *ParserContext) (n int, is bool, result definition.Pipe, err error) {
+func parseString(src string, i int, c *ParserContext) (n int, is bool, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 	var value []byte
 
@@ -738,7 +739,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 				}
 				parsed, err := strconv.ParseUint(hexVal, 16, 16)
 				if err != nil {
-					return 0, false, nil, err
+					panic(err)
 				}
 				r := rune(parsed)
 				// parse utf16
@@ -761,7 +762,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 						}
 						parsed, err = strconv.ParseUint(hexVal, 16, 16)
 						if err != nil {
-							return 0, false, nil, err
+							panic(err)
 						}
 						r2 := rune(parsed)
 						// if the second rune is no utf16 surrogate, we append each rune individually to the result value
@@ -817,7 +818,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 }
 
 // Parse pipe at i
-func opPipe(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opPipe(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipe definition.Pipe
@@ -842,7 +843,7 @@ func opPipe(src string, i int, c *ParserContext) (n int, result definition.Pipe,
 }
 
 // Parse subpipe at i
-func opSubPipe(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opSubPipe(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipe definition.Pipe
@@ -867,12 +868,12 @@ func opSubPipe(src string, i int, c *ParserContext) (n int, result definition.Pi
 }
 
 // Parse subroute at i
-func opSubRoute(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opSubRoute(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	return opTry(src, i, c)
 }
 
 // Parse output concat at i
-func opOutputConcat(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opOutputConcat(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipes []definition.Pipe
@@ -901,7 +902,7 @@ func opOutputConcat(src string, i int, c *ParserContext) (n int, result definiti
 }
 
 // Parse try at i
-func opTry(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opTry(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "try", SpaceAfter: true})
@@ -937,7 +938,7 @@ func opTry(src string, i int, c *ParserContext) (n int, result definition.Pipe, 
 }
 
 // Parse or at i
-func opOr(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opOr(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipes []definition.Pipe
@@ -966,7 +967,7 @@ func opOr(src string, i int, c *ParserContext) (n int, result definition.Pipe, e
 }
 
 // Parse and at i
-func opAnd(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opAnd(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipes []definition.Pipe
@@ -995,7 +996,7 @@ func opAnd(src string, i int, c *ParserContext) (n int, result definition.Pipe, 
 }
 
 // Parse equality at i
-func opEquality(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opEquality(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var ops definition.Pipe
@@ -1046,7 +1047,7 @@ func opEquality(src string, i int, c *ParserContext) (n int, result definition.P
 }
 
 // Parse comparison at i
-func opComparison(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opComparison(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var ops definition.Pipe
@@ -1127,7 +1128,7 @@ func opComparison(src string, i int, c *ParserContext) (n int, result definition
 }
 
 // Parse not at i
-func opNot(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opNot(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "not", SpaceAfter: true})
@@ -1150,7 +1151,7 @@ func opNot(src string, i int, c *ParserContext) (n int, result definition.Pipe, 
 }
 
 // Parse error suppression at i
-func opErrorSuppression(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opErrorSuppression(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iResult, opsResult, err := opDifference(src, n, c)
@@ -1172,7 +1173,7 @@ func opErrorSuppression(src string, i int, c *ParserContext) (n int, result defi
 }
 
 // Parse difference at i
-func opDifference(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opDifference(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var ops definition.Pipe
@@ -1223,7 +1224,7 @@ func opDifference(src string, i int, c *ParserContext) (n int, result definition
 }
 
 // Parse multiplication at i
-func opMultiplication(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opMultiplication(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var ops definition.Pipe
@@ -1289,7 +1290,7 @@ func opMultiplication(src string, i int, c *ParserContext) (n int, result defini
 }
 
 // Parse null coalescence at i
-func opNullCoalescence(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opNullCoalescence(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var pipes []definition.Pipe
@@ -1318,7 +1319,7 @@ func opNullCoalescence(src string, i int, c *ParserContext) (n int, result defin
 }
 
 // Parse negation at i
-func opNegation(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opNegation(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "-", NotBeforeSet: "=>"})
@@ -1341,7 +1342,7 @@ func opNegation(src string, i int, c *ParserContext) (n int, result definition.P
 }
 
 // Parse if at i
-func opIf(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opIf(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "if", SpaceAfter: true})
@@ -1419,7 +1420,7 @@ func opIf(src string, i int, c *ParserContext) (n int, result definition.Pipe, e
 }
 
 // Parse constant at i
-func opConstant(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opConstant(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "true", SpaceAfter: true})
@@ -1453,7 +1454,7 @@ func opConstant(src string, i int, c *ParserContext) (n int, result definition.P
 }
 
 // Parse number at i
-func opNumber(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opNumber(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iResult, isResult, opsResult, err := parseNumber(src, n, c)
@@ -1469,7 +1470,7 @@ func opNumber(src string, i int, c *ParserContext) (n int, result definition.Pip
 }
 
 // Parse named function definition at i
-func opNamedFunctionDefinition(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opNamedFunctionDefinition(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "func", SpaceAfter: true})
@@ -1507,7 +1508,7 @@ func opNamedFunctionDefinition(src string, i int, c *ParserContext) (n int, resu
 }
 
 // Parse function definition at i
-func opFunctionDefinition(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opFunctionDefinition(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "func", SpaceAfter: true})
@@ -1533,7 +1534,7 @@ func opFunctionDefinition(src string, i int, c *ParserContext) (n int, result de
 }
 
 // Parse variable definition at i
-func opVariableAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opVariableAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iV, isV, name, _, err := safeVariable(src, n, c)
@@ -1601,7 +1602,7 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 }
 
 // Parse variable access at i
-func opValueAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opValueAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	var selectors []definition.JPLSelector
@@ -1676,7 +1677,7 @@ func opValueAccess(src string, i int, c *ParserContext) (n int, result definitio
 }
 
 // Parse object constructor at i
-func opObjectConstructor(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opObjectConstructor(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "{"})
@@ -1889,7 +1890,7 @@ func opObjectConstructor(src string, i int, c *ParserContext) (n int, result def
 }
 
 // Parse array constructor at i
-func opArrayConstructor(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opArrayConstructor(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "["})
@@ -1930,7 +1931,7 @@ func opArrayConstructor(src string, i int, c *ParserContext) (n int, result defi
 }
 
 // Parse string literal at i
-func opStringLiteral(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opStringLiteral(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iS, isS, ops, err := parseString(src, n, c)
@@ -1946,7 +1947,7 @@ func opStringLiteral(src string, i int, c *ParserContext) (n int, result definit
 }
 
 // Parse group at i
-func opGroup(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
+func opGroup(src string, i int, c *ParserContext) (n int, result definition.Pipe, err library.JPLSyntaxError) {
 	n = i
 
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "("})

@@ -172,7 +172,7 @@ export function template(tmpl, ...replacements) {
         result = strictDisplayValue(value);
         break;
       default:
-        throw new Error(`format ${match} has unknown verb ${verb}`);
+        throw new JPLFatalError(`format ${match} has unknown verb ${verb}`);
     }
     let pad = true;
     let padRight = false;
@@ -189,7 +189,7 @@ export function template(tmpl, ...replacements) {
           trunc = true;
           break;
         default:
-          throw new Error(`format ${match} has unknown flag ${flag}`);
+          throw new JPLFatalError(`format ${match} has unknown flag ${flag}`);
       }
     });
     const w = +(width ?? 0);

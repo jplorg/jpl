@@ -3,6 +3,7 @@ package jpl
 import (
 	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/library"
 )
 
 // JPL program
@@ -20,5 +21,5 @@ type JPLProgram interface {
 	// Run the program with the provided inputs and runtime options.
 	// The program throws a JPLExecutionError for runtime failures.
 	// Other errors may be thrown when execution fails.
-	Run(inputs []any, options *config.JPLProgramConfig) ([]any, error)
+	Run(inputs []any, options *config.JPLProgramConfig) ([]any, library.JPLError)
 }

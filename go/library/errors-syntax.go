@@ -1,19 +1,25 @@
 package library
 
-func NewJPLSyntaxError(message string) JPLSyntaxError {
-	return JPLSyntaxError(message)
+// JPL error type for syntax errors
+type JPLSyntaxError interface {
+	JPLError
+	JPLSyntaxError() bool
 }
 
-// JPL error type for syntax errors
-type JPLSyntaxError string
+func NewJPLSyntaxError(message string) JPLSyntaxError {
+	return syntaxError(message)
+}
 
-// JPLSyntaxError implements JPLError
-var _ JPLError = JPLSyntaxError("")
+type syntaxError string
 
-func (e JPLSyntaxError) Error() string {
+func (e syntaxError) Error() string {
 	return string(e)
 }
 
-func (e JPLSyntaxError) JPLErrorName() string {
+func (e syntaxError) JPLErrorName() string {
 	return "JPLSyntaxError"
+}
+
+func (e syntaxError) JPLSyntaxError() bool {
+	return true
 }

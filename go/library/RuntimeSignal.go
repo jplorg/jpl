@@ -8,7 +8,7 @@ type RuntimeSignal interface {
 	Exited() bool
 
 	// Check that the current runtime area has not been requested to be exited and throw a fatal error otherwise
-	CheckHealth() error
+	CheckHealth() JPLFatalError
 
 	// Request the current runtime area to be exited.
 	// This also involves all child areas (introduced using `RuntimeSignal.next`).
@@ -49,7 +49,7 @@ func (s *runtimeSignal) Exited() bool {
 	return s.exited
 }
 
-func (s *runtimeSignal) CheckHealth() error {
+func (s *runtimeSignal) CheckHealth() JPLFatalError {
 	if s.exited {
 		return NewJPLFatalError("execution aborted")
 	}

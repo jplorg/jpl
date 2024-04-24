@@ -1,22 +1,21 @@
 package library
 
-func format(value any, replacements ...any) (string, error) {
+func format(value any, replacements ...any) (string, JPLError) {
 	if len(replacements) > 0 {
 		return Template(value, replacements...)
 	}
 	return DisplayValue(value)
 }
 
-// JPL error type for generic runtime errors.
+// JPL error type for generic runtime errors
 type JPLRuntimeError interface {
 	JPLExecutionError
-
 	JPLRuntimeError() bool
 }
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLRuntimeError(value any, replacements ...any) (JPLRuntimeError, error) {
+func NewJPLRuntimeError(value any, replacements ...any) (JPLRuntimeError, JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return nil, err
@@ -52,7 +51,7 @@ func (e jplRuntimeError) JPLRuntimeError() bool {
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLTypeError(value any, replacements ...any) (JPLTypeError, error) {
+func NewJPLTypeError(value any, replacements ...any) (JPLTypeError, JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return JPLTypeError{}, err
@@ -69,7 +68,7 @@ type JPLTypeError struct{ JPLRuntimeError }
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLReferenceError(value any, replacements ...any) (JPLReferenceError, error) {
+func NewJPLReferenceError(value any, replacements ...any) (JPLReferenceError, JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return JPLReferenceError{}, err
@@ -86,7 +85,7 @@ type JPLReferenceError struct{ JPLRuntimeError }
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLZeroDivisionError(value any, replacements ...any) (JPLZeroDivisionError, error) {
+func NewJPLZeroDivisionError(value any, replacements ...any) (JPLZeroDivisionError, JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return JPLZeroDivisionError{}, err
@@ -103,7 +102,7 @@ type JPLZeroDivisionError struct{ JPLRuntimeError }
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLTypeConversionError(value any, replacements ...any) (JPLTypeConversionError, error) {
+func NewJPLTypeConversionError(value any, replacements ...any) (JPLTypeConversionError, JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return JPLTypeConversionError{}, err

@@ -1,17 +1,17 @@
 package library
 
-type IterFunc = func(key *string, value any) (any, error)
+type IterFunc = func(key *string, value any) (any, JPLError)
 
 // JPL stripper
 type JPLStripper interface {
-	Strip(key *string, value any, iter IterFunc) (any, error)
+	Strip(key *string, value any, iter IterFunc) (any, JPLError)
 }
 
-type JPLStripperFunc func(key *string, value any, iter IterFunc) (any, error)
+type JPLStripperFunc func(key *string, value any, iter IterFunc) (any, JPLError)
 
 // JPLStripperFunc implements JPLStripper
 var _ JPLStripper = JPLStripperFunc(nil)
 
-func (p JPLStripperFunc) Strip(key *string, value any, iter IterFunc) (any, error) {
+func (p JPLStripperFunc) Strip(key *string, value any, iter IterFunc) (any, JPLError) {
 	return p(key, value, iter)
 }

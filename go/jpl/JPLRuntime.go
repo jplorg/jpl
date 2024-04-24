@@ -18,11 +18,11 @@ type JPLRuntime interface {
 	CreateScope(presets *library.RuntimeScopeConfig) library.RuntimeScope
 
 	// Execute a new dedicated program
-	Execute(inputs []any) ([]any, error)
+	Execute(inputs []any) ([]any, library.JPLError)
 
 	// Execute the specified instructions
-	ExecuteInstructions(instructions definition.Pipe, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, error)
+	ExecuteInstructions(instructions definition.Pipe, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, library.JPLError)
 
 	// Execute the specified OP
-	OP(op definition.JPLOP, params map[string]any, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, error)
+	OP(op definition.JPLOP, params map[string]any, inputs []any, scope library.RuntimeScope, next library.JPLPiper) ([]any, library.JPLError)
 }

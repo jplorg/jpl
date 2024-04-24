@@ -1,19 +1,25 @@
 package library
 
-func NewJPLFatalError(message string) JPLFatalError {
-	return JPLFatalError(message)
+// JPL error type for unrecoverable errors
+type JPLFatalError interface {
+	JPLError
+	JPLFatalError() bool
 }
 
-// JPL error type for unrecoverable errors
-type JPLFatalError string
+func NewJPLFatalError(message string) JPLFatalError {
+	return fatalError(message)
+}
 
-// JPLFatalError implements JPLError
-var _ JPLError = JPLFatalError("")
+type fatalError string
 
-func (e JPLFatalError) Error() string {
+func (e fatalError) Error() string {
 	return string(e)
 }
 
-func (e JPLFatalError) JPLErrorName() string {
+func (e fatalError) JPLErrorName() string {
 	return "JPLFatalError"
+}
+
+func (e fatalError) JPLFatalError() bool {
+	return true
 }

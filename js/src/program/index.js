@@ -1,5 +1,10 @@
 import applyDefaults from '../applyDefaults';
-import { DEFINITION_VERSION, DEFINITION_VERSION_MAJOR, DEFINITION_VERSION_MINOR } from '../library';
+import {
+  DEFINITION_VERSION,
+  DEFINITION_VERSION_MAJOR,
+  DEFINITION_VERSION_MINOR,
+  JPLFatalError,
+} from '../library';
 import JPLRuntime, { applyRuntimeDefaults } from '../runtime';
 import ops from './ops';
 
@@ -15,11 +20,11 @@ function validateDefinition(programDefinition) {
     typeof version === 'string' ? /^(\d+)\.(\d+)?$/g.exec(version) ?? [] : [];
 
   if (!major || !minor || !Array.isArray(programDefinition.instructions)) {
-    throw new Error('invalid program definition');
+    throw new JPLFatalError('invalid program definition');
   }
 
   if (+major !== DEFINITION_VERSION_MAJOR || +minor > DEFINITION_VERSION_MINOR) {
-    throw new Error(
+    throw new JPLFatalError(
       `unsupported program definition v${major}.${minor} - this version of JPL only supports v${DEFINITION_VERSION_MAJOR} (up to v${DEFINITION_VERSION})`,
     );
   }

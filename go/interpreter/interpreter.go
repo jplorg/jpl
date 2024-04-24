@@ -4,6 +4,7 @@ import (
 	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/2manyvcos/jpl/go/library"
 	"github.com/2manyvcos/jpl/go/program"
 )
 
@@ -31,7 +32,7 @@ func (i *interpreter) Options() config.JPLInterpreterOptions {
 	return i.options
 }
 
-func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig) (jpl.JPLProgram, error) {
+func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig) (jpl.JPLProgram, library.JPLError) {
 	if options == nil {
 		options = new(config.JPLInterpreterConfig)
 	}
@@ -52,7 +53,7 @@ func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig)
 	})
 }
 
-func (i *interpreter) ParseInstructions(source string) (definition.Pipe, error) {
+func (i *interpreter) ParseInstructions(source string) (definition.Pipe, library.JPLSyntaxError) {
 	_, instructions, err := parseEntrypoint(source, 0, &ParserContext{Interpreter: i})
 	return instructions, err
 }
