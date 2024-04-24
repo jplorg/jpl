@@ -6,47 +6,7 @@ import (
 	"github.com/2manyvcos/jpl/go/jpl"
 )
 
-// Generic type for handling special formatting on values.
-//
-// The value accessor should be used in JPL expressions, where type safety may be considered important.
-//
-// The json accessor should be used in program outputs, where the format of the value should be applied and the original type may be ignored.
-//
-// The alter function is called when the value is being changed by an operation.
-// The JPLType is responsible to decide whether the resulting value should be wrapped in a new JPLType or not.
-// It may also return itself if the value did not change.
-// Note that the resulting value may have another type than the original value.
-// Commonly, if multiple values wrapped in JPLTypes are involved in an operation, the leftmost operand should be altered whereas all other operands should be unwrapped using their value accessors, effectively loosing their formatting.
-//
-// However, both accessors should represent the same essential value.
-// For example, a JPLType that applies rounding to numbers with a fixed number of decimal digits, may return the rounded numeric value for its value accessor (e.g. `1`), whereas it may return a formatted string for its JSON accessor (e.g. `"1.00"`).
-// This allows this JPLType to be processed in JPL operations like generic numbers but resolves to formatted strings in the program output.
-type JPLType interface {
-	// Resolve the internal value for usage in JPL operations
-	Value() (any, jpl.JPLError)
-
-	// Resolve the JSON value for usage in program outputs
-	JSON() (any, jpl.JPLError)
-
-	// Alter the internal value using the specified updater.
-	// The result may or may not be wrapped into a new JPLType if desired.
-	// The JPLType may return itself if the value did not change.
-	//
-	// It is recommended to use AlterJPLType here as a starting point.
-	Alter(updater jpl.JPLModifier) (any, jpl.JPLError)
-
-	// Return whether the specified JPLType refers to the same value as the receiver, meaning that both instances are interchangeable.
-	// `other` is always expected to be of the same type than the receiver.
-	//
-	// For a JPLType that is defined as a pointer, both pointers can be simply compared, e.g.
-	// `func (t *someType) IsSame(other JPLType) bool { return t == other }`
-	IsSame(other JPLType) bool
-
-	// It is recommended to use MarshalJSONJPLType here, which marshals the JPLType based on its json accessor.
-	json.Marshaler
-}
-
-func NewJPLType(value any) (JPLType, jpl.JPLError) {
+func NewJPLType(value any) (jpl.JPLType, jpl.JPLError) {
 	v, err := normalizeInternalValue(value)
 	if err != nil {
 		return nil, err
@@ -68,7 +28,7 @@ func (t *jplType) Alter(updater jpl.JPLModifier) (any, jpl.JPLError) {
 	return AlterJPLType(t, updater)
 }
 
-func (t *jplType) IsSame(other JPLType) bool {
+func (t *jplType) IsSame(other jpl.JPLType) bool {
 	return t == other
 }
 
@@ -77,7 +37,7 @@ func (t *jplType) MarshalJSON() ([]byte, error) {
 }
 
 // Alter the specified JPLType
-func AlterJPLType(t JPLType, updater jpl.JPLModifier) (any, jpl.JPLError) {
+func AlterJPLType(t jpl.JPLType, updater jpl.JPLModifier) (any, jpl.JPLError) {
 	v, err := t.Value()
 	if err != nil {
 		return nil, err
@@ -90,7 +50,7 @@ func AlterJPLType(t JPLType, updater jpl.JPLModifier) (any, jpl.JPLError) {
 }
 
 // Marshal the specified JPLType as JSON
-func MarshalJPLType(t JPLType) ([]byte, error) {
+func MarshalJPLType(t jpl.JPLType) ([]byte, error) {
 	v, err := t.JSON()
 	if err != nil {
 		return nil, err
@@ -100,7 +60,7 @@ func MarshalJPLType(t JPLType) ([]byte, error) {
 
 // Normalize the specified external value to be used in a JPLType
 func normalizeInternalValue(value any) (any, jpl.JPLError) {
-	if t, ok := value.(JPLType); ok {
+	if t, ok := value.(jpl.JPLType); ok {
 		return t.Value()
 	}
 	return Normalize(value)
