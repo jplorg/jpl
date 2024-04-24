@@ -2,7 +2,7 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLExecutionError(message string, name string) jpl.JPLExecutionError {
+func NewExecutionError(message string, name string) jpl.JPLExecutionError {
 	if name == "" {
 		name = "JPLExecutionError"
 	}
@@ -13,7 +13,7 @@ func NewJPLExecutionError(message string, name string) jpl.JPLExecutionError {
 	}
 
 	return executionError{
-		JPLError: NewJPLError(message, name),
+		JPLError: NewError(message, name),
 		value:    value,
 	}
 }

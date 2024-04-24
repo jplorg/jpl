@@ -1,0 +1,12 @@
+package library
+
+import "github.com/2manyvcos/jpl/go/jpl"
+
+// Wrap error in a JPLExecutionError if it is not already a JPLError
+func AdaptError(err error) jpl.JPLError {
+	if e, ok := err.(jpl.JPLError); !ok {
+		return NewExecutionError(err.Error(), "")
+	} else {
+		return e
+	}
+}

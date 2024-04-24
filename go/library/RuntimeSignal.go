@@ -29,7 +29,7 @@ func (s *runtimeSignal) Exited() bool {
 
 func (s *runtimeSignal) CheckHealth() jpl.JPLFatalError {
 	if s.exited {
-		return NewJPLFatalError("execution aborted")
+		return NewFatalError("execution aborted")
 	}
 	return nil
 }

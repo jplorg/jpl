@@ -10,7 +10,7 @@ func NormalizeValue(value any) (any, jpl.JPLError) {
 // Normalize the specified array of external values
 func NormalizeValues(values any, name string) ([]any, jpl.JPLError) {
 	if _, ok := values.([]any); !ok {
-		return nil, NewJPLFatalError("expected " + name + " to be an array")
+		return nil, NewFatalError("expected " + name + " to be an array")
 	}
 	result, err := NormalizeValue(values)
 	if err != nil {

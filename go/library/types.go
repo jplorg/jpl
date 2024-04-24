@@ -2,11 +2,15 @@ package library
 
 import (
 	"encoding/json"
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/2manyvcos/jpl/go/jpl"
 )
 
-func NewJPLType(value any) (jpl.JPLType, jpl.JPLError) {
+func NewType(value any) (jpl.JPLType, jpl.JPLError) {
 	v, err := normalizeInternalValue(value)
 	if err != nil {
 		return nil, err
@@ -50,12 +54,16 @@ func AlterJPLType(t jpl.JPLType, updater jpl.JPLModifier) (any, jpl.JPLError) {
 }
 
 // Marshal the specified JPLType as JSON
-func MarshalJPLType(t jpl.JPLType) ([]byte, error) {
+func MarshalJPLType(t jpl.JPLType) ([]byte, jpl.JPLError) {
 	v, err := t.JSON()
 	if err != nil {
 		return nil, err
 	}
-	return json.Marshal(v)
+	if json, err := json.Marshal(v); err != nil {
+		return nil, AdaptError(err)
+	} else {
+		return json, nil
+	}
 }
 
 // Normalize the specified external value to be used in a JPLType
@@ -70,6 +78,105 @@ func normalizeInternalValue(value any) (any, jpl.JPLError) {
 func Normalize(value any) (any, jpl.JPLError) {
 	return Strip(value, nil, JPLTypedStripper)
 }
+
+// Unwrap the specified normalized value
+func Unwrap(value any) (any, jpl.JPLError) {
+	if t, ok := value.(jpl.JPLType); ok {
+		return t.Value()
+	}
+	return value, nil
+}
+
+// Resolve the type of the specified normalized value
+func TypeOf(value any) (jpl.JPLDataType, jpl.JPLError) {
+	v, err := Unwrap(value)
+	if err != nil {
+		return "", err
+	}
+	switch v.(type) {
+	case jpl.JPLFunc:
+		return jpl.JPLT_FUNCTION, nil
+	case map[string]any:
+		return jpl.JPLT_OBJECT, nil
+	case []any:
+		return jpl.JPLT_ARRAY, nil
+	case nil:
+		return jpl.JPLT_NULL, nil
+	case bool:
+		return jpl.JPLT_BOOLEAN, nil
+	case float64:
+		return jpl.JPLT_NUMBER, nil
+	case string:
+		return jpl.JPLT_STRING, nil
+
+	default:
+		return "", NewFatalError(fmt.Sprintf("invalid type %T (%+v)", v, v))
+	}
+}
+
+// Assert the type for the specified unwrapped value
+func AssertType(value any, expectedType jpl.JPLDataType) (any, jpl.JPLError) {
+	if _, ok := value.(jpl.JPLType); ok {
+		if message, err := Template("unexpected type: JPLTypes (%*<100v) are not allowed here", value); err != nil {
+			return nil, err
+		} else {
+			return nil, NewFatalError(message)
+		}
+	}
+	t, err := TypeOf(value)
+	if err != nil {
+		return nil, err
+	}
+	if t != expectedType {
+		if message, err := Template("unexpected type: %s (%*<100v) cannot be used as %s", t, value, expectedType); err != nil {
+			return nil, err
+		} else {
+			return nil, NewFatalError(message)
+		}
+	}
+	return value, nil
+}
+
+var replaceFunctions = jpl.JPLReplacerFunc(func(k string, v any) (any, jpl.JPLError) {
+	u, err := Unwrap(v)
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := u.(jpl.JPLFunc); ok {
+		return "<function>", nil
+	}
+	return v, nil
+})
+
+// Stringify the specified normalized value
+func Stringify(value any, unescapeString bool, escapeFunctions bool) (string, jpl.JPLError) {
+	var rawValue any
+	if escapeFunctions {
+		var err jpl.JPLError
+		rawValue, err = Strip(value, replaceFunctions, nil)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		var err jpl.JPLError
+		rawValue, err = Strip(value, nil, nil)
+		if err != nil {
+			return "", err
+		}
+	}
+	if unescapeString {
+		if s, ok := rawValue.(string); ok {
+			return s, nil
+		}
+	}
+	if json, err := json.Marshal(rawValue); err != nil {
+		return "", AdaptError(err)
+	} else {
+		return string(json), nil
+	}
+}
+
+var placeholder = regexp.MustCompile(`%(?P<Flags>[*\-<]+)?(?P<Width>[1-9][0-9]*)?(?P<Verb>.)`)
 
 // Format the specified template string.
 // The general form of a format is a percent sign, followed by optional flags, an optional width and a verb.
@@ -93,12 +200,98 @@ func Normalize(value any) (any, jpl.JPLError) {
 // - `s`: Format the next replacement as a string (like JSON, but does not escape strings)
 // - `v`: Format the next replacement as a JSON value
 func Template(tmpl any, replacements ...any) (string, jpl.JPLError) {
-	panic("TODO:")
+	var i int
+	v, err := DisplayValue(tmpl)
+	if err != nil {
+		return "", err
+	}
+	result := placeholder.ReplaceAllStringFunc(v, func(match string) string {
+		if err != nil {
+			return match
+		}
+		parts := placeholder.FindStringSubmatch(match)
+		if len(parts) < 4 {
+			return match
+		}
+		flags := parts[1]
+		width := parts[2]
+		verb := parts[3]
+		// verbs without replacement
+		switch verb {
+		case "%":
+			return "%"
+		default:
+		}
+		// verbs with replacement
+		var value any
+		if len(replacements) > i {
+			value = replacements[i]
+		}
+		var result string
+		switch verb {
+		case "s":
+			result, err = DisplayValue(value)
+			if err != nil {
+				return match
+			}
+		case "v":
+			result, err = StrictDisplayValue(value)
+			if err != nil {
+				return match
+			}
+		default:
+			err = NewFatalError("format " + match + " has unknown verb " + verb)
+			return match
+		}
+		pad := true
+		padRight := false
+		trunc := false
+		for _, flag := range flags {
+			switch flag {
+			case '*':
+				pad = false
+			case '-':
+				padRight = true
+			case '<':
+				trunc = true
+			default:
+				err = NewFatalError("format " + match + " has unknown flag " + string(flag))
+				return match
+			}
+		}
+		var w int
+		if parsed, err := strconv.ParseInt(width, 10, 64); width != "" && err == nil {
+			w = int(parsed)
+		}
+		if w > 0 {
+			rl := len([]rune(result))
+			if pad && rl < w {
+				padding := strings.Repeat(" ", w-rl)
+				if padRight {
+					result = result + padding
+				} else {
+					result = padding + result
+				}
+			} else if trunc && rl > w {
+				result = string([]rune(result)[0:w-1]) + "…"
+			}
+		}
+		return result
+	})
+	if err != nil {
+		return "", err
+	}
+	return result, nil
 }
 
 // Format the specified normalized value as a string
 func DisplayValue(value any) (string, jpl.JPLError) {
-	panic("TODO:")
+	return Stringify(value, true, true)
+}
+
+// Format the specified normalized value as a string, without removing escaping
+func StrictDisplayValue(value any) (string, jpl.JPLError) {
+	return Stringify(value, false, true)
 }
 
 // Unwrap the specified value similar to `JSON.stringify`.

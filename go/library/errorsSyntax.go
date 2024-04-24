@@ -2,7 +2,7 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLSyntaxError(message string) jpl.JPLSyntaxError {
+func NewSyntaxError(message string) jpl.JPLSyntaxError {
 	return syntaxError(message)
 }
 

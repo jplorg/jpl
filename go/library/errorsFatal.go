@@ -2,7 +2,7 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLFatalError(message string) jpl.JPLFatalError {
+func NewFatalError(message string) jpl.JPLFatalError {
 	return fatalError(message)
 }
 

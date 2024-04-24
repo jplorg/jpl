@@ -271,5 +271,5 @@ func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOpti
 	}
 	_, description := highlightLocation(src, i, c, highlightOptions{})
 	errorMessage += "\n" + description
-	return library.NewJPLSyntaxError(errorMessage)
+	return library.NewSyntaxError(errorMessage)
 }

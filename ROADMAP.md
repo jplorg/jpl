@@ -10,6 +10,7 @@
 - highlightLocation does not handle unicode codepoints and \r\n correctly
 - also the template function specifies that it looks at unicode codepoints but doesn't
 - because of that, the whole codebase should be checked for wrong unicode usage
+  -> template also doesn't handle this correctly (substring)
 
 ## Cross compatibility
 

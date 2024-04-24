@@ -15,7 +15,7 @@ var defaultOptions = jpl.JPLProgramOptions{}
 
 var versionRegex = regexp.MustCompile(`^(?P<Major>\d+)\.(?P<Minor>\d+)$`)
 
-func validateDefinition(programDefinition definition.JPLDefinition) jpl.JPLFatalError {
+func validateDefinition(programDefinition definition.JPLDefinition) jpl.JPLError {
 	parts := versionRegex.FindStringSubmatch(programDefinition.Version)
 	var major, minor string
 	var majorV, minorV int
@@ -33,11 +33,11 @@ func validateDefinition(programDefinition definition.JPLDefinition) jpl.JPLFatal
 	}
 
 	if major == "" || minor == "" {
-		return library.NewJPLFatalError("invalid program definition")
+		return library.NewFatalError("invalid program definition")
 	}
 
 	if majorV != definition.DEFINITION_VERSION_MAJOR || minorV > definition.DEFINITION_VERSION_MINOR {
-		return library.NewJPLFatalError(fmt.Sprintf("unsupported program definition v%s.%s - this version of JPL only supports v%v (up to v%s)", major, minor, definition.DEFINITION_VERSION_MAJOR, definition.DEFINITION_VERSION))
+		return library.NewFatalError(fmt.Sprintf("unsupported program definition v%s.%s - this version of JPL only supports v%v (up to v%s)", major, minor, definition.DEFINITION_VERSION_MAJOR, definition.DEFINITION_VERSION))
 	}
 
 	return nil

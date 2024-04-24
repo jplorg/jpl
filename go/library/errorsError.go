@@ -2,7 +2,7 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLError(message string, name string) jpl.JPLError {
+func NewError(message string, name string) jpl.JPLError {
 	if name == "" {
 		name = "JPLError"
 	}
