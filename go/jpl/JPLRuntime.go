@@ -80,11 +80,11 @@ type JPLRuntime interface {
 	// - `cb(1, 4)`
 	// - `cb(2, 3)`
 	// - `cb(2, 4)`
-	Mux(args [][]any, cb func(...any) error) error
+	Mux(args [][]any, cb library.JPLMuxer) error
 
 	// Multiplex the specified array of arguments and return the results produced by the callbacks
-	MuxOne(args [][]any, cb func(...any) (any, error)) ([]any, error)
+	MuxOne(args [][]any, cb library.JPLMuxerOne) ([]any, error)
 
 	// Multiplex the specified array of arguments and return a single array of all merged result arrays produced by the callbacks
-	MuxAll(args [][]any, cb func(...any) ([]any, error)) ([]any, error)
+	MuxAll(args [][]any, cb library.JPLMuxerAll) ([]any, error)
 }

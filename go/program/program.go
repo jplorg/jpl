@@ -90,7 +90,11 @@ func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, er
 		return nil, err
 	}
 
-	return r.StripJSON(outputs), nil
+	stripped, err := r.StripJSON(outputs)
+	if err != nil {
+		return nil, err
+	}
+	return stripped.([]any), nil
 }
 
 func (p *program) Definition() definition.JPLDefinition {
