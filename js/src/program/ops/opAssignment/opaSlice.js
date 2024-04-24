@@ -44,6 +44,7 @@ export default {
                         switch (tr) {
                           case 'null':
                           case 'array':
+                            // TODO: remove immer dependency
                             return produce(value, (draft) => {
                               let s = Math.trunc(start ?? 0);
                               let e = Math.trunc(end ?? draft.length);
@@ -90,6 +91,7 @@ export default {
                         switch (tr) {
                           case 'null':
                           case 'string':
+                            // TODO: remove immer dependency
                             return produce([...value], (draft) => {
                               let s = Math.trunc(start ?? 0);
                               let e = Math.trunc(end ?? draft.length);

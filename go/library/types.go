@@ -1,5 +1,7 @@
 package library
 
+import "encoding/json"
+
 // Generic type for handling special formatting on values.
 //
 // The value accessor should be used in JPL expressions, where type safety may be considered important.
@@ -21,11 +23,77 @@ type JPLType interface {
 
 	// Resolve the JSON value for usage in program outputs
 	JSON() (any, JPLError)
+
+	// Alter the internal value using the specified updater.
+	// The result may or may not be wrapped into a new JPLType if desired.
+	// The JPLType may return itself if the value did not change.
+	//
+	// It is recommended to use AlterJPLType here as a starting point.
+	Alter(updater JPLModifier) (any, JPLError)
+
+	// It is recommended to use MarshalJSONJPLType here, which marshals the JPLType based on its json accessor.
+	json.Marshaler
+}
+
+func NewJPLType(value any) (JPLType, JPLError) {
+	v, err := normalizeInternalValue(value)
+	if err != nil {
+		return nil, err
+	}
+	return &jplType{value: v}, nil
+}
+
+type jplType struct{ value any }
+
+func (t *jplType) Value() (any, JPLError) {
+	return t.value, nil
+}
+
+func (t *jplType) JSON() (any, JPLError) {
+	return t.value, nil
+}
+
+func (t *jplType) Alter(updater JPLModifier) (any, JPLError) {
+	return AlterJPLType(t, updater)
+}
+
+func (t *jplType) MarshalJSON() ([]byte, error) {
+	return MarshalJPLType(t)
+}
+
+// Alter the specified JPLType
+func AlterJPLType(t JPLType, updater JPLModifier) (any, JPLError) {
+	v, err := t.Value()
+	if err != nil {
+		return nil, err
+	}
+	v, err = updater.Modify(v)
+	if err != nil {
+		return nil, err
+	}
+	return Normalize(v)
+}
+
+// Marshal the specified JPLType as JSON
+func MarshalJPLType(t JPLType) ([]byte, error) {
+	v, err := t.JSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(v)
+}
+
+// Normalize the specified external value to be used in a JPLType
+func normalizeInternalValue(value any) (any, JPLError) {
+	if t, ok := value.(JPLType); ok {
+		return t.Value()
+	}
+	return Normalize(value)
 }
 
 // Normalize the specified external value
 func Normalize(value any) (any, JPLError) {
-	panic("TODO:")
+	return Strip(value, nil, JPLTypedStripper)
 }
 
 // Format the specified template string.
@@ -84,6 +152,11 @@ func Strip(value any, replacer JPLReplacer, stripper JPLStripper) (any, JPLError
 	}
 	return iter(nil, value)
 }
+
+// Stripper that allows JPLTypes and normalized values
+var JPLTypedStripper = JPLStripperFunc(func(k *string, v any, iter IterFunc) (any, JPLError) {
+	panic("TODO:")
+})
 
 // Stripper that allows JSON like values and unwraps JPLTypes
 var JPLJSONStripper = JPLStripperFunc(func(k *string, v any, iter IterFunc) (any, JPLError) {
