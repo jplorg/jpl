@@ -3,7 +3,7 @@
 ## `map(f)`
 
 Maps the input to an array by calling `f` for each field.
-`map(f)` is equivalent to `[.[] | f()]`. In fact, this is how it's defined.
+`map(f)` is equivalent to `[.[] | f()]`. In fact, this is how it is defined.
 
 Example: `[1, 2, 3] | map(func(): .+1)` -> `[2, 3, 4]`
 

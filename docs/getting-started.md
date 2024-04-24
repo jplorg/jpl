@@ -75,7 +75,7 @@ JPL, like JSON, does not distinguish between integers and floating point numbers
 
 Strings are usually wrapped in double quotes `"` as boundaries, but you can also use single quotes `'` instead.
 
-If a string contains it's own boundaries, you must either [escape them](spec.md#string-escape-sequences), or switch to alternative boundaries.
+If a string contains its own boundaries, you must either [escape them](spec.md#string-escape-sequences), or switch to alternative boundaries.
 Tabs and any newline symbols also need to be escaped, unless you are using [multiline strings](#multiline-strings).
 
 ```jpl
@@ -324,7 +324,7 @@ Named functions are accessible using their name, similar to a variable.
 func greet(): (
   "Hello!"
 ) |
-# Now, we can call the function by it's name
+# Now, we can call the function by its name
 greet()
 # -> "Hello!"
 ```
@@ -376,7 +376,7 @@ func(): (
 ) | .()
 ```
 
-It is also possible to provide a function's input as it's first argument.
+It is also possible to provide a function's input as its first argument.
 This is done by using a bound function call `fn->(input, arg1, ...)`.
 
 ```jpl
@@ -588,7 +588,7 @@ You can specify negative indices to look back from the end of the input.
 ## Iterating values
 
 You can return all entries from an array or string by using the value iterator `value[]`.
-This can also be used on object to return all of it's values.
+This can also be used on object to return all of its values.
 
 ```jpl
 ["a", "b", "c"] | .[]

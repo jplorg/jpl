@@ -86,19 +86,19 @@ Formats the input date as an ISO 8601-compliant string.
 
 Formats the input date as an ISO 8601-compliant date string.
 
-A date may loose some of it's details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
+A date may loose some of its details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
 
 ## `date.formatISOTime()`
 
 Formats the input date as an ISO 8601-compliant time string.
 
-A date may loose some of it's details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
+A date may loose some of its details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
 
 ## `date.formatISOWeekDate()`
 
 Formats the input date as an ISO 8601-compliant week date string.
 
-A date may loose some of it's details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
+A date may loose some of its details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
 
 ## `date.format(format)`
 
@@ -106,7 +106,7 @@ Formates the input date with the specified format string.
 
 See [here](https://moment.github.io/luxon/#/parsing?id=table-of-tokens) for a list of supported tokens.
 
-A date may loose some of it's details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
+A date may loose some of its details when formatting. E.g. `date.now() | date.formatISODate() | date.formatISO()` looses all information about the date's time.
 
 ## `date.locale()`
 
