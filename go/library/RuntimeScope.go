@@ -1,22 +1,10 @@
 package library
 
-type RuntimeScopeConfig struct {
-	Signal RuntimeSignal
-	Vars   map[string]any
-}
+import "github.com/2manyvcos/jpl/go/jpl"
 
-type RuntimeScope interface {
-	Signal() RuntimeSignal
-
-	Vars() map[string]any
-
-	// Inherit the next scope based on the specified modifications
-	Next(modifications *RuntimeScopeConfig) RuntimeScope
-}
-
-func NewRuntimeScope(presets *RuntimeScopeConfig) RuntimeScope {
+func NewRuntimeScope(presets *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntimeScope {
 	if presets == nil {
-		presets = new(RuntimeScopeConfig)
+		presets = new(jpl.JPLRuntimeScopeConfig)
 	}
 
 	signal := presets.Signal
@@ -31,11 +19,11 @@ func NewRuntimeScope(presets *RuntimeScopeConfig) RuntimeScope {
 }
 
 type runtimeScope struct {
-	signal RuntimeSignal
+	signal jpl.JPLRuntimeSignal
 	vars   map[string]any
 }
 
-func (s *runtimeScope) Signal() RuntimeSignal {
+func (s *runtimeScope) Signal() jpl.JPLRuntimeSignal {
 	return s.signal
 }
 
@@ -43,9 +31,9 @@ func (s *runtimeScope) Vars() map[string]any {
 	return s.vars
 }
 
-func (s *runtimeScope) Next(modifications *RuntimeScopeConfig) RuntimeScope {
+func (s *runtimeScope) Next(modifications *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntimeScope {
 	if modifications == nil {
-		modifications = new(RuntimeScopeConfig)
+		modifications = new(jpl.JPLRuntimeScopeConfig)
 	}
 
 	signal := modifications.Signal

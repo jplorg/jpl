@@ -1,12 +1,8 @@
 package library
 
-// Generic JPL error type
-type JPLError interface {
-	error
-	JPLErrorName() string
-}
+import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLError(message string, name string) JPLError {
+func NewJPLError(message string, name string) jpl.JPLError {
 	if name == "" {
 		name = "JPLError"
 	}

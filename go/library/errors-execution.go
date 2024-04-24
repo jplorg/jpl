@@ -1,14 +1,8 @@
 package library
 
-// JPL error type for execution errors.
-//
-// All error types that infer this type can be caught in a program.
-type JPLExecutionError interface {
-	JPLError
-	JPLErrorValue() any
-}
+import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLExecutionError(message string, name string) JPLExecutionError {
+func NewJPLExecutionError(message string, name string) jpl.JPLExecutionError {
 	if name == "" {
 		name = "JPLExecutionError"
 	}
@@ -18,17 +12,17 @@ func NewJPLExecutionError(message string, name string) JPLExecutionError {
 		value = message
 	}
 
-	return jplExecutionError{
+	return executionError{
 		JPLError: NewJPLError(message, name),
 		value:    value,
 	}
 }
 
-type jplExecutionError struct {
-	JPLError
+type executionError struct {
+	jpl.JPLError
 	value any
 }
 
-func (e jplExecutionError) JPLErrorValue() any {
+func (e executionError) JPLErrorValue() any {
 	return e.value
 }

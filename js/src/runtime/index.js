@@ -2,7 +2,7 @@ import applyDefaults from '../applyDefaults';
 import {
   JPLFatalError,
   JPLType,
-  RuntimeScope,
+  JPLRuntimeScope,
   adaptErrorsAsync,
   applyObject,
   assertType,
@@ -46,7 +46,7 @@ class JPLRuntime {
   }
 
   /** Create a new orphan scope */
-  createScope = (presets) => new RuntimeScope(presets);
+  createScope = (presets) => new JPLRuntimeScope(presets);
 
   /** Execute a new dedicated program */
   execute = async (inputs) => {

@@ -1,21 +1,17 @@
 package library
 
-func format(value any, replacements ...any) (string, JPLError) {
+import "github.com/2manyvcos/jpl/go/jpl"
+
+func format(value any, replacements ...any) (string, jpl.JPLError) {
 	if len(replacements) > 0 {
 		return Template(value, replacements...)
 	}
 	return DisplayValue(value)
 }
 
-// JPL error type for generic runtime errors
-type JPLRuntimeError interface {
-	JPLExecutionError
-	JPLRuntimeError() bool
-}
-
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLRuntimeError(value any, replacements ...any) (JPLRuntimeError, JPLError) {
+func NewJPLRuntimeError(value any, replacements ...any) (jpl.JPLRuntimeError, jpl.JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
 		return nil, err
@@ -30,89 +26,91 @@ func NewJPLRuntimeError(value any, replacements ...any) (JPLRuntimeError, JPLErr
 		}
 	}
 
-	return jplRuntimeError{
+	return runtimeError{
 		JPLError: NewJPLError(message, "JPLRuntimeError"),
 		value:    value,
 	}, nil
 }
 
-type jplRuntimeError struct {
-	JPLError
+type runtimeError struct {
+	jpl.JPLError
 	value any
 }
 
-func (e jplRuntimeError) JPLErrorValue() any {
+func (e runtimeError) JPLErrorValue() any {
 	return e.value
 }
 
-func (e jplRuntimeError) JPLRuntimeError() bool {
-	return true
-}
+func (runtimeError) IsJPLRuntimeError() {}
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLTypeError(value any, replacements ...any) (JPLTypeError, JPLError) {
+func NewJPLTypeError(value any, replacements ...any) (jpl.JPLTypeError, jpl.JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
-		return JPLTypeError{}, err
+		return nil, err
 	}
 	runtimeErr, err := NewJPLRuntimeError("TypeError - " + message)
 	if err != nil {
-		return JPLTypeError{}, err
+		return nil, err
 	}
-	return JPLTypeError{runtimeErr}, nil
+	return typeError{runtimeErr}, nil
 }
 
-// JPL runtime error type for type errors.
-type JPLTypeError struct{ JPLRuntimeError }
+type typeError struct{ jpl.JPLRuntimeError }
+
+func (typeError) IsJPLTypeError() {}
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLReferenceError(value any, replacements ...any) (JPLReferenceError, JPLError) {
+func NewJPLReferenceError(value any, replacements ...any) (jpl.JPLReferenceError, jpl.JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
-		return JPLReferenceError{}, err
+		return nil, err
 	}
 	runtimeErr, err := NewJPLRuntimeError("ReferenceError - " + message)
 	if err != nil {
-		return JPLReferenceError{}, err
+		return nil, err
 	}
-	return JPLReferenceError{runtimeErr}, nil
+	return referenceError{runtimeErr}, nil
 }
 
-// JPL runtime error Reference for reference errors.
-type JPLReferenceError struct{ JPLRuntimeError }
+type referenceError struct{ jpl.JPLRuntimeError }
+
+func (referenceError) IsJPLReferenceError() {}
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLZeroDivisionError(value any, replacements ...any) (JPLZeroDivisionError, JPLError) {
+func NewJPLZeroDivisionError(value any, replacements ...any) (jpl.JPLZeroDivisionError, jpl.JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
-		return JPLZeroDivisionError{}, err
+		return nil, err
 	}
 	runtimeErr, err := NewJPLRuntimeError("ZeroDivisionError - " + message)
 	if err != nil {
-		return JPLZeroDivisionError{}, err
+		return nil, err
 	}
-	return JPLZeroDivisionError{runtimeErr}, nil
+	return zeroDivisionError{runtimeErr}, nil
 }
 
-// JPL runtime error type for zero division errors.
-type JPLZeroDivisionError struct{ JPLRuntimeError }
+type zeroDivisionError struct{ jpl.JPLRuntimeError }
+
+func (zeroDivisionError) IsJPLZeroDivisionError() {}
 
 // `value` can by of any type.
 // If at least one replacement is specified, the value is formatted as a template.
-func NewJPLTypeConversionError(value any, replacements ...any) (JPLTypeConversionError, JPLError) {
+func NewJPLTypeConversionError(value any, replacements ...any) (jpl.JPLTypeConversionError, jpl.JPLError) {
 	message, err := format(value, replacements)
 	if err != nil {
-		return JPLTypeConversionError{}, err
+		return nil, err
 	}
 	runtimeErr, err := NewJPLRuntimeError("TypeConversionError - " + message)
 	if err != nil {
-		return JPLTypeConversionError{}, err
+		return nil, err
 	}
-	return JPLTypeConversionError{runtimeErr}, nil
+	return typeConversionError{runtimeErr}, nil
 }
 
-// JPL runtime error type for type conversion errors.
-type JPLTypeConversionError struct{ JPLRuntimeError }
+type typeConversionError struct{ jpl.JPLRuntimeError }
+
+func (typeConversionError) IsJPLTypeConversionError() {}

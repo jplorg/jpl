@@ -5,18 +5,17 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
 	"github.com/2manyvcos/jpl/go/library"
 	"github.com/2manyvcos/jpl/go/runtime"
 )
 
-var defaultOptions = config.JPLProgramOptions{}
+var defaultOptions = jpl.JPLProgramOptions{}
 
 var versionRegex = regexp.MustCompile(`^(?P<Major>\d+)\.(?P<Minor>\d+)$`)
 
-func validateDefinition(programDefinition definition.JPLDefinition) library.JPLFatalError {
+func validateDefinition(programDefinition definition.JPLDefinition) jpl.JPLFatalError {
 	parts := versionRegex.FindStringSubmatch(programDefinition.Version)
 	var major, minor string
 	var majorV, minorV int
@@ -44,17 +43,17 @@ func validateDefinition(programDefinition definition.JPLDefinition) library.JPLF
 	return nil
 }
 
-func NewProgram(programDefinition definition.JPLDefinition, options *config.JPLProgramConfig) (jpl.JPLProgram, library.JPLError) {
+func NewProgram(programDefinition definition.JPLDefinition, options *jpl.JPLProgramConfig) (jpl.JPLProgram, jpl.JPLError) {
 	if err := validateDefinition(programDefinition); err != nil {
 		return nil, err
 	}
 
 	if options == nil {
-		options = new(config.JPLProgramConfig)
+		options = new(jpl.JPLProgramConfig)
 	}
 
 	return &program{
-		options:        config.ApplyProgramDefaults(options.Program, defaultOptions),
+		options:        jpl.ApplyProgramDefaults(options.Program, defaultOptions),
 		runtimeOptions: options.Runtime,
 
 		definition: programDefinition,
@@ -63,14 +62,14 @@ func NewProgram(programDefinition definition.JPLDefinition, options *config.JPLP
 }
 
 type program struct {
-	options        config.JPLProgramOptions
-	runtimeOptions config.JPLRuntimeOptions
+	options        jpl.JPLProgramOptions
+	runtimeOptions jpl.JPLRuntimeOptions
 
 	definition definition.JPLDefinition
 	ops        map[string]jpl.JPLOPHandler
 }
 
-func (p *program) Options() config.JPLProgramOptions {
+func (p *program) Options() jpl.JPLProgramOptions {
 	return p.options
 }
 
@@ -82,13 +81,13 @@ func (p *program) OPs() map[string]jpl.JPLOPHandler {
 	return p.ops
 }
 
-func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, library.JPLError) {
+func (p *program) Run(inputs []any, options *jpl.JPLProgramConfig) ([]any, jpl.JPLError) {
 	if options == nil {
-		options = new(config.JPLProgramConfig)
+		options = new(jpl.JPLProgramConfig)
 	}
 
-	r := runtime.NewRuntime(p, &config.JPLRuntimeConfig{
-		Runtime: config.ApplyRuntimeDefaults(options.Runtime, p.runtimeOptions),
+	r := runtime.NewRuntime(p, &jpl.JPLRuntimeConfig{
+		Runtime: jpl.ApplyRuntimeDefaults(options.Runtime, p.runtimeOptions),
 	})
 
 	normalizedInputs, err := library.NormalizeValues(inputs, "program inputs")

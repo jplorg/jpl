@@ -1,4 +1,4 @@
-package library
+package jpl
 
 // JPL modifier
 type JPLModifier interface {

@@ -1,12 +1,8 @@
 package library
 
-// JPL error type for unrecoverable errors
-type JPLFatalError interface {
-	JPLError
-	JPLFatalError() bool
-}
+import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLFatalError(message string) JPLFatalError {
+func NewJPLFatalError(message string) jpl.JPLFatalError {
 	return fatalError(message)
 }
 
@@ -16,10 +12,8 @@ func (e fatalError) Error() string {
 	return string(e)
 }
 
-func (e fatalError) JPLErrorName() string {
+func (fatalError) JPLErrorName() string {
 	return "JPLFatalError"
 }
 
-func (e fatalError) JPLFatalError() bool {
-	return true
-}
+func (fatalError) IsJPLFatalError() {}

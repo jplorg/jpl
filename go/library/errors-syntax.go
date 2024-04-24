@@ -1,12 +1,8 @@
 package library
 
-// JPL error type for syntax errors
-type JPLSyntaxError interface {
-	JPLError
-	JPLSyntaxError() bool
-}
+import "github.com/2manyvcos/jpl/go/jpl"
 
-func NewJPLSyntaxError(message string) JPLSyntaxError {
+func NewJPLSyntaxError(message string) jpl.JPLSyntaxError {
 	return syntaxError(message)
 }
 
@@ -16,10 +12,8 @@ func (e syntaxError) Error() string {
 	return string(e)
 }
 
-func (e syntaxError) JPLErrorName() string {
+func (syntaxError) JPLErrorName() string {
 	return "JPLSyntaxError"
 }
 
-func (e syntaxError) JPLSyntaxError() bool {
-	return true
-}
+func (syntaxError) IsJPLSyntaxError() {}

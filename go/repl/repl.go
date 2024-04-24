@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 
 	gojpl "github.com/2manyvcos/jpl/go"
-	"github.com/2manyvcos/jpl/go/library"
+	"github.com/2manyvcos/jpl/go/jpl"
 	"github.com/chzyer/readline"
 )
 
@@ -119,7 +119,7 @@ func handle(input string, rl *readline.Instance) {
 			program, err := gojpl.Parse(line, nil)
 			if err != nil {
 				name := "Error"
-				if syntaxErr, ok := err.(library.JPLSyntaxError); ok {
+				if syntaxErr, ok := err.(jpl.JPLSyntaxError); ok {
 					name = syntaxErr.JPLErrorName()
 					if name == "" {
 						name = "JPLError"
@@ -128,12 +128,12 @@ func handle(input string, rl *readline.Instance) {
 				fmt.Fprintf(rl, "%s: %s\n", name, err)
 				return
 			}
-			json, err := json.MarshalIndent(program.Definition(), "", "  ")
-			if err != nil {
+			if json, err := json.MarshalIndent(program.Definition(), "", "  "); err != nil {
 				fmt.Fprintf(rl, "Error: %s\n", err)
 				return
+			} else {
+				fmt.Fprintln(rl, string(json))
 			}
-			fmt.Fprintln(rl, string(json))
 
 		case ' ':
 			fmt.Fprintf(rl, "Error: missing REPL command\n\n")
@@ -147,7 +147,7 @@ func handle(input string, rl *readline.Instance) {
 		program, err := gojpl.Parse(line, nil)
 		if err != nil {
 			name := "Error"
-			if syntaxErr, ok := err.(library.JPLSyntaxError); ok {
+			if syntaxErr, ok := err.(jpl.JPLSyntaxError); ok {
 				name = syntaxErr.JPLErrorName()
 				if name == "" {
 					name = "JPLError"
@@ -163,7 +163,7 @@ func handle(input string, rl *readline.Instance) {
 		nextInputs, err := program.Run(inputs, nil)
 		if err != nil {
 			name := "Error"
-			if executionErr, ok := err.(library.JPLExecutionError); ok {
+			if executionErr, ok := err.(jpl.JPLExecutionError); ok {
 				name = executionErr.JPLErrorName()
 				if name == "" {
 					name = "JPLError"

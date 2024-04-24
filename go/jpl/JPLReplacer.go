@@ -1,4 +1,4 @@
-package library
+package jpl
 
 // JPL replacer
 type JPLReplacer interface {

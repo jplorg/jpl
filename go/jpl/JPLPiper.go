@@ -1,4 +1,4 @@
-package library
+package jpl
 
 // JPL piper
 type JPLPiper interface {

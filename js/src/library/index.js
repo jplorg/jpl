@@ -21,7 +21,7 @@ export { default as JPLSyntaxError } from './errors/syntax';
 export { nativeFunction, orphanFunction, scopedFunction } from './functions';
 export { default as mux, muxAll, muxAsync, muxOne } from './mux';
 export * from './ops';
-export { default as RuntimeScope } from './runtimeScope';
+export { default as JPLRuntimeScope } from './runtimeScope';
 export {
   JPLType,
   assertType,

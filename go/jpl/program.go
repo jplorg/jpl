@@ -1,15 +1,24 @@
 package jpl
 
 import (
-	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
-	"github.com/2manyvcos/jpl/go/library"
 )
+
+type JPLProgramConfig struct {
+	Program JPLProgramOptions
+	Runtime JPLRuntimeOptions
+}
+
+type JPLProgramOptions struct{}
+
+func ApplyProgramDefaults(options JPLProgramOptions, defaults JPLProgramOptions) (result JPLProgramOptions) {
+	return
+}
 
 // JPL program
 type JPLProgram interface {
 	// Return the program's options
-	Options() config.JPLProgramOptions
+	Options() JPLProgramOptions
 
 	// Return the program's definition.
 	// The definition can be serialized as JSON to be reused in other JPL implementations.
@@ -21,5 +30,5 @@ type JPLProgram interface {
 	// Run the program with the provided inputs and runtime options.
 	// The program throws a JPLExecutionError for runtime failures.
 	// Other errors may be thrown when execution fails.
-	Run(inputs []any, options *config.JPLProgramConfig) ([]any, library.JPLError)
+	Run(inputs []any, options *JPLProgramConfig) ([]any, JPLError)
 }

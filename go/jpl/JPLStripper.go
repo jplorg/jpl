@@ -1,4 +1,4 @@
-package library
+package jpl
 
 type IterFunc = func(key *string, value any) (any, JPLError)
 

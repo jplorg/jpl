@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/2manyvcos/jpl/go/jpl"
 	"github.com/2manyvcos/jpl/go/library"
 )
 
@@ -17,7 +18,7 @@ const setWhitespace = " \xa0\r\n\t"
 const setHex = setDigit + "abcdefABCDEF"
 
 // Walk whitespace at i
-func walkWhitespace(src string, i int, c *ParserContext) (n int, is bool, err library.JPLSyntaxError) {
+func walkWhitespace(src string, i int, c *ParserContext) (n int, is bool, err jpl.JPLSyntaxError) {
 	n = i
 
 	for {
@@ -116,7 +117,7 @@ func match(src string, i int, c *ParserContext, options matchOptions) (n int, is
 }
 
 // The same as match, but also walk whitespace after the match if present
-func matchWord(src string, i int, c *ParserContext, options matchOptions) (n int, is bool, err library.JPLSyntaxError) {
+func matchWord(src string, i int, c *ParserContext, options matchOptions) (n int, is bool, err jpl.JPLSyntaxError) {
 	n = i
 
 	iM, isM := match(src, n, c, options)
@@ -158,7 +159,7 @@ func matchSet(src string, i int, c *ParserContext, options matchSetOptions) (n i
 }
 
 // Parse variable selector at i
-func variable(src string, i int, c *ParserContext) (n int, is bool, value string, err library.JPLSyntaxError) {
+func variable(src string, i int, c *ParserContext) (n int, is bool, value string, err jpl.JPLSyntaxError) {
 	n = i
 
 	for {
@@ -185,7 +186,7 @@ func variable(src string, i int, c *ParserContext) (n int, is bool, value string
 }
 
 // The same as variable, but also check that the result is not a reserved term
-func safeVariable(src string, i int, c *ParserContext) (n int, is bool, value string, reserved bool, err library.JPLSyntaxError) {
+func safeVariable(src string, i int, c *ParserContext) (n int, is bool, value string, reserved bool, err jpl.JPLSyntaxError) {
 	n, is, value, err = variable(src, i, c)
 
 	if !is {
@@ -254,7 +255,7 @@ type errorOptions struct {
 }
 
 // Throw an error caused by an unexpected token at i
-func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOptions) library.JPLSyntaxError {
+func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOptions) jpl.JPLSyntaxError {
 	var errorMessage string
 	if _, isEnd := eot(src, i, c); isEnd {
 		errorMessage = "unexpected EOT"

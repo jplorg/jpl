@@ -1,30 +1,32 @@
 package library
 
+import "github.com/2manyvcos/jpl/go/jpl"
+
 // JPL muxer
 type IMuxer[Input any] interface {
-	Mux(args ...Input) JPLError
+	Mux(args ...Input) jpl.JPLError
 }
 
-type IMuxerFunc[Input any] func(args ...Input) JPLError
+type IMuxerFunc[Input any] func(args ...Input) jpl.JPLError
 
 // IMuxerFunc implements IMuxer
 var _ IMuxer[any] = IMuxerFunc[any](nil)
 
-func (p IMuxerFunc[Input]) Mux(args ...Input) JPLError {
+func (p IMuxerFunc[Input]) Mux(args ...Input) jpl.JPLError {
 	return p(args...)
 }
 
 // JPL muxer
 type IOMuxer[Input any, Output any] interface {
-	Mux(args ...Input) (Output, JPLError)
+	Mux(args ...Input) (Output, jpl.JPLError)
 }
 
-type IOMuxerFunc[Input any, Output any] func(args ...Input) (Output, JPLError)
+type IOMuxerFunc[Input any, Output any] func(args ...Input) (Output, jpl.JPLError)
 
 // IOMuxerFunc implements IOMuxer
 var _ IOMuxer[any, any] = IOMuxerFunc[any, any](nil)
 
-func (p IOMuxerFunc[Input, Output]) Mux(args ...Input) (Output, JPLError) {
+func (p IOMuxerFunc[Input, Output]) Mux(args ...Input) (Output, jpl.JPLError) {
 	return p(args...)
 }
 
@@ -35,7 +37,7 @@ func (p IOMuxerFunc[Input, Output]) Mux(args ...Input) (Output, JPLError) {
 // - `cb(1, 4)`
 // - `cb(2, 3)`
 // - `cb(2, 4)`
-func Mux[Input any](args [][]Input, cb IMuxer[Input]) JPLError {
+func Mux[Input any](args [][]Input, cb IMuxer[Input]) jpl.JPLError {
 	argCount := len(args)
 	if argCount == 1 {
 		for _, arg := range args[0] {
@@ -85,13 +87,13 @@ func Mux[Input any](args [][]Input, cb IMuxer[Input]) JPLError {
 }
 
 // Multiplex the specified array of arguments and return the results produced by the callbacks
-func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([]Output, JPLError) {
+func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([]Output, jpl.JPLError) {
 	argCount := len(args)
 	if argCount == 1 {
 		inputs := args[0]
 		result := make([]Output, len(inputs))
 		for i, arg := range inputs {
-			var err JPLError
+			var err jpl.JPLError
 			if result[i], err = cb.Mux(arg); err != nil {
 				return nil, err
 			}
@@ -115,7 +117,7 @@ func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([
 	}
 	execIndex := 0
 	for {
-		var err JPLError
+		var err jpl.JPLError
 		if outputs[execIndex], err = cb.Mux(buffer...); err != nil {
 			return nil, err
 		}
@@ -140,7 +142,7 @@ func MuxOne[Input any, Output any](args [][]Input, cb IOMuxer[Input, Output]) ([
 }
 
 // Multiplex the specified array of arguments and return a single array of all merged result arrays produced by the callbacks
-func MuxAll[Input any, Output any](args [][]Input, cb IOMuxer[Input, []Output]) ([]Output, JPLError) {
+func MuxAll[Input any, Output any](args [][]Input, cb IOMuxer[Input, []Output]) ([]Output, jpl.JPLError) {
 	segments, err := MuxOne(args, cb)
 	if err != nil {
 		return nil, err

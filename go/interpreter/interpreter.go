@@ -1,40 +1,38 @@
 package interpreter
 
 import (
-	"github.com/2manyvcos/jpl/go/config"
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
-	"github.com/2manyvcos/jpl/go/library"
 	"github.com/2manyvcos/jpl/go/program"
 )
 
-var defaultOptions = config.JPLInterpreterOptions{}
+var defaultOptions = jpl.JPLInterpreterOptions{}
 
-func NewInterpreter(options *config.JPLInterpreterConfig) jpl.JPLInterpreter {
+func NewInterpreter(options *jpl.JPLInterpreterConfig) jpl.JPLInterpreter {
 	if options == nil {
-		options = new(config.JPLInterpreterConfig)
+		options = new(jpl.JPLInterpreterConfig)
 	}
 
 	return &interpreter{
-		options:        config.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
+		options:        jpl.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
 		programOptions: options.Program,
 		runtimeOptions: options.Runtime,
 	}
 }
 
 type interpreter struct {
-	options        config.JPLInterpreterOptions
-	programOptions config.JPLProgramOptions
-	runtimeOptions config.JPLRuntimeOptions
+	options        jpl.JPLInterpreterOptions
+	programOptions jpl.JPLProgramOptions
+	runtimeOptions jpl.JPLRuntimeOptions
 }
 
-func (i *interpreter) Options() config.JPLInterpreterOptions {
+func (i *interpreter) Options() jpl.JPLInterpreterOptions {
 	return i.options
 }
 
-func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig) (jpl.JPLProgram, library.JPLError) {
+func (i *interpreter) Parse(source string, options *jpl.JPLInterpreterConfig) (jpl.JPLProgram, jpl.JPLError) {
 	if options == nil {
-		options = new(config.JPLInterpreterConfig)
+		options = new(jpl.JPLInterpreterConfig)
 	}
 
 	instructions, err := i.ParseInstructions(source)
@@ -47,13 +45,13 @@ func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig)
 		Instructions: instructions,
 	}
 
-	return program.NewProgram(definition, &config.JPLProgramConfig{
-		Program: config.ApplyProgramDefaults(options.Program, i.programOptions),
-		Runtime: config.ApplyRuntimeDefaults(options.Runtime, i.runtimeOptions),
+	return program.NewProgram(definition, &jpl.JPLProgramConfig{
+		Program: jpl.ApplyProgramDefaults(options.Program, i.programOptions),
+		Runtime: jpl.ApplyRuntimeDefaults(options.Runtime, i.runtimeOptions),
 	})
 }
 
-func (i *interpreter) ParseInstructions(source string) (definition.Pipe, library.JPLSyntaxError) {
+func (i *interpreter) ParseInstructions(source string) (definition.Pipe, jpl.JPLSyntaxError) {
 	_, instructions, err := parseEntrypoint(source, 0, &ParserContext{Interpreter: i})
 	return instructions, err
 }
