@@ -1,36 +1,34 @@
 package library
 
-type Entry[Key any] struct {
-	Key     Key
-	NoValue bool
+type ObjectEntry struct {
+	Key     string
 	Value   any
+	NoValue bool
 }
-type ObjectEntry = Entry[string]
-type ArrayEntry = Entry[int]
 
-// TODO: this will not work like expected
-// because for example slices cannot be compared
-// and are not passed by pointer but are copied.
-//
-// One possible workaround would be a deep comparison
-// but this would be very imperformant,
-// the other workaround would be to pass arrays and
-// objects as slice / map pointers instead of them directly,
-// however that would make the transition to
-// other JSON packages rather complicated and
-// expensive in terms of memory.
-//
-// A third (and maybe best) workaround would be
-// to use unsafe.SliceData
-// as described here:
-// https://stackoverflow.com/questions/53009686/equality-identity-of-go-slices
-// However, there still probably needs to be found a way to compare maps (if they cannot simply be compared directly).
-// UPDATE:
-// reflect.ValueOf(a).Pointer() == reflect.ValueOf(b).Pointer()
-// works for both slices and maps
+type ArrayEntry struct {
+	Index int
+	Value any
+}
+
+func ObjectEntries(source map[string]any) []ObjectEntry {
+	result := make([]ObjectEntry, 0, len(source))
+	for key, value := range source {
+		result = append(result, ObjectEntry{key, value, false})
+	}
+	return result
+}
+
+func ArrayEntries(source []any) []ArrayEntry {
+	result := make([]ArrayEntry, 0, len(source))
+	for i, value := range source {
+		result = append(result, ArrayEntry{i, value})
+	}
+	return result
+}
 
 // Apply all changes immutably to the source object.
-func applyObject(source map[string]any, changes []ObjectEntry) map[string]any {
+func ApplyObject(source map[string]any, changes []ObjectEntry) map[string]any {
 	result := source
 	unchanged := true
 
@@ -49,7 +47,7 @@ func applyObject(source map[string]any, changes []ObjectEntry) map[string]any {
 			continue
 		}
 
-		if value, exists := result[change.Key]; exists && value == change.Value {
+		if value, exists := result[change.Key]; exists && Is(value, change.Value) {
 			continue
 		}
 		if unchanged {
@@ -66,20 +64,20 @@ func applyObject(source map[string]any, changes []ObjectEntry) map[string]any {
 
 // Apply all changes immutably to the source array.
 // Indices can be negative to be applied from the end of the array.
-func applyArray(source []any, changes []ArrayEntry, filler any) []any {
+func ApplyArray(source []any, changes []ArrayEntry, filler any) []any {
 	result := source
 	unchanged := true
 
 	for _, change := range changes {
-		i := change.Key
-		if change.Key < 0 {
-			i = len(result) + change.Key
+		i := change.Index
+		if change.Index < 0 {
+			i = len(result) + change.Index
 		}
 
-		if i >= 0 && i < len(result) && result[i] == change.Value {
+		if i >= 0 && i < len(result) && Is(result[i], change.Value) {
 			continue
 		}
-		if change.Key >= 0 {
+		if change.Index >= 0 {
 			suf := i + 1 - len(result)
 			if suf > 0 {
 				total := len(result) + suf
@@ -105,9 +103,7 @@ func applyArray(source []any, changes []ArrayEntry, filler any) []any {
 			}
 		}
 		if unchanged {
-			nextResult := make([]any, len(result))
-			copy(nextResult, result)
-			result = nextResult
+			result = copySlice(result)
 			unchanged = false
 		}
 		result[i] = change.Value
@@ -117,9 +113,8 @@ func applyArray(source []any, changes []ArrayEntry, filler any) []any {
 }
 
 type combinationIndex struct {
-	count   int
-	current int
-	values  []any
+	max, current int
+	values       []any
 }
 
 // Create all possible combinations immutably.
@@ -131,7 +126,11 @@ type combinationIndex struct {
 // - `[1, 4]`
 // - `[2, 3]`
 // - `[2, 4]`
-func applyCombinations(combinations [][]any) []any {
+//
+// If the values of `source` are equal to the values of one of the combinations, it is used instead of a copy in the output array, e.g.:
+// `let i = [1, 2]; applyCombinations(i, [[1], [2]])[0] == i`
+// - `true`
+func ApplyCombinations(source []any, combinations [][]any) []any {
 	l := len(combinations)
 	total := 1
 	indices := make([]*combinationIndex, l)
@@ -143,7 +142,13 @@ func applyCombinations(combinations [][]any) []any {
 	if total == 0 {
 		return nil
 	}
-	s := make([]any, l)
+	s := source
+	if sl := len(s); sl > l {
+		s = s[:l]
+	} else if sl < l {
+		s = make([]any, l)
+		copy(s, source)
+	}
 	out := make([]any, total)
 	var c int
 	for {
@@ -151,19 +156,45 @@ func applyCombinations(combinations [][]any) []any {
 		unchanged := true
 		for i, index := range indices {
 			v := index.values[index.current]
-			if result[i] == v {
-				return
+			if Is(result[i], v) {
+				continue
 			}
+			if unchanged {
+				result = copySlice(result)
+				unchanged = false
+			}
+			result[i] = v
+		}
+		out[c] = result
+		c += 1
+		if c >= total {
+			break
+		}
+		for n := l - 1; n >= 0; n -= 1 {
+			i := indices[n]
+			next := i.current + 1
+			if next < i.max {
+				i.current = next
+				break
+			}
+			i.current = 0
 		}
 	}
 	return out
 }
 
-// Copies the source map
+// Copy the specified map
 func copyMap[Value any](source map[string]Value) (result map[string]Value) {
 	result = make(map[string]Value, len(source))
 	for key, value := range source {
 		result[key] = value
 	}
+	return
+}
+
+// Copy the specified slice
+func copySlice[Value any](source []Value) (result []Value) {
+	result = make([]Value, len(source))
+	copy(result, source)
 	return
 }

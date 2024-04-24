@@ -3,10 +3,15 @@ import JPLFatalError from './errors/fatal';
 /** Runtime signal for managing execution lifecycle */
 class RuntimeSignal {
   constructor(parent) {
-    this.parent = parent;
+    this._parent = parent;
     this._exited = false;
     this._subscriptions = {};
     this._nextSubscriptionKey = 0;
+  }
+
+  /** Return the signal's parent */
+  get parent() {
+    return this._parent;
   }
 
   /** Check whether the current runtime area has been requested to be exited */
@@ -35,7 +40,7 @@ class RuntimeSignal {
 
   /**
    * Subscribe for when the current runtime area is requested to be exited.
-   * This also involves to all parent areas.
+   * This also involves all parent areas.
    * The function returns an unsubscription hook which must be called when completed in order to prevent memory leaks.
    * If the area has already been exited when subscribing, the callback is called immediately after the current event cycle.
    */

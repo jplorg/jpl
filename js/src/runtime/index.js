@@ -30,9 +30,19 @@ export function applyRuntimeDefaults(options = {}, defaults = {}) {
 /** JPL runtime */
 class JPLRuntime {
   constructor(program, options) {
-    this.options = applyRuntimeDefaults(options?.runtime, defaultOptions);
+    this._options = applyRuntimeDefaults(options?.runtime, defaultOptions);
 
-    this.program = program;
+    this._program = program;
+  }
+
+  /** Return the runtime's options */
+  get options() {
+    return this._options;
+  }
+
+  /** Return the runtime's program */
+  get program() {
+    return this._program;
   }
 
   /** Create a new orphan scope */

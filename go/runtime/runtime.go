@@ -13,14 +13,22 @@ func NewRuntime(program jpl.JPLProgram, options *config.JPLRuntimeConfig) jpl.JP
 	}
 
 	return &runtime{
-		Options: config.ApplyRuntimeDefaults(options.Runtime, defaultOptions),
+		options: config.ApplyRuntimeDefaults(options.Runtime, defaultOptions),
 
-		Program: program,
+		program: program,
 	}
 }
 
 type runtime struct {
-	Options config.JPLRuntimeOptions
+	options config.JPLRuntimeOptions
 
-	Program jpl.JPLProgram
+	program jpl.JPLProgram
+}
+
+func (r *runtime) Options() config.JPLRuntimeOptions {
+	return r.options
+}
+
+func (r *runtime) Program() jpl.JPLProgram {
+	return r.program
 }

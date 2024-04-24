@@ -120,8 +120,7 @@ export function applyCombinations(source, combinations) {
     out[c] = result;
     c += 1;
     if (c >= total) break;
-    let n = l - 1;
-    while (n >= 0) {
+    for (let n = l - 1; n >= 0; n -= 1) {
       const i = indices[n];
       const [max, current] = i;
       const next = current + 1;
@@ -130,7 +129,6 @@ export function applyCombinations(source, combinations) {
         break;
       }
       i[1] = 0;
-      n -= 1;
     }
   }
   return out;

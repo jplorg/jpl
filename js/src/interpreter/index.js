@@ -13,10 +13,14 @@ export function applyInterpreterDefaults(options = {}, defaults = {}) {
 /** JPL interpreter */
 class JPLInterpreter {
   constructor(options) {
-    this.options = applyInterpreterDefaults(options?.interpreter, defaultOptions);
+    this._options = applyInterpreterDefaults(options?.interpreter, defaultOptions);
+    this._programOptions = options?.program;
+    this._runtimeOptions = options?.runtime;
+  }
 
-    this.programOptions = options?.program;
-    this.runtimeOptions = options?.runtime;
+  /** Return the interpreter's options */
+  get options() {
+    return this._options;
   }
 
   /** Parse the specified source program string into a reusable JPLProgram instance */
@@ -29,8 +33,8 @@ class JPLInterpreter {
     };
 
     return new JPLProgram(programDefinition, {
-      program: applyProgramDefaults(options?.program, this.programOptions),
-      runtime: applyRuntimeDefaults(options?.runtime, this.runtimeOptions),
+      program: applyProgramDefaults(options?.program, this._programOptions),
+      runtime: applyRuntimeDefaults(options?.runtime, this._runtimeOptions),
     });
   };
 

@@ -15,18 +15,20 @@ func NewInterpreter(options *config.JPLInterpreterConfig) jpl.JPLInterpreter {
 	}
 
 	return &interpreter{
-		Options: config.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
-
-		ProgramOptions: options.Program,
-		RuntimeOptions: options.Runtime,
+		options:        config.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
+		programOptions: options.Program,
+		runtimeOptions: options.Runtime,
 	}
 }
 
 type interpreter struct {
-	Options config.JPLInterpreterOptions
+	options        config.JPLInterpreterOptions
+	programOptions config.JPLProgramOptions
+	runtimeOptions config.JPLRuntimeOptions
+}
 
-	ProgramOptions config.JPLProgramOptions
-	RuntimeOptions config.JPLRuntimeOptions
+func (i *interpreter) Options() config.JPLInterpreterOptions {
+	return i.options
 }
 
 func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig) (jpl.JPLProgram, error) {
@@ -45,8 +47,8 @@ func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig)
 	}
 
 	return program.NewProgram(definition, &config.JPLProgramConfig{
-		Program: config.ApplyProgramDefaults(options.Program, i.ProgramOptions),
-		Runtime: config.ApplyRuntimeDefaults(options.Runtime, i.RuntimeOptions),
+		Program: config.ApplyProgramDefaults(options.Program, i.programOptions),
+		Runtime: config.ApplyRuntimeDefaults(options.Runtime, i.runtimeOptions),
 	})
 }
 

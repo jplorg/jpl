@@ -101,7 +101,7 @@ export function typeOf(value) {
   }
 }
 
-/** Assert the type for the specified unwrapped value. */
+/** Assert the type for the specified unwrapped value */
 export function assertType(value, type) {
   if (JPLType.is(value)) {
     throw new JPLFatalError(

@@ -7,6 +7,9 @@ import (
 
 // JPL interpreter
 type JPLInterpreter interface {
+	// Return the interpreter's options
+	Options() config.JPLInterpreterOptions
+
 	// Parse the specified source program string into a reusable JPLProgram instance
 	Parse(source string, options *config.JPLInterpreterConfig) (JPLProgram, error)
 

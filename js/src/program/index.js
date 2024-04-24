@@ -30,12 +30,29 @@ class JPLProgram {
   constructor(programDefinition, options) {
     validateDefinition(programDefinition);
 
-    this.options = applyProgramDefaults(options?.program, defaultOptions);
+    this._options = applyProgramDefaults(options?.program, defaultOptions);
+    this._runtimeOptions = options?.runtime;
 
     this._definition = programDefinition;
-    this.ops = ops;
+    this._ops = ops;
+  }
 
-    this.runtimeOptions = options?.runtime;
+  /** Return the program's options */
+  get options() {
+    return this._options;
+  }
+
+  /**
+   * Return the program's definition.
+   * The definition can be serialized as JSON to be reused in other JPL implementations.
+   */
+  get definition() {
+    return this._definition;
+  }
+
+  /** Return the program's OPs */
+  get ops() {
+    return this._ops;
   }
 
   /**
@@ -45,7 +62,7 @@ class JPLProgram {
    */
   run = async (inputs, options) => {
     const runtime = new JPLRuntime(this, {
-      runtime: applyRuntimeDefaults(options?.runtime, this.runtimeOptions),
+      runtime: applyRuntimeDefaults(options?.runtime, this._runtimeOptions),
     });
 
     const normalizedInputs = runtime.normalizeValues(inputs, 'program inputs');
@@ -53,14 +70,6 @@ class JPLProgram {
     const outputs = await runtime.execute(normalizedInputs);
     return runtime.stripJSON(outputs);
   };
-
-  /**
-   * Return the program's definition.
-   * The definition can be serialized as JSON to be reused in other JPL implementations.
-   */
-  get definition() {
-    return this._definition;
-  }
 }
 
 export default JPLProgram;

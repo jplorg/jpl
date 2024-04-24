@@ -53,22 +53,32 @@ func NewProgram(programDefinition definition.JPLDefinition, options *config.JPLP
 	}
 
 	return &program{
-		Options: config.ApplyProgramDefaults(options.Program, defaultOptions),
+		options:        config.ApplyProgramDefaults(options.Program, defaultOptions),
+		runtimeOptions: options.Runtime,
 
 		definition: programDefinition,
-		OPs:        OPs,
-
-		RuntimeOptions: options.Runtime,
+		ops:        OPs,
 	}, nil
 }
 
 type program struct {
-	Options config.JPLProgramOptions
+	options        config.JPLProgramOptions
+	runtimeOptions config.JPLRuntimeOptions
 
 	definition definition.JPLDefinition
-	OPs        map[string]jpl.JPLOPHandler
+	ops        map[string]jpl.JPLOPHandler
+}
 
-	RuntimeOptions config.JPLRuntimeOptions
+func (p *program) Options() config.JPLProgramOptions {
+	return p.options
+}
+
+func (p *program) Definition() definition.JPLDefinition {
+	return p.definition
+}
+
+func (p *program) OPs() map[string]jpl.JPLOPHandler {
+	return p.ops
 }
 
 func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, error) {
@@ -77,7 +87,7 @@ func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, er
 	}
 
 	r := runtime.NewRuntime(p, &config.JPLRuntimeConfig{
-		Runtime: config.ApplyRuntimeDefaults(options.Runtime, p.RuntimeOptions),
+		Runtime: config.ApplyRuntimeDefaults(options.Runtime, p.runtimeOptions),
 	})
 
 	normalizedInputs, err := r.NormalizeValues(inputs, "program inputs")
@@ -95,8 +105,4 @@ func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, er
 		return nil, err
 	}
 	return stripped.([]any), nil
-}
-
-func (p *program) Definition() definition.JPLDefinition {
-	return p.definition
 }
