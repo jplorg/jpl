@@ -32,7 +32,7 @@ class JPLProgram {
 
     this.options = applyProgramDefaults(options?.program, defaultOptions);
 
-    this.definition = programDefinition;
+    this._definition = programDefinition;
     this.ops = ops;
 
     this.runtimeOptions = options?.runtime;
@@ -50,9 +50,17 @@ class JPLProgram {
 
     const normalizedInputs = runtime.normalizeValues(inputs, 'program inputs');
 
-    const outputs = await runtime.executeProgram(this.definition.instructions, normalizedInputs);
+    const outputs = await runtime.execute(normalizedInputs);
     return runtime.stripJSON(outputs);
   };
+
+  /**
+   * Return the program's definition.
+   * The definition can be serialized as JSON to be reused in other JPL implementations.
+   */
+  get definition() {
+    return this._definition;
+  }
 }
 
 export default JPLProgram;

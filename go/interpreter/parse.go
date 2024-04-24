@@ -5,11 +5,12 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	"github.com/2manyvcos/jpl/go/library/definition"
+	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/jpl"
 )
 
 type ParserContext struct {
-	Interpreter JPLInterpreter
+	Interpreter jpl.JPLInterpreter
 }
 
 // Parse a single program at i.
@@ -121,7 +122,7 @@ type accessOptions struct {
 }
 
 // Parse access at i
-func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n int, is bool, operations []definition.JPLOperation, canAssign bool, err error) {
+func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n int, is bool, selectors []definition.JPLSelector, canAssign bool, err error) {
 	n = i
 
 	canAssign = true
@@ -130,7 +131,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 		if err != nil {
 			return 0, false, nil, false, err
 		}
-		isIdentity := options.Identity && len(operations) == 0
+		isIdentity := options.Identity && len(selectors) == 0
 		if !isIdentity && isM {
 			n = iM
 
@@ -155,7 +156,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 				n = iM
 				optional = true
 			}
-			operations = append(operations, definition.JPLOperation{OP: definition.OPA_FIELD, Params: definition.JPLOperationParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional}})
+			selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_FIELD, Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional}})
 			continue
 		}
 
@@ -182,7 +183,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 					n = iM
 					optional = true
 				}
-				operations = append(operations, definition.JPLOperation{OP: definition.OPA_ITER, Params: definition.JPLOperationParams{Optional: optional}})
+				selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_ITER, Params: definition.JPLSelectorParams{Optional: optional}})
 				continue
 			}
 
@@ -209,7 +210,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 						n = iM
 						optional = true
 					}
-					operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
+					selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_SLICE, Params: definition.JPLSelectorParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
 					continue
 				}
 
@@ -239,7 +240,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 					n = iM
 					optional = true
 				}
-				operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: opsRight, Optional: optional}})
+				selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_SLICE, Params: definition.JPLSelectorParams{From: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, To: opsRight, Optional: optional}})
 				continue
 			}
 
@@ -264,7 +265,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 					n = iM
 					optional = true
 				}
-				operations = append(operations, definition.JPLOperation{OP: definition.OPA_FIELD, Params: definition.JPLOperationParams{Pipe: opsLeft, Optional: optional}})
+				selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_FIELD, Params: definition.JPLSelectorParams{Pipe: opsLeft, Optional: optional}})
 				continue
 			}
 
@@ -296,7 +297,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 					n = iM
 					optional = true
 				}
-				operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: opsLeft, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
+				selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_SLICE, Params: definition.JPLSelectorParams{From: opsLeft, To: definition.Pipe{{OP: definition.OP_CONSTANT_NULL}}, Optional: optional}})
 				continue
 			}
 
@@ -326,7 +327,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 				n = iM
 				optional = true
 			}
-			operations = append(operations, definition.JPLOperation{OP: definition.OPA_SLICE, Params: definition.JPLOperationParams{From: opsLeft, To: opsRight, Optional: optional}})
+			selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_SLICE, Params: definition.JPLSelectorParams{From: opsLeft, To: opsRight, Optional: optional}})
 			continue
 		}
 
@@ -400,7 +401,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 				n = iM
 				optional = true
 			}
-			operations = append(operations, definition.JPLOperation{OP: definition.OPA_FUNCTION, Params: definition.JPLOperationParams{Args: args, Bound: bound, Optional: optional}})
+			selectors = append(selectors, definition.JPLSelector{OP: definition.OPA_FUNCTION, Params: definition.JPLSelectorParams{Args: args, Bound: bound, Optional: optional}})
 			canAssign = false
 			continue
 		}
@@ -408,7 +409,7 @@ func parseAccess(src string, i int, c *ParserContext, options accessOptions) (n 
 		break
 	}
 
-	return n, len(operations) > 0, operations, canAssign, nil
+	return n, len(selectors) > 0, selectors, canAssign, nil
 }
 
 // Parse assignment at i
@@ -1544,24 +1545,24 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 	}
 	n = iV
 
-	iAc, isAc, operations, canAssign, err := parseAccess(src, n, c, accessOptions{})
+	iAc, isAc, selectors, canAssign, err := parseAccess(src, n, c, accessOptions{})
 	if err != nil {
 		return 0, nil, err
 	}
 	if isAc {
 		n = iAc
 	} else {
-		operations = nil
+		selectors = nil
 		canAssign = true
 	}
 
 	if !canAssign {
 		ops := definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}}
 
-		if len(operations) == 0 {
+		if len(selectors) == 0 {
 			return n, ops, nil
 		}
-		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Selectors: selectors}}}, nil
 	}
 
 	var opAssignment *definition.JPLAssignment
@@ -1572,14 +1573,14 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 	if !isAs {
 		ops := definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}}
 
-		if len(operations) == 0 {
+		if len(selectors) == 0 {
 			return n, ops, nil
 		}
-		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Selectors: selectors}}}, nil
 	}
 	n = iAs
 
-	if len(operations) == 0 && opAssignment.OP == definition.OPU_SET {
+	if len(selectors) == 0 && opAssignment.OP == definition.OPU_SET {
 		return n, definition.Pipe{{OP: definition.OP_VARIABLE_DEFINITION, Params: definition.JPLInstructionParams{Name: name, Pipe: opAssignment.Params.Pipe}}}, nil
 	}
 
@@ -1591,7 +1592,7 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 				OP: definition.OP_ASSIGNMENT,
 				Params: definition.JPLInstructionParams{
 					Pipe:       definition.Pipe{{OP: definition.OP_VARIABLE, Params: definition.JPLInstructionParams{Name: name}}},
-					Operations: operations,
+					Selectors:  selectors,
 					Assignment: opAssignment,
 				},
 			}},
@@ -1603,7 +1604,7 @@ func opVariableAccess(src string, i int, c *ParserContext) (n int, result defini
 func opValueAccess(src string, i int, c *ParserContext) (n int, result definition.Pipe, err error) {
 	n = i
 
-	var operations []definition.JPLOperation
+	var selectors []definition.JPLSelector
 
 	var ops definition.Pipe
 	iM, isM, err := matchWord(src, n, c, matchOptions{Phrase: "."})
@@ -1635,30 +1636,30 @@ func opValueAccess(src string, i int, c *ParserContext) (n int, result definitio
 				optional = true
 			}
 
-			operations = append(operations, definition.JPLOperation{
+			selectors = append(selectors, definition.JPLSelector{
 				OP:     definition.OPA_FIELD,
-				Params: definition.JPLOperationParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional},
+				Params: definition.JPLSelectorParams{Pipe: definition.Pipe{{OP: definition.OP_STRING, Params: definition.JPLInstructionParams{Value: name}}}, Optional: optional},
 			})
 		}
 	}
 
-	iAc, isAc, operationsAc, canAssign, err := parseAccess(src, n, c, accessOptions{Identity: len(ops) == 0 && len(operations) == 0})
+	iAc, isAc, selectorsAc, canAssign, err := parseAccess(src, n, c, accessOptions{Identity: len(ops) == 0 && len(selectors) == 0})
 	if err != nil {
 		return 0, nil, err
 	}
 	if isAc {
 		n = iAc
-		operations = append(operations, operationsAc...)
+		selectors = append(selectors, selectorsAc...)
 	} else {
-		canAssign = len(operations) > 0
+		canAssign = len(selectors) > 0
 	}
 
-	if len(operations) == 0 {
+	if len(selectors) == 0 {
 		return n, ops, nil
 	}
 
 	if !canAssign {
-		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Selectors: selectors}}}, nil
 	}
 
 	var opAssignment *definition.JPLAssignment
@@ -1667,11 +1668,11 @@ func opValueAccess(src string, i int, c *ParserContext) (n int, result definitio
 		return 0, nil, err
 	}
 	if !isAs {
-		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations}}}, nil
+		return n, definition.Pipe{{OP: definition.OP_ACCESS, Params: definition.JPLInstructionParams{Pipe: ops, Selectors: selectors}}}, nil
 	}
 	n = iAs
 
-	return n, definition.Pipe{{OP: definition.OP_ASSIGNMENT, Params: definition.JPLInstructionParams{Pipe: ops, Operations: operations, Assignment: opAssignment}}}, nil
+	return n, definition.Pipe{{OP: definition.OP_ASSIGNMENT, Params: definition.JPLInstructionParams{Pipe: ops, Selectors: selectors, Assignment: opAssignment}}}, nil
 }
 
 // Parse object constructor at i

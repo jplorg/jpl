@@ -140,11 +140,11 @@ export function parseFunctionHeader(src, i, c) {
 export async function parseAccess(src, i, c, { identity } = {}) {
   let n = i;
 
-  const operations = [];
+  const selectors = [];
   let canAssign = true;
   for (;;) {
     let m = matchWord(src, n, c, { phrase: '.' });
-    const isIdentity = identity && operations.length === 0;
+    const isIdentity = identity && selectors.length === 0;
     if (!isIdentity && m.is) {
       ({ i: n } = m);
 
@@ -160,7 +160,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-      operations.push({
+      selectors.push({
         op: OPA_FIELD,
         params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
       });
@@ -178,7 +178,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-        operations.push({ op: OPA_ITER, params: { optional } });
+        selectors.push({ op: OPA_ITER, params: { optional } });
         continue;
       }
 
@@ -193,7 +193,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
           let optional;
           m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
           if (m.is) ({ i: n, is: optional } = m);
-          operations.push({
+          selectors.push({
             op: OPA_SLICE,
             params: { from: [{ op: OP_CONSTANT_NULL }], to: [{ op: OP_CONSTANT_NULL }], optional },
           });
@@ -214,7 +214,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-        operations.push({
+        selectors.push({
           op: OPA_SLICE,
           params: { from: [{ op: OP_CONSTANT_NULL }], to: opsRight, optional },
         });
@@ -231,7 +231,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-        operations.push({ op: OPA_FIELD, params: { pipe: opsLeft, optional } });
+        selectors.push({ op: OPA_FIELD, params: { pipe: opsLeft, optional } });
         continue;
       }
 
@@ -250,7 +250,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
         let optional;
         m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
         if (m.is) ({ i: n, is: optional } = m);
-        operations.push({
+        selectors.push({
           op: OPA_SLICE,
           params: { from: opsLeft, to: [{ op: OP_CONSTANT_NULL }], optional },
         });
@@ -271,7 +271,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-      operations.push({ op: OPA_SLICE, params: { from: opsLeft, to: opsRight, optional } });
+      selectors.push({ op: OPA_SLICE, params: { from: opsLeft, to: opsRight, optional } });
       continue;
     }
 
@@ -316,7 +316,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
       let optional;
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
-      operations.push({ op: OPA_FUNCTION, params: { args, bound, optional } });
+      selectors.push({ op: OPA_FUNCTION, params: { args, bound, optional } });
       canAssign = false;
       continue;
     }
@@ -324,7 +324,7 @@ export async function parseAccess(src, i, c, { identity } = {}) {
     break;
   }
 
-  return { i: n, is: operations.length > 0, operations, canAssign };
+  return { i: n, is: selectors.length > 0, selectors, canAssign };
 }
 
 /** Parse assignment at i */
@@ -1153,33 +1153,33 @@ export async function opVariableAccess(src, i, c) {
   let name;
   ({ i: n, value: name } = v);
 
-  let operations;
+  let selectors;
   let canAssign;
   const ac = await parseAccess(src, n, c);
-  if (ac.is) ({ i: n, operations, canAssign } = ac);
+  if (ac.is) ({ i: n, selectors, canAssign } = ac);
   else {
-    operations = [];
+    selectors = [];
     canAssign = true;
   }
 
   if (!canAssign) {
     const ops = [{ op: OP_VARIABLE, params: { name } }];
 
-    if (operations.length === 0) return { i: n, ops };
-    return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
+    if (selectors.length === 0) return { i: n, ops };
+    return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, selectors } }] };
   }
 
   const as = await parseAssignment(src, n, c);
   if (!as.is) {
     const ops = [{ op: OP_VARIABLE, params: { name } }];
 
-    if (operations.length === 0) return { i: n, ops };
-    return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
+    if (selectors.length === 0) return { i: n, ops };
+    return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, selectors } }] };
   }
   let opAssignment;
   ({ i: n, assignment: opAssignment } = as);
 
-  if (operations.length === 0 && opAssignment.op === OPU_SET) {
+  if (selectors.length === 0 && opAssignment.op === OPU_SET) {
     return {
       i: n,
       ops: [{ op: OP_VARIABLE_DEFINITION, params: { name, pipe: opAssignment.params.pipe } }],
@@ -1198,7 +1198,7 @@ export async function opVariableAccess(src, i, c) {
               op: OP_ASSIGNMENT,
               params: {
                 pipe: [{ op: OP_VARIABLE, params: { name } }],
-                operations,
+                selectors,
                 assignment: opAssignment,
               },
             },
@@ -1213,7 +1213,7 @@ export async function opVariableAccess(src, i, c) {
 export async function opValueAccess(src, i, c) {
   let n = i;
 
-  const operations = [];
+  const selectors = [];
 
   let ops;
   let m = matchWord(src, n, c, { phrase: '.' });
@@ -1231,7 +1231,7 @@ export async function opValueAccess(src, i, c) {
       m = matchWord(src, n, c, { phrase: '?', notBeforeSet: '?=' });
       if (m.is) ({ i: n, is: optional } = m);
 
-      operations.push({
+      selectors.push({
         op: OPA_FIELD,
         params: { pipe: [{ op: OP_STRING, params: { value: name } }], optional },
       });
@@ -1239,26 +1239,26 @@ export async function opValueAccess(src, i, c) {
   }
 
   const ac = await parseAccess(src, n, c, {
-    identity: ops.length === 0 && operations.length === 0,
+    identity: ops.length === 0 && selectors.length === 0,
   });
   let canAssign;
   if (ac.is) {
     ({ i: n, canAssign } = ac);
-    operations.push(...ac.operations);
-  } else canAssign = operations.length > 0;
+    selectors.push(...ac.selectors);
+  } else canAssign = selectors.length > 0;
 
-  if (operations.length === 0) return { i: n, ops };
+  if (selectors.length === 0) return { i: n, ops };
 
-  if (!canAssign) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
+  if (!canAssign) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, selectors } }] };
 
   const as = await parseAssignment(src, n, c);
-  if (!as.is) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, operations } }] };
+  if (!as.is) return { i: n, ops: [{ op: OP_ACCESS, params: { pipe: ops, selectors } }] };
   let opAssignment;
   ({ i: n, assignment: opAssignment } = as);
 
   return {
     i: n,
-    ops: [{ op: OP_ASSIGNMENT, params: { pipe: ops, operations, assignment: opAssignment } }],
+    ops: [{ op: OP_ASSIGNMENT, params: { pipe: ops, selectors, assignment: opAssignment } }],
   };
 }
 

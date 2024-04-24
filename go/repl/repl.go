@@ -1,4 +1,4 @@
-package repl
+package main
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/2manyvcos/jpl/go/jpl"
+	gojpl "github.com/2manyvcos/jpl/go"
 	"github.com/2manyvcos/jpl/go/library"
 	"github.com/chzyer/readline"
 )
@@ -24,7 +24,7 @@ var keep bool
 var inputs []any
 var measureTime bool
 
-func Run() {
+func main() {
 	var historyFile string
 	if homeDir, err := os.UserHomeDir(); err == nil {
 		historyFile = filepath.Join(homeDir, ".jpl_repl_history")
@@ -49,12 +49,12 @@ func Run() {
 	fmt.Printf("Type \"%ch\" for more information.\n\n", defaultReplKey)
 
 	// TODO: Is this the way to define functions?
-	jpl.Options.Runtime.Vars["exit"] = func() []any {
+	gojpl.Options.Runtime.Vars["exit"] = func() []any {
 		rl.Close()
 		os.Exit(0)
 		return nil
 	}
-	jpl.Options.Runtime.Vars["clear"] = func() []any {
+	gojpl.Options.Runtime.Vars["clear"] = func() []any {
 		readline.ClearScreen(rl)
 		return nil
 	}
@@ -116,7 +116,7 @@ func handle(input string, rl *readline.Instance) {
 			measureTime = parseBool(line, !measureTime, measureTime, rl)
 
 		case 'i':
-			program, err := jpl.Parse(line, nil)
+			program, err := gojpl.Parse(line, nil)
 			if err != nil {
 				name := "Error"
 				if syntaxErr, ok := err.(library.JPLSyntaxError); ok {
@@ -144,7 +144,7 @@ func handle(input string, rl *readline.Instance) {
 			printHelp(rl)
 		}
 	} else {
-		program, err := jpl.Parse(line, nil)
+		program, err := gojpl.Parse(line, nil)
 		if err != nil {
 			name := "Error"
 			if syntaxErr, ok := err.(library.JPLSyntaxError); ok {

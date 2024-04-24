@@ -39,7 +39,7 @@ class JPLRuntime {
   createScope = (presets) => new RuntimeScope(presets);
 
   /** Execute a new dedicated program */
-  executeProgram = async (instructions, inputs) => {
+  execute = async (inputs) => {
     const scope = this.createScope({
       vars: Object.fromEntries(
         this.muxOne([Object.entries(this.options.vars)], ([name, value]) => [
@@ -50,7 +50,12 @@ class JPLRuntime {
     });
 
     try {
-      return await this.executeInstructions(instructions, inputs, scope, this.options.adjustResult);
+      return await this.executeInstructions(
+        this.program.definition.instructions,
+        inputs,
+        scope,
+        this.options.adjustResult,
+      );
     } finally {
       scope.signal.exit();
     }

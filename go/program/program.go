@@ -6,15 +6,12 @@ import (
 	"strconv"
 
 	"github.com/2manyvcos/jpl/go/config"
-	"github.com/2manyvcos/jpl/go/library/definition"
+	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/2manyvcos/jpl/go/runtime"
 )
 
 var defaultOptions = config.JPLProgramOptions{}
-
-type Options struct {
-	Program config.JPLProgramOptions
-	Runtime config.JPLRuntimeOptions
-}
 
 var versionRegex = regexp.MustCompile(`^(?P<Major>\d+)\.(?P<Minor>\d+)$`)
 
@@ -46,25 +43,13 @@ func validateDefinition(programDefinition definition.JPLDefinition) error {
 	return nil
 }
 
-// JPL program
-type JPLProgram interface {
-	// Run the program with the provided inputs and runtime options.
-	// The program throws a JPLExecutionError for runtime failures.
-	// Other errors may be thrown when execution fails.
-	Run(inputs []any, options *Options) ([]any, error)
-
-	// Return the program's definition.
-	// The definition can be serialized as JSON to be reused in other JPL implementations.
-	Definition() definition.JPLDefinition
-}
-
-func NewProgram(programDefinition definition.JPLDefinition, options *Options) (JPLProgram, error) {
+func NewProgram(programDefinition definition.JPLDefinition, options *config.JPLProgramConfig) (jpl.JPLProgram, error) {
 	if err := validateDefinition(programDefinition); err != nil {
 		return nil, err
 	}
 
 	if options == nil {
-		options = new(Options)
+		options = new(config.JPLProgramConfig)
 	}
 
 	return &program{
@@ -81,13 +66,31 @@ type program struct {
 	Options config.JPLProgramOptions
 
 	definition definition.JPLDefinition
-	OPs        map[string]JPLOP
+	OPs        map[string]jpl.JPLOPHandler
 
 	RuntimeOptions config.JPLRuntimeOptions
 }
 
-func (p *program) Run(inputs []any, options *Options) ([]any, error) {
-	panic("TODO:")
+func (p *program) Run(inputs []any, options *config.JPLProgramConfig) ([]any, error) {
+	if options == nil {
+		options = new(config.JPLProgramConfig)
+	}
+
+	r := runtime.NewRuntime(p, &config.JPLRuntimeConfig{
+		Runtime: config.ApplyRuntimeDefaults(options.Runtime, p.RuntimeOptions),
+	})
+
+	normalizedInputs, err := r.NormalizeValues(inputs, "program inputs")
+	if err != nil {
+		return nil, err
+	}
+
+	outputs, err := r.Execute(normalizedInputs)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.StripJSON(outputs), nil
 }
 
 func (p *program) Definition() definition.JPLDefinition {

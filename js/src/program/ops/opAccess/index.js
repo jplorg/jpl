@@ -6,7 +6,7 @@ import opaIter from './opaIter';
 import opaSlice from './opaSlice';
 
 export default {
-  /** { pipe: [op], operations: [opa] } */
+  /** { pipe: [op], selectors: [opa] } */
   op(runtime, input, params, scope, next) {
     const iter = async (from, value) => {
       // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.
@@ -14,9 +14,9 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.operations.length) return next(value, scope);
+      if (from >= params.selectors.length) return next(value, scope);
 
-      const { op, params: opParams } = params.operations[from];
+      const { op, params: opParams } = params.selectors[from];
       const operator = ops[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);
 
@@ -28,11 +28,11 @@ export default {
     return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
   },
 
-  /** { value: function, operations: [opa] } */
+  /** { value: function, selectors: [opa] } */
   map(runtime, params) {
     return {
       pipe: call(params.value),
-      operations: runtime.muxOne([params.operations], ({ op, params: opParams }) => {
+      selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
         const operator = ops[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);
 

@@ -1,7 +1,7 @@
 /**
- * { value: function, operations: [opa] }
+ * { value: function, selectors: [opa] }
  *
- * { pipe: [op], operations: [opa] }
+ * { pipe: [op], selectors: [opa] }
  */
 export const OP_ACCESS = '$.';
 
@@ -20,9 +20,9 @@ export const OP_AND = 'and';
 export const OP_ARRAY_CONSTRUCTOR = '[]';
 
 /**
- * { value: function, operations: [opa], assignment: opu }
+ * { value: function, selectors: [opa], assignment: opu }
  *
- * { pipe: [op], operations: [opa], assignment: [opu] }
+ * { pipe: [op], selectors: [opa], assignment: [opu] }
  */
 export const OP_ASSIGNMENT = '$=';
 

@@ -2,30 +2,16 @@ package interpreter
 
 import (
 	"github.com/2manyvcos/jpl/go/config"
-	"github.com/2manyvcos/jpl/go/library/definition"
+	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/2manyvcos/jpl/go/jpl"
 	"github.com/2manyvcos/jpl/go/program"
 )
 
 var defaultOptions = config.JPLInterpreterOptions{}
 
-type Options struct {
-	Interpreter config.JPLInterpreterOptions
-	Program     config.JPLProgramOptions
-	Runtime     config.JPLRuntimeOptions
-}
-
-// JPL interpreter
-type JPLInterpreter interface {
-	// Parse the specified source program string into a reusable JPLProgram instance
-	Parse(source string, options *Options) (program.JPLProgram, error)
-
-	// Parse the specified source program string
-	ParseInstructions(source string) (definition.Pipe, error)
-}
-
-func NewInterpreter(options *Options) JPLInterpreter {
+func NewInterpreter(options *config.JPLInterpreterConfig) jpl.JPLInterpreter {
 	if options == nil {
-		options = new(Options)
+		options = new(config.JPLInterpreterConfig)
 	}
 	return &interpreter{
 		Options: config.ApplyInterpreterDefaults(options.Interpreter, defaultOptions),
@@ -42,9 +28,9 @@ type interpreter struct {
 	RuntimeOptions config.JPLRuntimeOptions
 }
 
-func (i *interpreter) Parse(source string, options *Options) (program.JPLProgram, error) {
+func (i *interpreter) Parse(source string, options *config.JPLInterpreterConfig) (jpl.JPLProgram, error) {
 	if options == nil {
-		options = new(Options)
+		options = new(config.JPLInterpreterConfig)
 	}
 
 	instructions, err := i.ParseInstructions(source)
@@ -57,7 +43,7 @@ func (i *interpreter) Parse(source string, options *Options) (program.JPLProgram
 		Instructions: instructions,
 	}
 
-	return program.NewProgram(definition, &program.Options{
+	return program.NewProgram(definition, &config.JPLProgramConfig{
 		Program: config.ApplyProgramDefaults(options.Program, i.ProgramOptions),
 		Runtime: config.ApplyRuntimeDefaults(options.Runtime, i.RuntimeOptions),
 	})

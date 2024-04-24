@@ -12,7 +12,7 @@ export function call(value) {
       op: OP_ACCESS,
       params: {
         pipe: constant(assertType(value, 'function')),
-        operations: [{ op: OPA_FUNCTION, params: { args: [], bound: false, optional: false } }],
+        selectors: [{ op: OPA_FUNCTION, params: { args: [], bound: false, optional: false } }],
       },
     },
   ];

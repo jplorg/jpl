@@ -26,7 +26,7 @@ import opuSubtraction from './opuSubtraction';
 import opuUpdate from './opuUpdate';
 
 export default {
-  /** { pipe: [op], operations: [opa], assignment: [opu] } */
+  /** { pipe: [op], selectors: [opa], assignment: [opu] } */
   op(runtime, input, params, scope, next) {
     const iter = async (from, value) => {
       // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.
@@ -34,7 +34,7 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.operations.length) {
+      if (from >= params.selectors.length) {
         const { op, params: opParams } = params.assignment;
         const operator = opsAssignment[op];
         if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
@@ -42,7 +42,7 @@ export default {
         return operator.op(runtime, input, value, opParams, scope, (output) => [output]);
       }
 
-      const { op, params: opParams } = params.operations[from];
+      const { op, params: opParams } = params.selectors[from];
       const operator = opsAccess[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
@@ -58,11 +58,11 @@ export default {
     );
   },
 
-  /** { value: function, operations: [opa], assignment: opu } */
+  /** { value: function, selectors: [opa], assignment: opu } */
   map(runtime, params) {
     return {
       pipe: call(params.value),
-      operations: runtime.muxOne([params.operations], ({ op, params: opParams }) => {
+      selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
         const operator = opsAccess[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 

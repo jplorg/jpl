@@ -1,5 +1,7 @@
 package program
 
-var OPs = map[string]JPLOP{
+import "github.com/2manyvcos/jpl/go/jpl"
+
+var OPs = map[string]jpl.JPLOPHandler{
 	// TODO:
 }
