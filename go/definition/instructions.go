@@ -42,11 +42,11 @@ type JPLOperation struct {
 type JPLOperationParams struct {
 	By       Pipe   `json:"by,omitempty"`
 	Pipe     Pipe   `json:"pipe,omitempty"`
-	Optional bool   `json:"optional"`
+	Optional bool   `json:"optional,omitempty"`
 	From     Pipe   `json:"from,omitempty"`
 	To       Pipe   `json:"to,omitempty"`
 	Args     []Pipe `json:"args,omitempty"`
-	Bound    bool   `json:"bound"`
+	Bound    bool   `json:"bound,omitempty"`
 }
 
 type JPLIfThen struct {
@@ -66,7 +66,7 @@ type JPLAssignmentParams struct {
 type JPLField struct {
 	Key      Pipe `json:"key"`
 	Value    Pipe `json:"value"`
-	Optional bool `json:"optional"`
+	Optional bool `json:"optional,omitempty"`
 }
 
 type JPLInterpolation struct {
