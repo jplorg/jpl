@@ -258,7 +258,7 @@ export function jplJSONStripper(k, v, iter) {
 /** Stripper that allows JSON like values and calls `toJSON` similar to `JSON.stringify` */
 export function jsonStripper(k, v, iter) {
   let r = v;
-  if (typeof v?.toJSON === 'function') r = r.toJSON();
+  if (typeof r?.toJSON === 'function') r = r.toJSON();
   return rawStripper(k, r, iter);
 }
 

@@ -3,6 +3,7 @@ package library
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -137,15 +138,15 @@ func AssertType(value any, expectedType jpl.JPLDataType) (any, jpl.JPLError) {
 	return value, nil
 }
 
-var replaceFunctions = jpl.JPLReplacerFunc(func(k string, v any) (any, jpl.JPLError) {
+var replaceFunctions = jpl.JPLReplacerFunc(func(k string, v any) (result any, remove bool, err jpl.JPLError) {
 	u, err := Unwrap(v)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	if _, ok := u.(jpl.JPLFunc); ok {
-		return "<function>", nil
+		return "<function>", false, nil
 	}
-	return v, nil
+	return v, false, nil
 })
 
 // Stringify the specified normalized value
@@ -304,7 +305,7 @@ func Strip(value any, replacer jpl.JPLReplacer, stripper jpl.JPLStripper) (any, 
 		stripper = JPLJSONStripper
 	}
 	var iter jpl.IterFunc
-	iter = func(k *string, v any) (any, jpl.JPLError) {
+	iter = func(k *string, v any) (result any, remove bool, err jpl.JPLError) {
 		r := v
 		if replacer != nil {
 			var key string
@@ -312,21 +313,119 @@ func Strip(value any, replacer jpl.JPLReplacer, stripper jpl.JPLStripper) (any, 
 				key = *k
 			}
 			var err jpl.JPLError
-			if r, err = replacer.Replace(key, r); err != nil {
-				return nil, err
+			if r, remove, err = replacer.Replace(key, r); err != nil {
+				return nil, false, err
+			} else if remove {
+				return nil, true, nil
 			}
 		}
 		return stripper.Strip(k, r, iter)
 	}
-	return iter(nil, value)
+	result, remove, err := iter(nil, value)
+	if err != nil {
+		return nil, err
+	} else if remove {
+		return nil, nil
+	}
+	return result, nil
 }
 
 // Stripper that allows JPLTypes and normalized values
-var JPLTypedStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (any, jpl.JPLError) {
-	panic("TODO:")
+var JPLTypedStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (result any, remove bool, err jpl.JPLError) {
+	if _, ok := v.(jpl.JPLType); ok {
+		return v, false, nil
+	}
+	if _, ok := v.(jpl.JPLFunc); ok {
+		return v, false, nil
+	}
+	return RawStripper(k, v, iter)
+})
+
+// Stripper that only allows normalized values and unwraps JPLTypes
+var JPLStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (result any, remove bool, err jpl.JPLError) {
+	r := v
+	if t, ok := v.(jpl.JPLType); ok {
+		var err jpl.JPLError
+		if r, err = t.JSON(); err != nil {
+			return nil, false, err
+		}
+	}
+	if _, ok := v.(jpl.JPLFunc); ok {
+		return r, false, nil
+	}
+	return RawStripper(k, r, iter)
 })
 
 // Stripper that allows JSON like values and unwraps JPLTypes
-var JPLJSONStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (any, jpl.JPLError) {
-	panic("TODO:")
+var JPLJSONStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (result any, remove bool, err jpl.JPLError) {
+	r := v
+	if t, ok := v.(jpl.JPLType); ok {
+		var err jpl.JPLError
+		if r, err = t.JSON(); err != nil {
+			return nil, false, err
+		}
+	}
+	return RawStripper(k, r, iter)
+})
+
+// Stripper that allows JSON like values and parses `json.Marshaler` interfaces
+var JSONStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (result any, remove bool, err jpl.JPLError) {
+	r := v
+	if m, ok := r.(json.Marshaler); ok {
+		bytes, err := m.MarshalJSON()
+		if err != nil {
+			return nil, false, AdaptError(err)
+		}
+		err = json.Unmarshal(bytes, &r)
+		if err != nil {
+			return nil, false, AdaptError(err)
+		}
+	}
+	return RawStripper(k, r, iter)
+})
+
+// Stripper that allows JSON like values
+var RawStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) (result any, remove bool, err jpl.JPLError) {
+	top := k == nil
+
+	switch v := v.(type) {
+	case jpl.JPLFunc:
+		return nil, !top, nil
+	case string, bool:
+		return v, false, nil
+	case float64:
+		if math.IsNaN(v) || math.IsInf(v, 0) {
+			return nil, false, nil
+		}
+		return v, false, nil
+	case []any:
+		changes := make([]ArrayEntry[any], len(v))
+		for i, entry := range v {
+			key := strconv.Itoa(i)
+			result, remove, err := iter(&key, entry)
+			if err != nil {
+				return nil, false, err
+			} else if remove {
+				result = nil
+			}
+			changes[i] = ArrayEntry[any]{i, result}
+		}
+		return ApplyArray(v, changes, nil), false, nil
+	case map[string]any:
+		changes := make([]ObjectEntry[any], 0, len(v))
+		for i, entry := range v {
+			result, remove, err := iter(&i, entry)
+			if err != nil {
+				return nil, false, err
+			} else if remove {
+				result = nil
+			}
+			changes = append(changes, ObjectEntry[any]{i, result, remove})
+		}
+		return ApplyObject(v, changes), false, nil
+	case nil:
+		return nil, false, nil
+	default:
+		return nil, false, NewFatalError(fmt.Sprintf("unexpected %T", v))
+	}
 })
