@@ -184,7 +184,7 @@ null ?? void()
 # -> <nothing>
 ```
 
-There are also the builtins `hasContent()` and `contents()`, which also considers other empty values than `null`.
+There are also the builtins `hasContent()` and `contents()`, which also omit other empty values than `null`.
 
 ## Combining expressions
 
@@ -331,10 +331,10 @@ greet()
 
 ### Anonymous functions
 
-Anonymous functions are returned as the expression's output instead, so you cen access it afterwards using the identity operator `.`.
+Anonymous functions are returned as the expression's output instead, so you can access it afterwards using the identity operator `.`.
 
 ```jpl
-# Here, we define a anonymous function
+# Here, we define an anonymous function
 func (): (
   "Hello!"
 ) |
@@ -588,7 +588,7 @@ You can specify negative indices to look back from the end of the input.
 ## Iterating values
 
 You can return all entries from an array or string by using the value iterator `value[]`.
-This can also be used on object to return all of its values.
+This can also be used on an object to return all of its values.
 
 ```jpl
 ["a", "b", "c"] | .[]

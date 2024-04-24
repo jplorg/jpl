@@ -13,48 +13,84 @@ Those operators are executed from left to right.
 
 - `$ | $` (pipe) <- subpipe
 
+---
+
 - `$, $` (not available in subpipes and subroutes)
+
+---
 
 - `try $ catch $` <- subroute
 
+---
+
 - `$ or $`
+
+---
 
 - `$ and $`
 
+---
+
 - `$ == $`
 - `$ != $`
+
+---
 
 - `$ < $`
 - `$ <= $`
 - `$ > $`
 - `$ >= $`
 
+---
+
 - `not $`
+
+---
 
 - `$ ?`
 
+---
+
 - `$ - $`
 - `$ + $`
+
+---
 
 - `$ % $`
 - `$ / $` (divide by)
 - `$ * $`
 
+---
+
 - `$ ?? $`
+
+---
 
 - `- $`
 
+---
+
 - `if $pipe then $pipe elif $pipe then $pipe else $pipe end`
+
+---
 
 - `true`
 - `false`
 - `null`
 
+---
+
 - `number`
+
+---
 
 - `func variable-name(variable-name, ...): $subroute`
 
+---
+
 - `func (variable-name, ...): $subroute`
+
+---
 
 - `variable-name`
 - `variable-name<.path> = $subroute`
@@ -81,8 +117,12 @@ Those operators are executed from left to right.
 - `$<.path>[]`
 - `$<.path>($subpipe, ...)`
 
+---
+
 - `{ ($pipe): $subpipe, "": $subpipe, variable-name: $subpipe, ... }`
 - `[ $pipe ]`
 - `""`, `"\($pipe)"`
+
+---
 
 - `($pipe)`
