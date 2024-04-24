@@ -66,7 +66,7 @@ type program struct {
 	runtimeOptions jpl.JPLRuntimeOptions
 
 	definition definition.JPLDefinition
-	ops        map[string]jpl.JPLOPHandler
+	ops        map[definition.JPLOP]jpl.JPLOPHandler
 }
 
 func (p *program) Options() jpl.JPLProgramOptions {
@@ -77,7 +77,7 @@ func (p *program) Definition() definition.JPLDefinition {
 	return p.definition
 }
 
-func (p *program) OPs() map[string]jpl.JPLOPHandler {
+func (p *program) OPs() map[definition.JPLOP]jpl.JPLOPHandler {
 	return p.ops
 }
 

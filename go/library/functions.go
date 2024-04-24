@@ -28,7 +28,7 @@ func (e *jplEnclosure) Call(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal,
 			Signal: signal,
 			Vars:   vars,
 		}),
-		next,
+		NewPiperWithScope(next),
 	)
 }
 
@@ -63,6 +63,6 @@ func NativeFunction(fn func(runtime jpl.JPLRuntime, input any, args ...any) ([]a
 			return nil, err
 		}
 
-		return MuxAll([][]any{results}, NewPiperMuxer(next))
+		return MuxAll([][]any{results}, NewPiperMuxer(next, nil))
 	})
 }

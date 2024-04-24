@@ -11,7 +11,7 @@ type JPLRuntimeConfig struct {
 type JPLRuntimeOptions struct {
 	Vars map[string]any
 
-	AdjustResult JPLPiper
+	AdjustResult JPLScopedPiper
 }
 
 func ApplyRuntimeDefaults(options JPLRuntimeOptions, defaults JPLRuntimeOptions) (result JPLRuntimeOptions) {
@@ -41,8 +41,8 @@ type JPLRuntime interface {
 	Execute(inputs []any) ([]any, JPLError)
 
 	// Execute the specified instructions
-	ExecuteInstructions(instructions definition.Pipe, inputs []any, scope JPLRuntimeScope, next JPLPiper) ([]any, JPLError)
+	ExecuteInstructions(instructions definition.Pipe, inputs []any, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)
 
 	// Execute the specified OP
-	OP(op definition.JPLOP, params map[string]any, inputs []any, scope JPLRuntimeScope, next JPLPiper) ([]any, JPLError)
+	OP(op definition.JPLOP, params map[string]any, inputs []any, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)
 }

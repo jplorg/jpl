@@ -138,7 +138,7 @@ func AssertType(value any, expectedType jpl.JPLDataType) (any, jpl.JPLError) {
 	return value, nil
 }
 
-var replaceFunctions = jpl.JPLReplacerFunc(func(k string, v any) (result any, remove bool, err jpl.JPLError) {
+var functionReplacer = jpl.JPLReplacerFunc(func(k string, v any) (result any, remove bool, err jpl.JPLError) {
 	u, err := Unwrap(v)
 	if err != nil {
 		return nil, false, err
@@ -154,7 +154,7 @@ func Stringify(value any, unescapeString bool, escapeFunctions bool) (string, jp
 	var rawValue any
 	if escapeFunctions {
 		var err jpl.JPLError
-		rawValue, err = Strip(value, replaceFunctions, nil)
+		rawValue, err = Strip(value, functionReplacer, nil)
 		if err != nil {
 			return "", err
 		}

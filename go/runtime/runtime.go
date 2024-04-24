@@ -54,25 +54,59 @@ func (r *runtime) Execute(inputs []any) ([]any, jpl.JPLError) {
 	defer scope.Signal().Exit()
 
 	return r.ExecuteInstructions(
-		r.program.Definition().Instructions,
+		r.Program().Definition().Instructions,
 		inputs,
 		scope,
 		r.Options().AdjustResult,
 	)
 }
 
-var nexter = jpl.JPLPiperFunc(func(input any) (outputs []any, err jpl.JPLError) {
+var nexter = jpl.JPLScopedPiperFunc(func(input any, scope jpl.JPLRuntimeScope) (outputs []any, err jpl.JPLError) {
 	return []any{input}, nil
 })
 
-func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLPiper) ([]any, jpl.JPLError) {
+func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
 	if next == nil {
 		next = nexter
 	}
 
-	panic("TODO:")
+	var iter func(from int, input any, currentScope jpl.JPLRuntimeScope) ([]any, jpl.JPLError)
+	iter = func(from int, input any, currentScope jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
+		if err := currentScope.Signal().CheckHealth(); err != nil {
+			return nil, err
+		}
+
+		if from >= len(instructions) {
+			return next.Pipe(input, currentScope)
+		}
+
+		instruction := instructions[from]
+		operator := r.Program().OPs()[instruction.OP]
+		if operator == nil {
+			return nil, library.NewFatalError("invalid op '" + string(instruction.OP) + "'")
+		}
+
+		return operator.OP(r, input, instruction.Params, currentScope, jpl.JPLScopedPiperFunc(func(output any, nextScope jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
+			return iter(from+1, output, nextScope)
+		}))
+	}
+
+	return library.MuxAll([][]any{inputs}, jpl.IOMuxerFunc[any, []any](func(args ...any) ([]any, jpl.JPLError) {
+		return iter(0, args[0], scope)
+	}))
 }
 
-func (r *runtime) OP(op definition.JPLOP, params map[string]any, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLPiper) ([]any, jpl.JPLError) {
-	panic("TODO:")
+func (r *runtime) OP(op definition.JPLOP, params map[string]any, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
+	operator := r.Program().OPs()[op]
+	if operator == nil {
+		return nil, library.NewFatalError("invalid op '" + string(op) + "'")
+	}
+
+	opParams, err := operator.Map(r, params)
+	if err != nil {
+		return nil, err
+	}
+	return library.MuxAll([][]any{inputs}, jpl.IOMuxerFunc[any, []any](func(args ...any) ([]any, jpl.JPLError) {
+		return operator.OP(r, args[0], opParams, scope, next)
+	}))
 }

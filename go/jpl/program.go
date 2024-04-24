@@ -25,7 +25,7 @@ type JPLProgram interface {
 	Definition() definition.JPLDefinition
 
 	// Return the program's OPs
-	OPs() map[string]JPLOPHandler
+	OPs() map[definition.JPLOP]JPLOPHandler
 
 	// Run the program with the provided inputs and runtime options.
 	// The program throws a JPLExecutionError for runtime failures.
