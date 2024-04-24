@@ -16,7 +16,7 @@ import opcLessEqual from './opcLessEqual';
 import opcUnequal from './opcUnequal';
 
 export default {
-  /** { pipe: [op], comparisons: [opm] } */
+  /** { pipe: [op], comparisons: [opc] } */
   op(runtime, input, params, scope, next) {
     const iter = async (from, value) => {
       // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.
