@@ -1,4 +1,4 @@
-package options
+package config
 
 type JPLRuntimeOptions struct {
 	Vars map[string]any

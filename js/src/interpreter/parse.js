@@ -62,10 +62,10 @@ import {
  * Parse a single program at i.
  * Throws an error if src contains additional content.
  */
-export async function entrypoint(src, i, c) {
+export async function parseEntrypoint(src, i, c) {
   let n = i;
 
-  const result = await program(src, n, c);
+  const result = await parseProgram(src, n, c);
   ({ i: n } = result);
 
   if (!eot(src, n, c).is)
@@ -75,7 +75,7 @@ export async function entrypoint(src, i, c) {
 }
 
 /** Parse program at i */
-export function program(src, i, c) {
+export function parseProgram(src, i, c) {
   let n = i;
 
   ({ i: n } = walkWhitespace(src, n, c));
@@ -139,10 +139,8 @@ export async function opOutputConcat(src, i, c) {
 
   const pipes = [];
   for (;;) {
-    const result = await opTry(src, n, c);
     let ops;
-    ({ i: n, ops } = result);
-
+    ({ i: n, ops } = await opTry(src, n, c));
     pipes.push(ops);
 
     const m = matchWord(src, n, c, { phrase: ',' });
@@ -183,10 +181,8 @@ export async function opOr(src, i, c) {
 
   const pipes = [];
   for (;;) {
-    const result = await opAnd(src, n, c);
     let ops;
-    ({ i: n, ops } = result);
-
+    ({ i: n, ops } = await opAnd(src, n, c));
     pipes.push(ops);
 
     const m = matchWord(src, n, c, { spaceBefore: true, phrase: 'or', spaceAfter: true });
@@ -205,10 +201,8 @@ export async function opAnd(src, i, c) {
 
   const pipes = [];
   for (;;) {
-    const result = await opEquality(src, n, c);
     let ops;
-    ({ i: n, ops } = result);
-
+    ({ i: n, ops } = await opEquality(src, n, c));
     pipes.push(ops);
 
     const m = matchWord(src, n, c, { spaceBefore: true, phrase: 'and', spaceAfter: true });

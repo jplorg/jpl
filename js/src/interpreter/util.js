@@ -194,7 +194,7 @@ export function whereIs(src, i) {
 }
 
 /** Get a descriptive text highlighting i */
-export function highlightLocation(src, i, { area = 25 } = {}) {
+export function highlightLocation(src, i, c, { area = 25 } = {}) {
   const s = Math.max(Math.min(i, src.length - 1 - area), area) - area;
   const e = Math.min(s + area + 1 + area, src.length);
   const view = src

@@ -1,7 +1,7 @@
 import applyDefaults from '../applyDefaults';
 import JPLProgram, { applyProgramDefaults } from '../program';
 import { applyRuntimeDefaults } from '../runtime';
-import { entrypoint } from './parse';
+import { parseEntrypoint } from './parse';
 
 const defaultOptions = {};
 
@@ -30,7 +30,7 @@ class JPLInterpreter {
 
   /** Parse the specified source program string */
   parseInstructions = async (source) => {
-    const { ops: instructions } = await entrypoint(source, 0, { interpreter: this });
+    const { ops: instructions } = await parseEntrypoint(source, 0, { interpreter: this });
     return instructions;
   };
 }
