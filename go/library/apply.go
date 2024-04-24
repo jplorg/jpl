@@ -19,6 +19,18 @@ func ObjectEntries[Value any](source map[string]Value) []ObjectEntry[Value] {
 	return result
 }
 
+func ObjectFromEntries[Value any](entries []ObjectEntry[Value]) map[string]Value {
+	result := make(map[string]Value, len(entries))
+	for _, entry := range entries {
+		if entry.NoValue {
+			delete(result, entry.Key)
+		} else {
+			result[entry.Key] = entry.Value
+		}
+	}
+	return result
+}
+
 func ArrayEntries[Value any](source []Value) []ArrayEntry[Value] {
 	result := make([]ArrayEntry[Value], 0, len(source))
 	for i, value := range source {

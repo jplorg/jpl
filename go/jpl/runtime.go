@@ -10,6 +10,8 @@ type JPLRuntimeConfig struct {
 
 type JPLRuntimeOptions struct {
 	Vars map[string]any
+
+	AdjustResult JPLPiper
 }
 
 func ApplyRuntimeDefaults(options JPLRuntimeOptions, defaults JPLRuntimeOptions) (result JPLRuntimeOptions) {
