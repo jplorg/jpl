@@ -2,11 +2,19 @@ package library
 
 import "github.com/2manyvcos/jpl/go/jpl"
 
-func format(value any, replacements ...any) (string, jpl.JPLError) {
+func format(value any, replacements []any) (string, jpl.JPLError) {
 	if len(replacements) > 0 {
 		return Template(value, replacements...)
 	}
 	return DisplayValue(value)
+}
+
+// Return any of the specified errors.
+func ThrowAny[ErrorType jpl.JPLError](err1 ErrorType, err2 jpl.JPLError) jpl.JPLError {
+	if err2 != nil {
+		return err2
+	}
+	return err1
 }
 
 // `value` can by of any type.
