@@ -25,6 +25,9 @@ type ArrayEntry = Entry[int]
 // as described here:
 // https://stackoverflow.com/questions/53009686/equality-identity-of-go-slices
 // However, there still probably needs to be found a way to compare maps (if they cannot simply be compared directly).
+// UPDATE:
+// reflect.ValueOf(a).Pointer() == reflect.ValueOf(b).Pointer()
+// works for both slices and maps
 
 // Apply all changes immutably to the source object.
 func applyObject(source map[string]any, changes []ObjectEntry) map[string]any {
