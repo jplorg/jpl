@@ -274,7 +274,7 @@ func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOpti
 	return library.NewSyntaxError(errorMessage)
 }
 
-// Throw an error caused by an generic parser error at i
+// Throw an error caused by a generic parser error at i
 func errorGeneric(src string, i int, c *ParserContext, options errorOptions) jpl.JPLSyntaxError {
 	errorMessage := "error"
 	if options.Operator != "" {

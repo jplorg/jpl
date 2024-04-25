@@ -4,7 +4,7 @@ type JPLInstructionParams struct {
 	// After          string
 	ArgNames []string
 	// Assignment     *JPLAssignment
-	// Catch          JPLFunc
+	Catch JPLFunc
 	// Comparisons    []JPLComparison
 	// Else           JPLFunc
 	// Fields         []JPLField
@@ -15,7 +15,7 @@ type JPLInstructionParams struct {
 	Pipe  JPLFunc
 	Pipes []JPLFunc
 	// Selectors      []JPLSelector
-	// Try            JPLFunc
+	Try    JPLFunc
 	Value  any
 	String string
 	Number float64

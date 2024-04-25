@@ -49,6 +49,7 @@ import {
 } from '../library';
 import {
   eot,
+  errorGeneric,
   errorUnexpectedToken,
   hex,
   match,
@@ -458,9 +459,14 @@ export function parseNumber(src, i, c) {
       return errorUnexpectedToken(src, n, c, { operator: 'number', message: 'expected digit' });
   }
 
+  const number = +value;
+  if (!Number.isFinite(number)) {
+    return errorGeneric(src, n, c, { operator: 'number', message: `invalid number ${number}` });
+  }
+
   ({ i: n } = walkWhitespace(src, n, c));
 
-  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { number: +value } }] };
+  return { i: n, is: true, ops: [{ op: OP_NUMBER, params: { number } }] };
 }
 
 /** Parse string at i */

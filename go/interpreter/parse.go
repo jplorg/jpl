@@ -593,7 +593,7 @@ func parseNumber(src string, i int, c *ParserContext) (n int, is bool, result de
 
 	var number float64
 	if parsed, err := strconv.ParseFloat(value, 64); err != nil {
-		return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "number", Message: "error parsing number: " + err.Error()})
+		return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "number", Message: err.Error()})
 	} else {
 		number = parsed
 	}
@@ -745,7 +745,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 				}
 				parsed, err := strconv.ParseUint(hexVal, 16, 16)
 				if err != nil {
-					return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: "error parsing hex code: " + err.Error()})
+					return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: err.Error()})
 				}
 				r := rune(parsed)
 				// parse utf16
@@ -768,7 +768,7 @@ func parseString(src string, i int, c *ParserContext) (n int, is bool, result de
 						}
 						parsed, err = strconv.ParseUint(hexVal, 16, 16)
 						if err != nil {
-							return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: "error parsing hex code: " + err.Error()})
+							return 0, false, nil, errorGeneric(src, n, c, errorOptions{Operator: "string", Message: err.Error()})
 						}
 						r2 := rune(parsed)
 						// if the second rune is no utf16 surrogate, we append each rune individually to the result value
