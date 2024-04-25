@@ -13,6 +13,6 @@ func (opAccess) OP(runtime jpl.JPLRuntime, input any, params definition.JPLInstr
 }
 
 // { pipe: function, selectors: [opa] }
-func (opAccess) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opAccess) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	panic("TODO:")
 }

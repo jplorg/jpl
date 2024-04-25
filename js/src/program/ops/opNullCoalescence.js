@@ -30,7 +30,7 @@ export default {
   /** { pipes: [function] } */
   map(runtime, params) {
     return {
-      pipes: runtime.muxOne([params.pipes], (option) => call(option)),
+      pipes: runtime.muxOne([params.pipes], (pipe) => call(pipe)),
     };
   },
 };

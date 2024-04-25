@@ -18,7 +18,7 @@ func (opVariable) OP(runtime jpl.JPLRuntime, input any, params definition.JPLIns
 }
 
 // { name: string }
-func (opVariable) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opVariable) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	return definition.JPLInstructionParams{
 		Name: params.Name,
 	}, nil

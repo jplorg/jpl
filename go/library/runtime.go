@@ -13,9 +13,6 @@ func NormalizeValue(value any) (any, jpl.JPLError) {
 
 // Normalize the specified array of external values
 func NormalizeValues(values any, name string) ([]any, jpl.JPLError) {
-	if values == nil {
-		values = []any(nil)
-	}
 	if name == "" {
 		name = "values"
 	}
@@ -36,9 +33,6 @@ func UnwrapValue(value any) (any, jpl.JPLError) {
 
 // Unwrap the specified array of normalized values for usage in JPL operations
 func UnwrapValues(values any, name string) ([]any, jpl.JPLError) {
-	if values == nil {
-		values = []any(nil)
-	}
 	if name == "" {
 		name = "values"
 	}
@@ -63,9 +57,6 @@ func StripValue(value any) (any, jpl.JPLError) {
 
 // Strip the specified array of normalized values for usage in JPL operations
 func StripValues(values any, name string) ([]any, jpl.JPLError) {
-	if values == nil {
-		values = []any(nil)
-	}
 	if name == "" {
 		name = "values"
 	}

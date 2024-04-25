@@ -13,6 +13,6 @@ func (opAssignment) OP(runtime jpl.JPLRuntime, input any, params definition.JPLI
 }
 
 // { pipe: function, selectors: [opa], assignment: opu }
-func (opAssignment) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opAssignment) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	panic("TODO:")
 }

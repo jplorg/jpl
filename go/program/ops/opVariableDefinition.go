@@ -15,7 +15,7 @@ func (opVariableDefinition) OP(runtime jpl.JPLRuntime, input any, params definit
 }
 
 // { name: string, pipe: function }
-func (opVariableDefinition) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opVariableDefinition) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	return definition.JPLInstructionParams{
 		Name: params.Name,
 		Pipe: call(params.Pipe),

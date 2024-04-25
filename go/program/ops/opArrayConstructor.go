@@ -13,11 +13,14 @@ func (opArrayConstructor) OP(runtime jpl.JPLRuntime, input any, params definitio
 	if err != nil {
 		return nil, err
 	}
+	if outputs == nil {
+		outputs = []any{}
+	}
 	return next.Pipe(outputs, scope)
 }
 
 // { pipe: function }
-func (opArrayConstructor) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opArrayConstructor) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	return definition.JPLInstructionParams{
 		Pipe: call(params.Pipe),
 	}, nil

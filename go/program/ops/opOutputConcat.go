@@ -18,15 +18,11 @@ func (opOutputConcat) OP(runtime jpl.JPLRuntime, input any, params definition.JP
 }
 
 // { pipes: [function] }
-func (opOutputConcat) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
-	pipes, err := library.MuxOne([][]jpl.JPLFunc{params.Pipes}, jpl.IOMuxerFunc[jpl.JPLFunc, definition.Pipe](func(args ...jpl.JPLFunc) (definition.Pipe, jpl.JPLError) {
+func (opOutputConcat) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
+	if result.Pipes, err = library.MuxOne([][]jpl.JPLFunc{params.Pipes}, jpl.IOMuxerFunc[jpl.JPLFunc, definition.Pipe](func(args ...jpl.JPLFunc) (definition.Pipe, jpl.JPLError) {
 		return call(args[0]), nil
-	}))
-	if err != nil {
-		return definition.JPLInstructionParams{}, err
+	})); err != nil {
+		return
 	}
-
-	return definition.JPLInstructionParams{
-		Pipes: pipes,
-	}, nil
+	return
 }

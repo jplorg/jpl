@@ -14,12 +14,9 @@ func (opConstant) OP(runtime jpl.JPLRuntime, input any, params definition.JPLIns
 }
 
 // { value: any }
-func (opConstant) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
-	normalized, err := library.NormalizeValue(params.Value)
-	if err != nil {
-		return definition.JPLInstructionParams{}, err
+func (opConstant) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
+	if result.Value, err = library.NormalizeValue(params.Value); err != nil {
+		return
 	}
-	return definition.JPLInstructionParams{
-		Value: normalized,
-	}, nil
+	return
 }

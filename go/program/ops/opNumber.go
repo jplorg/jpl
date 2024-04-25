@@ -13,7 +13,7 @@ func (opNumber) OP(runtime jpl.JPLRuntime, input any, params definition.JPLInstr
 }
 
 // { number: number }
-func (opNumber) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opNumber) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	return definition.JPLInstructionParams{
 		Number: params.Number,
 	}, nil

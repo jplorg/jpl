@@ -13,6 +13,6 @@ func (opCalculation) OP(runtime jpl.JPLRuntime, input any, params definition.JPL
 }
 
 // { pipe: function, operations: [opm] }
-func (opCalculation) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opCalculation) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	panic("TODO:")
 }

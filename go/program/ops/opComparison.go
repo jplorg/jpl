@@ -13,6 +13,6 @@ func (opComparison) OP(runtime jpl.JPLRuntime, input any, params definition.JPLI
 }
 
 // { pipe: function, comparisons: [opc] }
-func (opComparison) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opComparison) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	panic("TODO:")
 }

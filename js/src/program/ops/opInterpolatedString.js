@@ -16,7 +16,7 @@ export default {
   map(runtime, params) {
     return {
       interpolations: runtime.muxOne([params.interpolations], (entry) => ({
-        before: runtime.assertType(params.before, 'string'),
+        before: runtime.assertType(entry.before, 'string'),
         pipe: call(entry.pipe),
       })),
       after: runtime.assertType(params.after, 'string'),

@@ -129,7 +129,7 @@ func AssertType(value any, expectedType jpl.JPLDataType) (any, jpl.JPLError) {
 		return nil, err
 	}
 	if t != expectedType {
-		if message, err := Template("unexpected type: %s (%*<100v) cannot be used as %s", t, value, expectedType); err != nil {
+		if message, err := Template("unexpected type: %s (%*<100v) cannot be used as %s", string(t), value, string(expectedType)); err != nil {
 			return nil, err
 		} else {
 			return nil, NewFatalError(message)

@@ -18,6 +18,6 @@ func (opNot) OP(runtime jpl.JPLRuntime, input any, params definition.JPLInstruct
 }
 
 // {}
-func (opNot) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
-	return definition.JPLInstructionParams{}, nil
+func (opNot) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
+	return
 }

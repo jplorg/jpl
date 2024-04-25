@@ -13,6 +13,6 @@ func (opConstantNull) OP(runtime jpl.JPLRuntime, input any, params definition.JP
 }
 
 // {}
-func (opConstantNull) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
-	return definition.JPLInstructionParams{}, nil
+func (opConstantNull) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
+	return
 }

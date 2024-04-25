@@ -35,7 +35,7 @@ func (opTry) OP(runtime jpl.JPLRuntime, input any, params definition.JPLInstruct
 }
 
 // { try: function, catch: function }
-func (opTry) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (definition.JPLInstructionParams, jpl.JPLError) {
+func (opTry) Map(runtime jpl.JPLRuntime, params jpl.JPLInstructionParams) (result definition.JPLInstructionParams, err jpl.JPLError) {
 	return definition.JPLInstructionParams{
 		Try:   call(params.Try),
 		Catch: call(params.Catch),
