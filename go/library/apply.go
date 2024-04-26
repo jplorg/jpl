@@ -50,7 +50,7 @@ func ApplyObject[Value any](source map[string]Value, changes []*ObjectEntry[Valu
 				continue
 			}
 			if unchanged {
-				result = copyMap(result)
+				result = CopyMap(result)
 				delete(result, change.Key)
 				unchanged = false
 			} else {
@@ -63,7 +63,7 @@ func ApplyObject[Value any](source map[string]Value, changes []*ObjectEntry[Valu
 			continue
 		}
 		if unchanged {
-			result = copyMap(result)
+			result = CopyMap(result)
 			result[change.Key] = change.Value
 			unchanged = false
 		} else {
@@ -115,7 +115,7 @@ func ApplyArray[Value any](source []Value, changes []*ArrayEntry[Value], filler 
 			}
 		}
 		if unchanged {
-			result = copySlice(result)
+			result = CopySlice(result)
 			unchanged = false
 		}
 		result[i] = change.Value
@@ -167,7 +167,7 @@ func ApplyCombinations[Value any](source []Value, combinations [][]Value) [][]Va
 				continue
 			}
 			if unchanged {
-				result = copySlice(result)
+				result = CopySlice(result)
 				unchanged = false
 			}
 			result[i] = v

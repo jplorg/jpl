@@ -14,7 +14,7 @@ const setDigit = "0123456789"
 const setVarFirst = setAZ + "_$"
 const setVarRest = setVarFirst + setDigit
 const setVarAll = setVarRest
-const setWhitespace = " \xa0\r\n\t"
+const setWhitespace = " \r\n\t"
 const setHex = setDigit + "abcdefABCDEF"
 
 // Walk whitespace at i
@@ -56,6 +56,12 @@ func walkWhitespace(src string, i int, c *ParserContext) (n int, is bool, err jp
 
 				n += 1
 			}
+			is = true
+			continue
+		}
+
+		if iM, isM := match(src, n, c, matchOptions{Phrase: "\u00a0"}); isM {
+			n = iM
 			is = true
 			continue
 		}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -128,7 +129,7 @@ func handle(input string, rl *readline.Instance) {
 				fmt.Fprintf(rl, "%s: %s\n", name, err)
 				return
 			}
-			if json, err := json.MarshalIndent(program.Definition(), "", "  "); err != nil {
+			if json, err := marshalJSONIndent(program.Definition()); err != nil {
 				fmt.Fprintf(rl, "Error: %s\n", err)
 				return
 			} else {
@@ -178,7 +179,7 @@ func handle(input string, rl *readline.Instance) {
 		}
 		outputs := make([]string, len(inputs))
 		for i, output := range inputs {
-			json, err := json.MarshalIndent(output, "", "  ")
+			json, err := marshalJSONIndent(output)
 			if err != nil {
 				fmt.Fprintf(rl, "Error: %s\n", err)
 				return
@@ -249,4 +250,14 @@ func printHelp(rl *readline.Instance) {
 	}
 
 	fmt.Fprintln(rl, "\nPress Ctrl+C to abort current expression, Ctrl+D to exit the REPL")
+}
+
+// Marshal the specified value to JSON with indentation
+func marshalJSONIndent(value any) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+	err := encoder.Encode(value)
+	return bytes.TrimRight(buffer.Bytes(), "\n"), err
 }

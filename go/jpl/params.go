@@ -16,11 +16,11 @@ type JPLInstructionParams struct {
 	Operations     []JPLOperation
 	Pipe           JPLFunc
 	Pipes          []JPLFunc
-	// Selectors      []JPLSelector
-	Try    JPLFunc
-	Value  any
-	String string
-	Number float64
+	Selectors      []JPLSelector
+	Try            JPLFunc
+	Value          any
+	String         string
+	Number         float64
 }
 
 type JPLComparison struct {
@@ -30,6 +30,20 @@ type JPLComparison struct {
 
 type JPLComparisonParams struct {
 	By JPLFunc
+}
+
+type JPLSelector struct {
+	OP     definition.JPLOPA
+	Params JPLSelectorParams
+}
+
+type JPLSelectorParams struct {
+	Args     []JPLFunc
+	Bound    bool
+	From     JPLFunc
+	Optional bool
+	Pipe     JPLFunc
+	To       JPLFunc
 }
 
 type JPLOperation struct {

@@ -275,9 +275,9 @@ func CompareObjects(a, b any) (int, jpl.JPLError) {
 
 // Compare the specified normalized objects
 func compareObjects(a, b map[string]any) (int, jpl.JPLError) {
-	aKeys := mapKeys(a)
+	aKeys := GetMapKeys(a)
 	slices.SortFunc(aKeys, compareStrings)
-	bKeys := mapKeys(b)
+	bKeys := GetMapKeys(b)
 	slices.SortFunc(bKeys, compareStrings)
 	order, err := compareArrays(aKeys, bKeys)
 	if err != nil {

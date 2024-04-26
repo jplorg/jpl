@@ -1,6 +1,7 @@
 package library
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -60,7 +61,7 @@ func MarshalJPLType(t jpl.JPLType) ([]byte, jpl.JPLError) {
 	if err != nil {
 		return nil, err
 	}
-	if json, err := json.Marshal(v); err != nil {
+	if json, err := marshalJSON(v); err != nil {
 		return nil, AdaptError(err)
 	} else {
 		return json, nil
@@ -170,7 +171,7 @@ func Stringify(value any, unescapeString bool, escapeFunctions bool) (string, jp
 			return s, nil
 		}
 	}
-	if json, err := json.Marshal(rawValue); err != nil {
+	if json, err := marshalJSON(rawValue); err != nil {
 		return "", AdaptError(err)
 	} else {
 		return string(json), nil
@@ -430,3 +431,12 @@ var RawStripper = jpl.JPLStripperFunc(func(k *string, v any, iter jpl.IterFunc) 
 		return nil, false, NewFatalError(fmt.Sprintf("unexpected %T", v))
 	}
 })
+
+// Marshal the specified value to JSON
+func marshalJSON(value any) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(value)
+	return bytes.TrimRight(buffer.Bytes(), "\n"), err
+}

@@ -189,6 +189,7 @@ The following sequences are valid inside string literals:
 - If no value is specified for a field name, the value is taken from a variable with the same name. In this case, `?` can be appended to omit errors that occur if the variable does not exist.
 - Keys can also be specified with quotes, enabling more complex names, escape sequences and string interpolation.
 - When a key is surrounded by parentheses, an expression can be used. In this case, `?` can be appended to omit errors that occur when the result of the expression is not a string.
+- Objects are unordered.
 
 ## Array constructors
 

@@ -6,7 +6,7 @@ import "github.com/2manyvcos/jpl/go/jpl"
 // For each argument, `JPLPiper.Pipe` is called and the results are combined into a single array.
 type JPLPiperMuxer struct{ jpl.JPLPiper }
 
-func NewPiperMuxer(piper jpl.JPLPiper, scope jpl.JPLRuntimeScope) JPLPiperMuxer {
+func NewPiperMuxer(piper jpl.JPLPiper) JPLPiperMuxer {
 	return JPLPiperMuxer{JPLPiper: piper}
 }
 

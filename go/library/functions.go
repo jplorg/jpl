@@ -63,6 +63,6 @@ func NativeFunction(fn func(runtime jpl.JPLRuntime, input any, args ...any) ([]a
 			return nil, err
 		}
 
-		return MuxAll([][]any{results}, NewPiperMuxer(next, nil))
+		return MuxAll([][]any{results}, NewPiperMuxer(next))
 	})
 }
