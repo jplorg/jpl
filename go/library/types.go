@@ -228,6 +228,7 @@ func Template(tmpl any, replacements ...any) (string, jpl.JPLError) {
 		if len(replacements) > i {
 			value = replacements[i]
 		}
+		i += 1
 		var result string
 		switch verb {
 		case "s":

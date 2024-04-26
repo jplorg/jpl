@@ -23,7 +23,10 @@ export default {
               break;
 
             case 'string':
-              if (tb === 'string') return a.split(b);
+              if (tb === 'string') {
+                if (b === '') return [...a];
+                return a.split(b);
+              }
               break;
 
             default:

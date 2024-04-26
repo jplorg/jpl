@@ -31,9 +31,7 @@ func (opComparison) OP(runtime jpl.JPLRuntime, input any, params definition.JPLI
 		}))
 	}
 
-	return runtime.ExecuteInstructions(params.Pipe, []any{input}, scope, jpl.JPLScopedPiperFunc(func(output any, _ jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
-		return iter(0, output)
-	}))
+	return runtime.ExecuteInstructions(params.Pipe, []any{input}, scope, jpl.JPLScopedPiperFunc(func(output any, _ jpl.JPLRuntimeScope) ([]any, jpl.JPLError) { return iter(0, output) }))
 }
 
 // { pipe: function, comparisons: [opc] }

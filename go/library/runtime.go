@@ -317,7 +317,7 @@ func Merge(a, b any) (any, jpl.JPLError) {
 	if err != nil {
 		return nil, err
 	}
-	if ta != "object" || tb != "object" {
+	if ta != jpl.JPLT_OBJECT || tb != jpl.JPLT_OBJECT {
 		return b, nil
 	}
 

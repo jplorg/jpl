@@ -17,7 +17,7 @@ func (opNegation) OP(runtime jpl.JPLRuntime, input any, params definition.JPLIns
 		}
 		switch t {
 		case jpl.JPLT_NUMBER:
-			return -(value.(float64)), nil
+			return -value.(float64), nil
 
 		default:
 		}

@@ -13,9 +13,9 @@ type JPLInstructionParams struct {
 	Ifs            []JPLIfThen
 	Interpolations []JPLInterpolation
 	Name           string
-	// Operations     []JPLOperation
-	Pipe  JPLFunc
-	Pipes []JPLFunc
+	Operations     []JPLOperation
+	Pipe           JPLFunc
+	Pipes          []JPLFunc
 	// Selectors      []JPLSelector
 	Try    JPLFunc
 	Value  any
@@ -29,6 +29,15 @@ type JPLComparison struct {
 }
 
 type JPLComparisonParams struct {
+	By JPLFunc
+}
+
+type JPLOperation struct {
+	OP     definition.JPLOPM
+	Params JPLOperationParams
+}
+
+type JPLOperationParams struct {
 	By JPLFunc
 }
 
