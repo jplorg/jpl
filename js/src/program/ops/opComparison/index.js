@@ -27,7 +27,7 @@ export default {
       if (from >= params.comparisons.length) return next(value, scope);
 
       const { op, params: opParams } = params.comparisons[from];
-      const operator = ops[op];
+      const operator = opcs[op];
       if (!operator) throw new JPLFatalError(`invalid OPC '${op}'`);
 
       return operator.op(runtime, input, value, opParams, scope, (output) =>
@@ -43,7 +43,7 @@ export default {
     return {
       pipe: call(params.pipe),
       comparisons: runtime.muxOne([params.comparisons], ({ op, params: opParams }) => {
-        const operator = ops[op];
+        const operator = opcs[op];
         if (!operator) throw new JPLFatalError(`invalid OPC '${op}'`);
 
         return {
@@ -55,7 +55,7 @@ export default {
   },
 };
 
-const ops = {
+const opcs = {
   [OPC_EQUAL]: opcEqual,
   [OPC_GREATER]: opcGreater,
   [OPC_GREATEREQUAL]: opcGreaterEqual,

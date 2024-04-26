@@ -83,7 +83,7 @@ func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any
 		instruction := instructions[from]
 		operator := r.Program().OPs()[instruction.OP]
 		if operator == nil {
-			return nil, library.NewFatalError("invalid op '" + string(instruction.OP) + "'")
+			return nil, library.NewFatalError("invalid OP '" + string(instruction.OP) + "'")
 		}
 
 		return operator.OP(r, input, instruction.Params, currentScope, jpl.JPLScopedPiperFunc(func(output any, nextScope jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
@@ -99,7 +99,7 @@ func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any
 func (r *runtime) OP(op definition.JPLOP, params jpl.JPLInstructionParams, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
 	operator := r.Program().OPs()[op]
 	if operator == nil {
-		return nil, library.NewFatalError("invalid op '" + string(op) + "'")
+		return nil, library.NewFatalError("invalid OP '" + string(op) + "'")
 	}
 
 	opParams, err := operator.Map(r, params)

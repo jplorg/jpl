@@ -1,11 +1,11 @@
-package ops
+package program
 
 import (
 	"github.com/2manyvcos/jpl/go/definition"
 	"github.com/2manyvcos/jpl/go/jpl"
 )
 
-var OPs = map[definition.JPLOP]jpl.JPLOPHandler{
+var ops = map[definition.JPLOP]jpl.JPLOPHandler{
 	definition.OP_ACCESS:              opAccess{},
 	definition.OP_AND:                 opAnd{},
 	definition.OP_ARRAY_CONSTRUCTOR:   opArrayConstructor{},

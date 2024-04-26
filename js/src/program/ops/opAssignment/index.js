@@ -13,9 +13,9 @@ import {
   OPU_UPDATE,
 } from '../../../library';
 import { call } from '../utils';
-import opaField from './opaField';
-import opaIter from './opaIter';
-import opaSlice from './opaSlice';
+import opaSelectField from './opaSelectField';
+import opaSelectIter from './opaSelectIter';
+import opaSelectSlice from './opaSelectSlice';
 import opuAddition from './opuAddition';
 import opuDivision from './opuDivision';
 import opuMultiplication from './opuMultiplication';
@@ -36,14 +36,14 @@ export default {
 
       if (from >= params.selectors.length) {
         const { op, params: opParams } = params.assignment;
-        const operator = opsAssignment[op];
+        const operator = opus[op];
         if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
 
         return operator.op(runtime, input, value, opParams, scope, (output) => [output]);
       }
 
       const { op, params: opParams } = params.selectors[from];
-      const operator = opsAccess[op];
+      const operator = opasSelect[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
       return operator.op(runtime, input, value, opParams, scope, (output) =>
@@ -63,7 +63,7 @@ export default {
     return {
       pipe: call(params.pipe),
       selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
-        const operator = opsAccess[op];
+        const operator = opasSelect[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
         return {
@@ -72,7 +72,7 @@ export default {
         };
       }),
       assignment: (({ op, params: opParams }) => {
-        const operator = opsAssignment[op];
+        const operator = opus[op];
         if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
 
         return {
@@ -84,13 +84,13 @@ export default {
   },
 };
 
-const opsAccess = {
-  [OPA_FIELD]: opaField,
-  [OPA_ITER]: opaIter,
-  [OPA_SLICE]: opaSlice,
+const opasSelect = {
+  [OPA_FIELD]: opaSelectField,
+  [OPA_ITER]: opaSelectIter,
+  [OPA_SLICE]: opaSelectSlice,
 };
 
-const opsAssignment = {
+const opus = {
   [OPU_ADDITION]: opuAddition,
   [OPU_DIVISION]: opuDivision,
   [OPU_MULTIPLICATION]: opuMultiplication,

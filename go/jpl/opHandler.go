@@ -7,3 +7,9 @@ type JPLOPHandler interface {
 
 	Map(runtime JPLRuntime, params JPLInstructionParams) (definition.JPLInstructionParams, JPLError)
 }
+
+type JPLOPSubHandler[DefinitionParams any, JPLParams any] interface {
+	OP(runtime JPLRuntime, input any, target any, params DefinitionParams, scope JPLRuntimeScope, next JPLPiper) ([]any, JPLError)
+
+	Map(runtime JPLRuntime, params JPLParams) (DefinitionParams, JPLError)
+}

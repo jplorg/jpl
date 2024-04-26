@@ -1,4 +1,4 @@
-package ops
+package program
 
 import (
 	"github.com/2manyvcos/jpl/go/definition"

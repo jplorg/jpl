@@ -25,7 +25,7 @@ export default {
       if (from >= params.operations.length) return next(value, scope);
 
       const { op, params: opParams } = params.operations[from];
-      const operator = ops[op];
+      const operator = opms[op];
       if (!operator) throw new JPLFatalError(`invalid OPM '${op}'`);
 
       return operator.op(runtime, input, value, opParams, scope, (output) =>
@@ -41,7 +41,7 @@ export default {
     return {
       pipe: call(params.pipe),
       operations: runtime.muxOne([params.operations], ({ op, params: opParams }) => {
-        const operator = ops[op];
+        const operator = opms[op];
         if (!operator) throw new JPLFatalError(`invalid OPM '${op}'`);
 
         return {
@@ -53,7 +53,7 @@ export default {
   },
 };
 
-const ops = {
+const opms = {
   [OPM_ADDITION]: opmAddition,
   [OPM_DIVISION]: opmDivision,
   [OPM_MULTIPLICATION]: opmMultiplication,

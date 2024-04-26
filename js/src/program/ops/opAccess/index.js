@@ -17,7 +17,7 @@ export default {
       if (from >= params.selectors.length) return next(value, scope);
 
       const { op, params: opParams } = params.selectors[from];
-      const operator = ops[op];
+      const operator = opas[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);
 
       return operator.op(runtime, input, value, opParams, scope, (output) =>
@@ -33,7 +33,7 @@ export default {
     return {
       pipe: call(params.pipe),
       selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
-        const operator = ops[op];
+        const operator = opas[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);
 
         return {
@@ -45,7 +45,7 @@ export default {
   },
 };
 
-const ops = {
+const opas = {
   [OPA_FIELD]: opaField,
   [OPA_FUNCTION]: opaFunction,
   [OPA_ITER]: opaIter,

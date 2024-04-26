@@ -82,7 +82,7 @@ class JPLRuntime {
 
       const { op, params } = instructions[from];
       const operator = this.program.ops[op];
-      if (!operator) throw new JPLFatalError(`invalid op '${op}'`);
+      if (!operator) throw new JPLFatalError(`invalid OP '${op}'`);
 
       return operator.op(this, input, params, currentScope, (output, nextScope) =>
         iter(from + 1, output, nextScope),
@@ -95,7 +95,7 @@ class JPLRuntime {
   /** Execute the specified OP */
   op(op, params, inputs, scope, next = (output) => [output]) {
     const operator = this.program.ops[op];
-    if (!operator) throw new JPLFatalError(`invalid op '${op}'`);
+    if (!operator) throw new JPLFatalError(`invalid OP '${op}'`);
 
     const opParams = operator.map(this, params);
     return this.muxAll([inputs], (input) => operator.op(this, input, opParams, scope, next));
