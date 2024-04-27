@@ -1,5 +1,5 @@
-import { OP_CONSTANT, OP_NULL_COALESCENCE } from '../../../library';
-import { call } from '../utils';
+import { OP_NULL_COALESCENCE } from '../../../library';
+import { call, constant } from '../utils';
 
 export default {
   /** { pipe: [op] } */
@@ -8,7 +8,7 @@ export default {
       [
         {
           op: OP_NULL_COALESCENCE,
-          params: { pipes: [[{ op: OP_CONSTANT, params: { value: target } }], params.pipe] },
+          params: { pipes: [constant(target), params.pipe] },
         },
       ],
       [input],

@@ -3,9 +3,9 @@ package jpl
 import "github.com/2manyvcos/jpl/go/definition"
 
 type JPLInstructionParams struct {
-	After    string
-	ArgNames []string
-	// Assignment     *JPLAssignment
+	After          string
+	ArgNames       []string
+	Assignment     *JPLAssignment
 	Catch          JPLFunc
 	Comparisons    []JPLComparison
 	Else           JPLFunc
@@ -58,6 +58,15 @@ type JPLOperationParams struct {
 type JPLIfThen struct {
 	If   JPLFunc
 	Then JPLFunc
+}
+
+type JPLAssignment struct {
+	OP     definition.JPLOPU
+	Params JPLAssignmentParams
+}
+
+type JPLAssignmentParams struct {
+	Pipe JPLFunc
 }
 
 type JPLField struct {

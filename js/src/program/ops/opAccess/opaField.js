@@ -12,7 +12,8 @@ export default {
       const tf = runtime.type(field);
       switch (tv) {
         case 'null':
-          return next(null);
+          if (['string', 'number'].includes(tf)) return next(null);
+          break;
 
         case 'object':
           if (tf === 'string') return next(value[field] ?? null);

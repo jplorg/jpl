@@ -30,7 +30,9 @@ func (opaField) OP(runtime jpl.JPLRuntime, input any, target any, params definit
 		}
 		switch tv {
 		case jpl.JPLT_NULL:
-			return next.Pipe(nil)
+			if tf == jpl.JPLT_STRING || tf == jpl.JPLT_NUMBER {
+				return next.Pipe(nil)
+			}
 
 		case jpl.JPLT_OBJECT:
 			if tf == jpl.JPLT_STRING {
@@ -42,11 +44,12 @@ func (opaField) OP(runtime jpl.JPLRuntime, input any, target any, params definit
 				i := int(field.(float64))
 				v := value.([]any)
 				l := len(v)
+				vi := i
 				if i < 0 {
-					i = l + i
+					vi = l + i
 				}
-				if i >= 0 && i < l {
-					return next.Pipe(v[i])
+				if vi >= 0 && vi < l {
+					return next.Pipe(v[vi])
 				} else {
 					return next.Pipe(nil)
 				}
@@ -57,11 +60,12 @@ func (opaField) OP(runtime jpl.JPLRuntime, input any, target any, params definit
 				i := int(field.(float64))
 				chars := []rune(value.(string))
 				l := len(chars)
+				vi := i
 				if i < 0 {
-					i = l + i
+					vi = l + i
 				}
-				if i >= 0 && i < l {
-					return next.Pipe(string(chars[i]))
+				if vi >= 0 && vi < l {
+					return next.Pipe(string(chars[vi]))
 				} else {
 					return next.Pipe(nil)
 				}

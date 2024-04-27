@@ -61,13 +61,11 @@ func (r *runtime) Execute(inputs []any) ([]any, jpl.JPLError) {
 	)
 }
 
-var nexter = jpl.JPLScopedPiperFunc(func(input any, scope jpl.JPLRuntimeScope) (outputs []any, err jpl.JPLError) {
-	return []any{input}, nil
-})
-
 func (r *runtime) ExecuteInstructions(instructions definition.Pipe, inputs []any, scope jpl.JPLRuntimeScope, next jpl.JPLScopedPiper) ([]any, jpl.JPLError) {
 	if next == nil {
-		next = nexter
+		next = jpl.JPLScopedPiperFunc(func(output any, _ jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
+			return []any{output}, nil
+		})
 	}
 
 	var iter func(from int, input any, currentScope jpl.JPLRuntimeScope) ([]any, jpl.JPLError)

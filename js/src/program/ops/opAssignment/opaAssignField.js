@@ -1,4 +1,4 @@
-import { JPLTypeError, applyArray } from '../../../library';
+import { JPLTypeError, applyArray, applyObject } from '../../../library';
 import { call } from '../utils';
 
 export default {
@@ -20,11 +20,7 @@ export default {
 
       default:
         if (params.optional) return [undefined];
-        throw new JPLTypeError(
-          'cannot access fields of %s (%*<100v) (assignment)',
-          tt,
-          runtime.unwrapValue(vt),
-        );
+        throw new JPLTypeError('cannot access fields of %s (%*<100v) (assignment)', tt, vt);
     }
 
     const fields = await runtime.executeInstructions(params.pipe, [input], scope, (output) => [
@@ -69,8 +65,8 @@ export default {
           if (tf === 'string') {
             const item = source[field];
             return runtime.muxAll([await next(item ?? null)], (output) => {
-              if (output === undefined || item === output) return iter(from + 1, source);
-              return iter(from + 1, { ...source, [field]: output });
+              if (output === undefined) return iter(from + 1, source);
+              return iter(from + 1, applyObject(source, [[field, output]]));
             });
           }
           break;
@@ -80,7 +76,7 @@ export default {
             const i = Math.trunc(field);
             const item = source[i >= 0 ? i : source.length + i];
             return runtime.muxAll([await next(item ?? null)], (output) => {
-              if (output === undefined || item === output) return iter(from + 1, source);
+              if (output === undefined) return iter(from + 1, source);
               return iter(from + 1, applyArray(source, [[i, output]]));
             });
           }
@@ -91,7 +87,7 @@ export default {
             const i = Math.trunc(field);
             const item = source[i >= 0 ? i : source.length + i];
             return runtime.muxAll([await next(item ?? null)], (output) => {
-              if (output === undefined || item === output) return iter(from + 1, source);
+              if (output === undefined) return iter(from + 1, source);
               const r = runtime.unwrapValue(output);
               const tr = runtime.type(r);
               switch (tr) {

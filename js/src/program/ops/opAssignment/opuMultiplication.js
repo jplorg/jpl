@@ -1,5 +1,5 @@
-import { OPM_MULTIPLICATION, OP_CALCULATION, OP_CONSTANT } from '../../../library';
-import { call } from '../utils';
+import { OPM_MULTIPLICATION, OP_CALCULATION } from '../../../library';
+import { call, constant } from '../utils';
 
 export default {
   /** { pipe: [op] } */
@@ -9,7 +9,7 @@ export default {
         {
           op: OP_CALCULATION,
           params: {
-            pipe: [{ op: OP_CONSTANT, params: { value: target } }],
+            pipe: constant(target),
             operations: [{ op: OPM_MULTIPLICATION, params: { by: params.pipe } }],
           },
         },

@@ -13,9 +13,9 @@ import {
   OPU_UPDATE,
 } from '../../../library';
 import { call } from '../utils';
-import opaSelectField from './opaSelectField';
-import opaSelectIter from './opaSelectIter';
-import opaSelectSlice from './opaSelectSlice';
+import opaAssignField from './opaAssignField';
+import opaAssignIter from './opaAssignIter';
+import opaAssignSlice from './opaAssignSlice';
 import opuAddition from './opuAddition';
 import opuDivision from './opuDivision';
 import opuMultiplication from './opuMultiplication';
@@ -43,7 +43,7 @@ export default {
       }
 
       const { op, params: opParams } = params.selectors[from];
-      const operator = opasSelect[op];
+      const operator = opasAssign[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
       return operator.op(runtime, input, value, opParams, scope, (output) =>
@@ -63,7 +63,7 @@ export default {
     return {
       pipe: call(params.pipe),
       selectors: runtime.muxOne([params.selectors], ({ op, params: opParams }) => {
-        const operator = opasSelect[op];
+        const operator = opasAssign[op];
         if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
         return {
@@ -84,10 +84,10 @@ export default {
   },
 };
 
-const opasSelect = {
-  [OPA_FIELD]: opaSelectField,
-  [OPA_ITER]: opaSelectIter,
-  [OPA_SLICE]: opaSelectSlice,
+const opasAssign = {
+  [OPA_FIELD]: opaAssignField,
+  [OPA_ITER]: opaAssignIter,
+  [OPA_SLICE]: opaAssignSlice,
 };
 
 const opus = {
