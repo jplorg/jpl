@@ -5,6 +5,21 @@ type iteratorIndex[Value any] struct {
 	values       []Value
 }
 
+// Merge the specified maps into a single one
+func MergeMaps[Key comparable, Value any](sources ...map[Key]Value) (result map[Key]Value) {
+	var l int
+	for _, source := range sources {
+		l += len(source)
+	}
+	result = make(map[Key]Value, l)
+	for _, source := range sources {
+		for key, value := range source {
+			result[key] = value
+		}
+	}
+	return result
+}
+
 // Copy the specified map
 func CopyMap[Key comparable, Value any](source map[Key]Value) (result map[Key]Value) {
 	result = make(map[Key]Value, len(source))

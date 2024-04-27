@@ -19,6 +19,20 @@ func ObjectEntries[Value any](source map[string]Value) []*ObjectEntry[Value] {
 	return result
 }
 
+func FilteredObjectEntries[Value any](source map[string]Value, ignoredKeys ...string) []*ObjectEntry[Value] {
+	ignored := make(map[string]bool, len(ignoredKeys))
+	for _, key := range ignoredKeys {
+		ignored[key] = true
+	}
+	result := make([]*ObjectEntry[Value], 0, len(source))
+	for key, value := range source {
+		if !ignored[key] {
+			result = append(result, &ObjectEntry[Value]{key, value, false})
+		}
+	}
+	return result
+}
+
 func ObjectFromEntries[Value any](entries []*ObjectEntry[Value]) map[string]Value {
 	result := make(map[string]Value, len(entries))
 	for _, entry := range entries {

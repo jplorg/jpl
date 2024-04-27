@@ -128,14 +128,11 @@ func map(f): ([.[] | f()])
 
 func getBuiltins() map[string]any {
 	result := library.CopyMap(native)
-	runtimeVars := library.CopyMap(native)
-	runtimeVars["internals"] = internals
 	program, err := interpreter.SystemInterpreter.Parse(builtins, &jpl.JPLInterpreterConfig{
 		Runtime: jpl.JPLRuntimeOptions{
-			Vars: runtimeVars,
+			Vars: library.MergeMaps(map[string]any{"internals": internals}, native),
 			AdjustResult: jpl.JPLScopedPiperFunc(func(_ any, scope jpl.JPLRuntimeScope) ([]any, jpl.JPLError) {
-				vars := library.CopyMap(scope.Vars())
-				result = library.ApplyObject(result, library.ObjectEntries(vars))
+				result = library.ApplyObject(result, library.FilteredObjectEntries(scope.Vars(), "internals"))
 				return nil, nil
 			}),
 		},
