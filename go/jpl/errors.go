@@ -4,6 +4,7 @@ package jpl
 type JPLError interface {
 	error
 	JPLErrorName() string
+	JPLErrorMessage() string
 }
 
 // JPL error type for wrapping errors that should be handled elsewhere

@@ -23,6 +23,12 @@ func ApplyRuntimeDefaults(options JPLRuntimeOptions, defaults JPLRuntimeOptions)
 		result.Vars[k] = v
 	}
 
+	if options.AdjustResult != nil {
+		result.AdjustResult = options.AdjustResult
+	} else {
+		result.AdjustResult = defaults.AdjustResult
+	}
+
 	return
 }
 

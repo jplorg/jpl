@@ -12,7 +12,7 @@ var Options = &jpl.JPLInterpreterConfig{
 	Program: jpl.JPLProgramOptions{},
 
 	Runtime: jpl.JPLRuntimeOptions{
-		Vars: builtins.GetBuiltins(),
+		Vars: builtins.Builtins,
 	},
 }
 

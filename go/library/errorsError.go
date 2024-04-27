@@ -3,10 +3,6 @@ package library
 import "github.com/2manyvcos/jpl/go/jpl"
 
 func NewError(message string, name string) jpl.JPLError {
-	if name == "" {
-		name = "JPLError"
-	}
-
 	return jplError{message: message, name: name}
 }
 
@@ -16,9 +12,16 @@ type jplError struct {
 }
 
 func (e jplError) Error() string {
-	return e.message
+	return e.JPLErrorName() + ": " + e.JPLErrorMessage()
 }
 
 func (e jplError) JPLErrorName() string {
+	if e.name == "" {
+		return "JPLError"
+	}
 	return e.name
+}
+
+func (e jplError) JPLErrorMessage() string {
+	return e.message
 }

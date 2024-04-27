@@ -9,11 +9,15 @@ func NewFatalError(message string) jpl.JPLFatalError {
 type fatalError string
 
 func (e fatalError) Error() string {
-	return string(e)
+	return e.JPLErrorName() + ": " + e.JPLErrorMessage()
 }
 
 func (fatalError) JPLErrorName() string {
 	return "JPLFatalError"
+}
+
+func (e fatalError) JPLErrorMessage() string {
+	return string(e)
 }
 
 func (fatalError) IsJPLFatalError() {}

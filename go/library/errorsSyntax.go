@@ -9,11 +9,15 @@ func NewSyntaxError(message string) jpl.JPLSyntaxError {
 type syntaxError string
 
 func (e syntaxError) Error() string {
-	return string(e)
+	return e.JPLErrorName() + ": " + e.JPLErrorMessage()
 }
 
 func (syntaxError) JPLErrorName() string {
 	return "JPLSyntaxError"
+}
+
+func (e syntaxError) JPLErrorMessage() string {
+	return string(e)
 }
 
 func (syntaxError) IsJPLSyntaxError() {}

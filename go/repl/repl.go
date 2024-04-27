@@ -119,14 +119,7 @@ func handle(input string, rl *readline.Instance) {
 		case 'i':
 			program, err := gojpl.Parse(line, nil)
 			if err != nil {
-				name := "Error"
-				if syntaxErr, ok := err.(jpl.JPLSyntaxError); ok {
-					name = syntaxErr.JPLErrorName()
-					if name == "" {
-						name = "JPLError"
-					}
-				}
-				fmt.Fprintf(rl, "%s: %s\n", name, err)
+				printError(rl, err)
 				return
 			}
 			if json, err := marshalJSONIndent(program.Definition()); err != nil {
@@ -147,14 +140,7 @@ func handle(input string, rl *readline.Instance) {
 	} else {
 		program, err := gojpl.Parse(line, nil)
 		if err != nil {
-			name := "Error"
-			if syntaxErr, ok := err.(jpl.JPLSyntaxError); ok {
-				name = syntaxErr.JPLErrorName()
-				if name == "" {
-					name = "JPLError"
-				}
-			}
-			fmt.Fprintf(rl, "%s: %s\n", name, err)
+			printError(rl, err)
 			return
 		}
 		var before, diff int64
@@ -163,14 +149,7 @@ func handle(input string, rl *readline.Instance) {
 		}
 		nextInputs, err := program.Run(inputs, nil)
 		if err != nil {
-			name := "Error"
-			if executionErr, ok := err.(jpl.JPLExecutionError); ok {
-				name = executionErr.JPLErrorName()
-				if name == "" {
-					name = "JPLError"
-				}
-			}
-			fmt.Fprintf(rl, "%s: %s\n", name, err)
+			printError(rl, err)
 			return
 		}
 		inputs = nextInputs
@@ -260,4 +239,17 @@ func marshalJSONIndent(value any) ([]byte, error) {
 	encoder.SetIndent("", "  ")
 	err := encoder.Encode(value)
 	return bytes.TrimRight(buffer.Bytes(), "\n"), err
+}
+
+// Print an error to the console
+func printError(rl *readline.Instance, err error) {
+	if err, ok := err.(jpl.JPLError); ok {
+		name := err.JPLErrorName()
+		if name == "" {
+			name = "JPLError"
+		}
+		fmt.Fprintf(rl, "%s: %s\n", name, err.JPLErrorMessage())
+	} else {
+		fmt.Fprintf(rl, "Error: %s\n", err)
+	}
 }
