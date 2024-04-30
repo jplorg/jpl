@@ -1,13 +1,13 @@
 export default {
-  /** { value: string } */
+  /** { number: number } */
   op(runtime, input, params, scope, next) {
-    return next(+params.value, scope);
+    return next(params.number ?? 0, scope);
   },
 
-  /** { value: number } */
+  /** { number: number } */
   map(runtime, params) {
     return {
-      value: runtime.assertType(params.value, 'number').toString(),
+      number: runtime.assertType(params.number, 'number'),
     };
   },
 };

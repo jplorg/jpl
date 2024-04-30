@@ -7,12 +7,13 @@ export default {
     const value = runtime.unwrapValue(target);
     const tv = runtime.type(value);
 
-    return runtime.executeInstructions(params.pipe, [input], scope, (output) => {
+    return runtime.executeInstructions(params.pipe ?? [], [input], scope, (output) => {
       const field = runtime.unwrapValue(output);
       const tf = runtime.type(field);
       switch (tv) {
         case 'null':
-          return next(null);
+          if (['string', 'number'].includes(tf)) return next(null);
+          break;
 
         case 'object':
           if (tf === 'string') return next(value[field] ?? null);
@@ -47,10 +48,10 @@ export default {
     });
   },
 
-  /** { value: function, optional: boolean } */
+  /** { pipe: function, optional: boolean } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
       optional: runtime.assertType(params.optional, 'boolean'),
     };
   },

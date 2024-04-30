@@ -1,6 +1,6 @@
 # Snippets for performance testing
 
-```plain
+```jpl
 # 📍 Iter / assignment performance tests
 
 #/*
@@ -23,20 +23,5 @@ a = [range(0, 400)]
 
 # | [][a[]] = 1
 # | a | reduce(func(s): s+., 0)
-*/
-
-
-# 📍 Date tests
-
-/*
-[ '1982-W\(range(1, 53) | toString() | if length() == 1 then '0' + . else . end)-\(range(1, 8))']
-| map(
-    func():
-      '\(.) - \(date.parseISO())'
-  )
-| groupBy(
-    func():
-      .[6:8]
-  )
 */
 ```

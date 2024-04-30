@@ -2,14 +2,11 @@ import { JPLTypeError } from '../library';
 
 function unwrapNumber(runtime, v) {
   const t = runtime.type(v);
+  const u = runtime.unwrapValue(v);
   if (t !== 'number') {
-    throw new JPLTypeError(
-      '%s (%*<100v) cannot be used for mathematical operations',
-      t,
-      runtime.unwrapValue(v),
-    );
+    throw new JPLTypeError('%s (%*<100v) cannot be used for mathematical operations', t, u);
   }
-  return runtime.unwrapValue(v);
+  return u;
 }
 
 function funcMath(alter) {

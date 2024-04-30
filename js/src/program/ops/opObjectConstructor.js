@@ -4,10 +4,10 @@ import { call } from './utils';
 export default {
   /** { fields: [{ key: [op], value: [op], optional: boolean }] } */
   async op(runtime, input, params, scope, next) {
-    const fields = await runtime.muxAsync([params.fields], async (field) => {
+    const fields = await runtime.muxAsync([params.fields ?? []], async (field) => {
       const [keys, values] = await Promise.all([
-        runtime.executeInstructions(field.key, [input], scope),
-        runtime.executeInstructions(field.value, [input], scope),
+        runtime.executeInstructions(field.key ?? [], [input], scope),
+        runtime.executeInstructions(field.value ?? [], [input], scope),
       ]);
 
       return runtime.muxAll([runtime.unwrapValues(keys), values], (key, value) => {

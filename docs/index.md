@@ -7,9 +7,10 @@ JPL is a programming language for complex JSON processing with a focus on integr
 - [Getting started](getting-started.md)
 - [Specification](spec.md)
 - [Builtin functions](builtins.md)
-  - [Date and time](builtins-date.md)
+- [Libraries](libraries.md)
 - [Operator priority](order.md)
 
 ## Implementations
 
+- [Golang](../go/README.md)
 - [JavaScript](../js/README.md)

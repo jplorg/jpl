@@ -4,7 +4,7 @@ import { call } from '../utils';
 export default {
   /** { by: [op] } */
   op(runtime, input, target, params, scope, next) {
-    return runtime.executeInstructions(params.by, [input], scope, async (by) =>
+    return runtime.executeInstructions(params.by ?? [], [input], scope, async (by) =>
       next(
         await runtime.alterValue(target, (a) => {
           const b = runtime.unwrapValue(by);
@@ -23,7 +23,10 @@ export default {
               break;
 
             case 'string':
-              if (tb === 'string') return a.split(b);
+              if (tb === 'string') {
+                if (b === '') return [...a];
+                return a.split(b);
+              }
               break;
 
             default:

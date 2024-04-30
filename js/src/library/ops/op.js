@@ -1,40 +1,40 @@
 /**
- * { value: function, operations: [opa] }
+ * { pipe: function, selectors: [opa] }
  *
- * { pipe: [op], operations: [opa] }
+ * { pipe: [op], selectors: [opa] }
  */
 export const OP_ACCESS = '$.';
 
 /**
- * { conditions: [function] }
+ * { pipes: [function] }
  *
  * { pipes: [[op]] }
  */
 export const OP_AND = 'and';
 
 /**
- * { value: function }
+ * { pipe: function }
  *
  * { pipe: [op] }
  */
 export const OP_ARRAY_CONSTRUCTOR = '[]';
 
 /**
- * { value: function, operations: [opa], assignment: opu }
+ * { pipe: function, selectors: [opa], assignment: opu }
  *
- * { pipe: [op], operations: [opa], assignment: [opu] }
+ * { pipe: [op], selectors: [opa], assignment: [opu] }
  */
 export const OP_ASSIGNMENT = '$=';
 
 /**
- * { value: function, operations: [opm] }
+ * { pipe: function, operations: [opm] }
  *
  * { pipe: [op], operations: [opm] }
  */
 export const OP_CALCULATION = 'clc';
 
 /**
- * { value: function, comparisons: [opc] }
+ * { pipe: function, comparisons: [opc] }
  *
  * { pipe: [op], comparisons: [opc] }
  */
@@ -69,7 +69,7 @@ export const OP_CONSTANT_NULL = 'nul';
 export const OP_CONSTANT_TRUE = 'tru';
 
 /**
- * { argNames: [string], value: [op] }
+ * { argNames: [string], pipe: function }
  *
  * { argNames: [string], pipe: [op] }
  */
@@ -83,7 +83,7 @@ export const OP_FUNCTION_DEFINITION = 'fun';
 export const OP_IF = 'if';
 
 /**
- * { interpolations: [{ before: string, value: function }], after: string }
+ * { interpolations: [{ before: string, pipe: function }], after: string }
  *
  * { interpolations: [{ before: string, pipe: [op] }], after: string }
  */
@@ -104,16 +104,16 @@ export const OP_NEGATION = 'neg';
 export const OP_NOT = 'not';
 
 /**
- * { values: [function] }
+ * { pipes: [function] }
  *
  * { pipes: [[op]] }
  */
 export const OP_NULL_COALESCENCE = '??';
 
 /**
- * { value: number }
+ * { number: number }
  *
- * { value: string }
+ * { number: number }
  */
 export const OP_NUMBER = 'nbr';
 
@@ -125,23 +125,23 @@ export const OP_NUMBER = 'nbr';
 export const OP_OBJECT_CONSTRUCTOR = '{}';
 
 /**
- * { conditions: [function] }
+ * { pipes: [function] }
  *
  * { pipes: [[op]] }
  */
 export const OP_OR = 'or';
 
 /**
- * { values: [function] }
+ * { pipes: [function] }
  *
  * { pipes: [[op]] }
  */
 export const OP_OUTPUT_CONCAT = ',';
 
 /**
- * { value: string }
+ * { string: string }
  *
- * { value: string }
+ * { string: string }
  */
 export const OP_STRING = '""';
 
@@ -160,7 +160,7 @@ export const OP_TRY = 'try';
 export const OP_VARIABLE = 'var';
 
 /**
- * { name: string, value: function }
+ * { name: string, pipe: function }
  *
  * { name: string, pipe: [op] }
  */

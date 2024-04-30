@@ -1,9 +1,11 @@
 # [JPL - JSON Processing Language](index.md) - Builtin functions
 
+JPL comes with a number of builtins out of the box, which are described in detail in this document.
+
 ## `map(f)`
 
 Maps the input to an array by calling `f` for each field.
-`map(f)` is equivalent to `[.[] | f()]`. In fact, this is how it's defined.
+`map(f)` is equivalent to `[.[] | f()]`. In fact, this is how it is defined.
 
 Example: `[1, 2, 3] | map(func(): .+1)` -> `[2, 3, 4]`
 
@@ -280,6 +282,10 @@ Example: `[1, 2, 3] | map(void)` -> `[]`
 
 Returns `true` if the provided input is neither `null`, a function, nor an empty array, object or string, `false` otherwise.
 
+## `now()`
+
+Returns the number of milliseconds elapsed since midnight, January 1, 1970 Universal Coordinated Time (UTC).
+
 ## Type selectors
 
 The following type selectors return only those inputs that match specific types.
@@ -396,7 +402,3 @@ Example: `1.5, -1.5 | trunc()` -> `1, -1`
 Returns the absolute value of the numeric input (the value without regard to whether it is positive or negative).
 
 Example: `-1 | abs()` -> `1`
-
-## Date and time
-
-See [Date and time](builtins-date.md)

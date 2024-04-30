@@ -9,11 +9,11 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.pipes.length) return next(false, scope);
+      if (from >= (params.pipes?.length ?? 0)) return next(false, scope);
 
       const pipe = params.pipes[from];
 
-      return runtime.executeInstructions(pipe, [input], scope, (output) => {
+      return runtime.executeInstructions(pipe ?? [], [input], scope, (output) => {
         if (runtime.truthy(output)) return next(true, scope);
 
         return iter(from + 1);
@@ -23,10 +23,10 @@ export default {
     return iter(0);
   },
 
-  /** { conditions: [function] } */
+  /** { pipes: [function] } */
   map(runtime, params) {
     return {
-      pipes: runtime.muxOne([params.conditions], (condition) => call(condition)),
+      pipes: runtime.muxOne([params.pipes], (pipe) => call(pipe)),
     };
   },
 };

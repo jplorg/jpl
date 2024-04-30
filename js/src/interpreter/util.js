@@ -194,7 +194,7 @@ export function whereIs(src, i) {
 }
 
 /** Get a descriptive text highlighting i */
-export function highlightLocation(src, i, { area = 25 } = {}) {
+export function highlightLocation(src, i, c, { area = 25 } = {}) {
   const s = Math.max(Math.min(i, src.length - 1 - area), area) - area;
   const e = Math.min(s + area + 1 + area, src.length);
   const view = src
@@ -221,6 +221,15 @@ export function errorUnexpectedToken(src, i, c, { operator, message } = {}) {
     const { line, column } = whereIs(src, i, c);
     errorMessage = `unexpected token '${src[i]}' at line ${line + 1}, column ${column + 1}`;
   }
+  if (operator) errorMessage += ` while parsing ${operator}`;
+  if (message) errorMessage += `: ${message}`;
+  errorMessage += `\n${highlightLocation(src, i, c).value}`;
+  throw new JPLSyntaxError(errorMessage);
+}
+
+/** Throw an error caused by a generic parser error at i */
+export function errorGeneric(src, i, c, { operator, message } = {}) {
+  let errorMessage = 'error';
   if (operator) errorMessage += ` while parsing ${operator}`;
   if (message) errorMessage += `: ${message}`;
   errorMessage += `\n${highlightLocation(src, i, c).value}`;

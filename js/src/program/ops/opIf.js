@@ -9,17 +9,17 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.ifs.length) {
-        return runtime.executeInstructions(params.else, [input], scope, (output) =>
+      if (from >= (params.ifs?.length ?? 0)) {
+        return runtime.executeInstructions(params.else ?? [], [input], scope, (output) =>
           next(output, scope),
         );
       }
 
       const condition = params.ifs[from];
 
-      return runtime.executeInstructions(condition.if, [input], scope, (result) => {
+      return runtime.executeInstructions(condition.if ?? [], [input], scope, (result) => {
         if (runtime.truthy(result)) {
-          return runtime.executeInstructions(condition.then, [input], scope, (output) =>
+          return runtime.executeInstructions(condition.then ?? [], [input], scope, (output) =>
             next(output, scope),
           );
         }

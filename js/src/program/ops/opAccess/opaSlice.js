@@ -8,8 +8,8 @@ export default {
     const tv = runtime.type(value);
 
     const [froms, tos] = await Promise.all([
-      runtime.executeInstructions(params.from, [input], scope),
-      runtime.executeInstructions(params.to, [input], scope),
+      runtime.executeInstructions(params.from ?? [], [input], scope),
+      runtime.executeInstructions(params.to ?? [], [input], scope),
     ]);
 
     return runtime.muxAll([runtime.unwrapValues(froms), runtime.unwrapValues(tos)], (from, to) => {

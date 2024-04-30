@@ -28,8 +28,7 @@ function mux(args, cb) {
     execIndex += 1;
     if (execIndex >= execCount) break;
     // determine next combination
-    let argIndex = argCount - 1;
-    while (argIndex >= 0) {
+    for (let argIndex = argCount - 1; argIndex >= 0; argIndex -= 1) {
       const arg = indices[argIndex];
       const [max, current, values] = arg;
       const next = current + 1;
@@ -40,7 +39,6 @@ function mux(args, cb) {
       }
       arg[1] = 0;
       [buffer[argIndex]] = values;
-      argIndex -= 1;
     }
   }
 }
@@ -66,8 +64,7 @@ export function muxOne(args, cb) {
     execIndex += 1;
     if (execIndex >= execCount) break;
     // determine next combination
-    let argIndex = argCount - 1;
-    while (argIndex >= 0) {
+    for (let argIndex = argCount - 1; argIndex >= 0; argIndex -= 1) {
       const arg = indices[argIndex];
       const [max, current, values] = arg;
       const next = current + 1;
@@ -78,7 +75,6 @@ export function muxOne(args, cb) {
       }
       arg[1] = 0;
       [buffer[argIndex]] = values;
-      argIndex -= 1;
     }
   }
   return outputs;

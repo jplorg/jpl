@@ -85,6 +85,10 @@ export function applyArray(source, changes, filler = null) {
  * - `[2, 3]`
  * - `[2, 4]`
  *
+ * If the values of `source` are equal to the values of one of the combinations, it is used instead of a copy in the output array, e.g.:
+ * `let i = [1, 2]; applyCombinations(i, [[1], [2]])[0] == i`
+ * - `true`
+ *
  * @param {any[][]} combinations The combinations
  */
 export function applyCombinations(source, combinations) {
@@ -116,8 +120,7 @@ export function applyCombinations(source, combinations) {
     out[c] = result;
     c += 1;
     if (c >= total) break;
-    let n = l - 1;
-    while (n >= 0) {
+    for (let n = l - 1; n >= 0; n -= 1) {
       const i = indices[n];
       const [max, current] = i;
       const next = current + 1;
@@ -126,7 +129,6 @@ export function applyCombinations(source, combinations) {
         break;
       }
       i[1] = 0;
-      n -= 1;
     }
   }
   return out;

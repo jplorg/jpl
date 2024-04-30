@@ -1,7 +1,8 @@
 import applyDefaults from '../applyDefaults';
+import { DEFINITION_VERSION } from '../library';
 import JPLProgram, { applyProgramDefaults } from '../program';
 import { applyRuntimeDefaults } from '../runtime';
-import { entrypoint } from './parse';
+import { parseEntrypoint } from './parse';
 
 const defaultOptions = {};
 
@@ -12,25 +13,34 @@ export function applyInterpreterDefaults(options = {}, defaults = {}) {
 /** JPL interpreter */
 class JPLInterpreter {
   constructor(options) {
-    this.options = applyInterpreterDefaults(options?.interpreter, defaultOptions);
+    this._options = applyInterpreterDefaults(options?.interpreter, defaultOptions);
+    this._programOptions = options?.program;
+    this._runtimeOptions = options?.runtime;
+  }
 
-    this.programOptions = options?.program;
-    this.runtimeOptions = options?.runtime;
+  /** Return the interpreter's options */
+  get options() {
+    return this._options;
   }
 
   /** Parse the specified source program string into a reusable JPLProgram instance */
   parse = async (source, options) => {
     const instructions = await this.parseInstructions(source);
 
-    return new JPLProgram(instructions, {
-      program: applyProgramDefaults(options?.program, this.programOptions),
-      runtime: applyRuntimeDefaults(options?.runtime, this.runtimeOptions),
+    const programDefinition = {
+      version: DEFINITION_VERSION,
+      instructions,
+    };
+
+    return new JPLProgram(programDefinition, {
+      program: applyProgramDefaults(options?.program, this._programOptions),
+      runtime: applyRuntimeDefaults(options?.runtime, this._runtimeOptions),
     });
   };
 
   /** Parse the specified source program string */
   parseInstructions = async (source) => {
-    const { ops: instructions } = await entrypoint(source, 0, { interpreter: this });
+    const { ops: instructions } = await parseEntrypoint(source, 0, { interpreter: this });
     return instructions;
   };
 }

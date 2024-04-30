@@ -1,16 +1,16 @@
 import { applyObject } from './apply';
-import RuntimeSignal from './runtimeSignal';
+import JPLRuntimeSignal from './runtimeSignal';
 
 /**
  * Runtime scope for managing contextual runtime information.
  *
  * Fields of the scope must not be modified directly.
- * Instead, `RuntimeScope.next` should be used to create a sub scope with the specified modifications.
+ * Instead, `JPLRuntimeScope.next` should be used to create a sub scope with the specified modifications.
  */
-class RuntimeScope {
+class JPLRuntimeScope {
   constructor(presets = {}) {
     this._state = {
-      signal: presets.signal ?? new RuntimeSignal(),
+      signal: presets.signal ?? new JPLRuntimeSignal(),
       vars: presets.vars ?? {},
     };
   }
@@ -25,11 +25,11 @@ class RuntimeScope {
 
   /** Inherit the next scope based on the specified modifications */
   next(modifications) {
-    return new RuntimeScope({
+    return new JPLRuntimeScope({
       signal: modifications.signal ?? this.signal,
       vars: applyObject(this.vars, Object.entries(modifications.vars ?? {})),
     });
   }
 }
 
-export default RuntimeScope;
+export default JPLRuntimeScope;

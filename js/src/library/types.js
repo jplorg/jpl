@@ -101,7 +101,7 @@ export function typeOf(value) {
   }
 }
 
-/** Assert the type for the specified unwrapped value. */
+/** Assert the type for the specified unwrapped value */
 export function assertType(value, type) {
   if (JPLType.is(value)) {
     throw new JPLFatalError(
@@ -125,8 +125,6 @@ export function stringify(value, unescapeString, escapeFunctions) {
   if (unescapeString && typeof rawValue === 'string') return rawValue;
   return JSON.stringify(rawValue);
 }
-
-const placeholder = /%([*\-<]+)?([1-9][0-9]*)?(.)/g;
 
 /**
  * Format the specified template string.
@@ -153,57 +151,60 @@ const placeholder = /%([*\-<]+)?([1-9][0-9]*)?(.)/g;
  */
 export function template(tmpl, ...replacements) {
   let i = 0;
-  return displayValue(tmpl).replace(placeholder, (match, flags, width, verb) => {
-    // verbs without replacement
-    switch (verb) {
-      case '%':
-        return '%';
-      default:
-    }
-    // verbs with replacement
-    const value = replacements[i] ?? null;
-    i += 1;
-    let result;
-    switch (verb) {
-      case 's':
-        result = displayValue(value);
-        break;
-      case 'v':
-        result = strictDisplayValue(value);
-        break;
-      default:
-        throw new Error(`format ${match} has unknown verb ${verb}`);
-    }
-    let pad = true;
-    let padRight = false;
-    let trunc = false;
-    [...(flags ?? [])].forEach((flag) => {
-      switch (flag) {
-        case '*':
-          pad = false;
+  return displayValue(tmpl).replace(
+    /%([*\-<]+)?([1-9][0-9]*)?(.)/g,
+    (match, flags, width, verb) => {
+      // verbs without replacement
+      switch (verb) {
+        case '%':
+          return '%';
+        default:
+      }
+      // verbs with replacement
+      const value = replacements[i] ?? null;
+      i += 1;
+      let result;
+      switch (verb) {
+        case 's':
+          result = displayValue(value);
           break;
-        case '-':
-          padRight = true;
-          break;
-        case '<':
-          trunc = true;
+        case 'v':
+          result = strictDisplayValue(value);
           break;
         default:
-          throw new Error(`format ${match} has unknown flag ${flag}`);
+          throw new JPLFatalError(`format ${match} has unknown verb ${verb}`);
       }
-    });
-    const w = +(width ?? 0);
-    if (w > 0) {
-      const rl = [...result].length;
-      if (pad && rl < w) {
-        const padding = ' '.repeat(w - rl);
-        result = padRight ? `${result}${padding}` : `${padding}${result}`;
-      } else if (trunc && rl > w) {
-        result = `${result.substring(0, w - 1)}…`;
+      let pad = true;
+      let padRight = false;
+      let trunc = false;
+      [...(flags ?? [])].forEach((flag) => {
+        switch (flag) {
+          case '*':
+            pad = false;
+            break;
+          case '-':
+            padRight = true;
+            break;
+          case '<':
+            trunc = true;
+            break;
+          default:
+            throw new JPLFatalError(`format ${match} has unknown flag ${flag}`);
+        }
+      });
+      const w = +(width ?? 0);
+      if (w > 0) {
+        const rl = [...result].length;
+        if (pad && rl < w) {
+          const padding = ' '.repeat(w - rl);
+          result = padRight ? `${result}${padding}` : `${padding}${result}`;
+        } else if (trunc && rl > w) {
+          result = `${result.substring(0, w - 1)}…`;
+        }
       }
-    }
-    return result;
-  });
+      return result;
+    },
+  );
 }
 
 /** Format the specified normalized value as a string */
@@ -257,7 +258,7 @@ export function jplJSONStripper(k, v, iter) {
 /** Stripper that allows JSON like values and calls `toJSON` similar to `JSON.stringify` */
 export function jsonStripper(k, v, iter) {
   let r = v;
-  if (typeof v?.toJSON === 'function') r = r.toJSON();
+  if (typeof r?.toJSON === 'function') r = r.toJSON();
   return rawStripper(k, r, iter);
 }
 

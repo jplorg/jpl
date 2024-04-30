@@ -4,7 +4,7 @@ import { call } from '../utils';
 export default {
   /** { by: [op] } */
   op(runtime, input, target, params, scope, next) {
-    return runtime.executeInstructions(params.by, [input], scope, async (by) =>
+    return runtime.executeInstructions(params.by ?? [], [input], scope, async (by) =>
       next(
         await runtime.alterValue(target, (a) => {
           const b = runtime.unwrapValue(by);
