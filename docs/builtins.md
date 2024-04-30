@@ -280,6 +280,10 @@ Example: `[1, 2, 3] | map(void)` -> `[]`
 
 Returns `true` if the provided input is neither `null`, a function, nor an empty array, object or string, `false` otherwise.
 
+## `now()`
+
+Returns the number of milliseconds elapsed since midnight, January 1, 1970 Universal Coordinated Time (UTC).
+
 ## Type selectors
 
 The following type selectors return only those inputs that match specific types.

@@ -6,6 +6,7 @@ export { default as has } from './funcHas';
 export { default as in } from './funcIn';
 export { default as keys } from './funcKeys';
 export { default as length } from './funcLength';
+export { default as now } from './funcNow';
 export { default as startsWith } from './funcStartsWith';
 export { default as toJSON } from './funcToJSON';
 export { default as toNumber } from './funcToNumber';

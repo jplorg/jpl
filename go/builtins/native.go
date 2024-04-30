@@ -14,6 +14,7 @@ var native = library.MergeMaps(
 		"in":         funcIn,
 		"keys":       funcKeys,
 		"length":     funcLength,
+		"now":        funcNow,
 		"startsWith": funcStartsWith,
 		"toJSON":     funcToJSON,
 		"toNumber":   funcToNumber,

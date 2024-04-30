@@ -29,21 +29,6 @@ Type ":h" for more information.
 >
 ```
 
-For debugging purposes or to be able to dive into how a code snippet is interpreted, the REPL provides a `:i` directive.
-
-```sh
-> :i "Hello, 🌎!"
-[
-  {
-    "op": "\"\"",
-    "params": {
-      "value": "Hello, 🌎!"
-    }
-  }
-]
->
-```
-
 ## Extending JPL
 
 TODO: inform about the runtime API, functions, JPLTypes and different error types
