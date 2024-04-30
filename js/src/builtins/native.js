@@ -17,4 +17,3 @@ export { default as trimStart } from './funcTrimStart';
 export { default as type } from './funcType';
 export { default as void } from './funcVoid';
 export * from './math';
-export * as date from './nsDate';

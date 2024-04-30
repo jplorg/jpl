@@ -4,8 +4,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const readline = require('readline');
-const { default: jpl } = require('./lib');
-const pkg = require('./package.json');
+const { default: jpl } = require('@jplorg/jpl');
+const pkg = require('@jplorg/jpl/package.json');
 
 const replKeys = [':', '!'];
 const defaultReplKey = replKeys[0];

@@ -3,7 +3,7 @@
 ## Code example
 
 ```js
-import jpl from 'jpli';
+import jpl from '@jplorg/jpl';
 
 (async () => {
   const inputs = [null];
@@ -19,7 +19,7 @@ import jpl from 'jpli';
 The package provides a CLI REPL, which can be used as a language playground.
 
 ```sh
-> jpl # or `npm start`
+> jpl-repl # or `npm --prefix js run repl`
 
 Welcome to JPL v1.0.0.
 Type ":h" for more information.

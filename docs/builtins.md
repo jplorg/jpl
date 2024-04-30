@@ -1,5 +1,7 @@
 # [JPL - JSON Processing Language](index.md) - Builtin functions
 
+JPL comes with a number of builtins out of the box, which are described in detail in this document.
+
 ## `map(f)`
 
 Maps the input to an array by calling `f` for each field.
@@ -400,7 +402,3 @@ Example: `1.5, -1.5 | trunc()` -> `1, -1`
 Returns the absolute value of the numeric input (the value without regard to whether it is positive or negative).
 
 Example: `-1 | abs()` -> `1`
-
-## Date and time
-
-See [Date and time](builtins-date.md)

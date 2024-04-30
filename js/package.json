@@ -1,6 +1,6 @@
 {
-  "name": "jpli",
-  "version": "1.0.1",
+  "name": "@jplorg/jpl",
+  "version": "1.0.0",
   "description": "JPL interpreter",
   "main": "./lib/index.js",
   "exports": {
@@ -12,7 +12,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "jpl": "repl.js"
+    "jpl-repl": "repl.js"
   },
   "files": [
     "lib",
@@ -37,7 +37,6 @@
   },
   "keywords": [
     "jpl",
-    "jpli",
     "json",
     "cli"
   ],
@@ -64,7 +63,5 @@
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5"
   },
-  "dependencies": {
-    "luxon": "^3.4.3"
-  }
+  "dependencies": {}
 }

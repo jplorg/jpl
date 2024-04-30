@@ -1,10 +1,5 @@
 # Roadmap
 
-## Additional luxon based classes
-
-- durations
-- intervals?
-
 ## JPLType handling
 
 - Allow JPLTypes to handle alteration operations themselves,

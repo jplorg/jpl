@@ -1,7 +1,5 @@
 # [JPL - JSON Processing Language](index.md) - Getting started
 
-JPL is a programming language for complex JSON processing with a focus on integrity in other common languages.
-
 In JPL, each expression has exactly one input and produces any number of outputs, each of which in turn is fed individually into the next expression.
 The current expression's input can be referred to by the identity selector `.`.
 
@@ -110,8 +108,8 @@ If the expression evaluates to multiple results, a string is created for each re
 Conversely, if the expression has no outputs, there is also no string created.
 
 ```jpl
-"The time is \(date.now())"
-# -> "the time is 2023-09-20T16:55:34.619+02:00"
+"3 times 9 is \(3 * 9)"
+# -> "3 times 9 is 27"
 
 "multiple \("results", "strings")"
 # -> "multiple results", "multiple strings"
@@ -461,9 +459,9 @@ Conversely, if the expression returns no outputs, no objects are created.
 ```jpl
 {
   "id": (1, 2),
-  "time": date.now()
+  "time": now()
 }
-# -> { "id": 1, "time": "2023-09-21T10:39:26.401+02:00" }, { "id": 2, "time": "2023-09-21T10:39:26.401+02:00" }
+# -> { "id": 1, "time": 1714500000000 }, { "id": 2, "time": 1714500000000 }
 ```
 
 ### Object keys
@@ -698,5 +696,5 @@ This can also be useful if you want to apply an assignment to a part of the inpu
 
 - [Specification](spec.md)
 - [Builtin functions](builtins.md)
-  - [Date and time](builtins-date.md)
+- [Libraries](libraries.md)
 - [Operator priority](order.md)

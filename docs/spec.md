@@ -350,5 +350,5 @@ The following sequences are valid inside string literals:
 ## Further reading
 
 - [Builtin functions](builtins.md)
-  - [Date and time](builtins-date.md)
+- [Libraries](libraries.md)
 - [Operator priority](order.md)
