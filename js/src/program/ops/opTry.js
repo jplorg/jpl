@@ -6,18 +6,23 @@ export default {
   async op(runtime, input, params, scope, next) {
     const nextScope = scope.next({ signal: scope.signal.next() });
     try {
-      return await runtime.executeInstructions(params.try, [input], nextScope, async (output) => {
-        try {
-          return await next(output, scope);
-        } catch (err) {
-          throw new JPLErrorEnclosure(err);
-        }
-      });
+      return await runtime.executeInstructions(
+        params.try ?? [],
+        [input],
+        nextScope,
+        async (output) => {
+          try {
+            return await next(output, scope);
+          } catch (err) {
+            throw new JPLErrorEnclosure(err);
+          }
+        },
+      );
     } catch (err) {
       if (JPLErrorEnclosure.is(err)) throw err.inner;
       if (!JPLExecutionError.is(err)) throw err;
       nextScope.signal.exit();
-      return runtime.executeInstructions(params.catch, [err.value], scope, (output) =>
+      return runtime.executeInstructions(params.catch ?? [], [err.value], scope, (output) =>
         next(output, scope),
       );
     }

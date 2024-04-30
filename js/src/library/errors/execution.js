@@ -8,7 +8,7 @@ import JPLError from './error';
 class JPLExecutionError extends JPLError {
   constructor(message, name = 'JPLExecutionError') {
     super(message, name);
-    this.value = typeof message === 'string' ? message : null;
+    this.value = typeof message === 'string' && message ? message : null;
   }
 }
 

@@ -4,11 +4,9 @@ import { applyObject } from '../library';
 import * as internals from './internals';
 import * as native from './native';
 
-// function builtin(runtime, signal, next, input, ...args) { return next(result); }
-
 const builtins = `
-# See ./native for builtins that are implemented directly in JavaScript.
-# In ./internals are functions that are not exposed to the public but are referenced by some of the builtins below.
+# There are additional builtins that are implemented directly in the corresponding languages.
+# Also the functions in the "internals" namespace are not exposed to the public and are only to be used by the builtins below.
 
 func map(f): ([.[] | f()])
 | func mapValues(f): (.[] |= f())

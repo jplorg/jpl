@@ -1,7 +1,5 @@
 # [JPL - JSON Processing Language](index.md) - Getting started
 
-JPL is a programming language for complex JSON processing with a focus on integrity in other common languages.
-
 In JPL, each expression has exactly one input and produces any number of outputs, each of which in turn is fed individually into the next expression.
 The current expression's input can be referred to by the identity selector `.`.
 
@@ -75,7 +73,7 @@ JPL, like JSON, does not distinguish between integers and floating point numbers
 
 Strings are usually wrapped in double quotes `"` as boundaries, but you can also use single quotes `'` instead.
 
-If a string contains it's own boundaries, you must either [escape them](spec.md#string-escape-sequences), or switch to alternative boundaries.
+If a string contains its own boundaries, you must either [escape them](spec.md#string-escape-sequences), or switch to alternative boundaries.
 Tabs and any newline symbols also need to be escaped, unless you are using [multiline strings](#multiline-strings).
 
 ```jpl
@@ -110,8 +108,8 @@ If the expression evaluates to multiple results, a string is created for each re
 Conversely, if the expression has no outputs, there is also no string created.
 
 ```jpl
-"The time is \(date.now())"
-# -> "the time is 2023-09-20T16:55:34.619+02:00"
+"3 times 9 is \(3 * 9)"
+# -> "3 times 9 is 27"
 
 "multiple \("results", "strings")"
 # -> "multiple results", "multiple strings"
@@ -184,7 +182,7 @@ null ?? void()
 # -> <nothing>
 ```
 
-There are also the builtins `hasContent()` and `contents()`, which also considers other empty values than `null`.
+There are also the builtins `hasContent()` and `contents()`, which also omit other empty values than `null`.
 
 ## Combining expressions
 
@@ -324,17 +322,17 @@ Named functions are accessible using their name, similar to a variable.
 func greet(): (
   "Hello!"
 ) |
-# Now, we can call the function by it's name
+# Now, we can call the function by its name
 greet()
 # -> "Hello!"
 ```
 
 ### Anonymous functions
 
-Anonymous functions are returned as the expression's output instead, so you cen access it afterwards using the identity operator `.`.
+Anonymous functions are returned as the expression's output instead, so you can access it afterwards using the identity operator `.`.
 
 ```jpl
-# Here, we define a anonymous function
+# Here, we define an anonymous function
 func (): (
   "Hello!"
 ) |
@@ -376,7 +374,7 @@ func(): (
 ) | .()
 ```
 
-It is also possible to provide a function's input as it's first argument.
+It is also possible to provide a function's input as its first argument.
 This is done by using a bound function call `fn->(input, arg1, ...)`.
 
 ```jpl
@@ -461,9 +459,9 @@ Conversely, if the expression returns no outputs, no objects are created.
 ```jpl
 {
   "id": (1, 2),
-  "time": date.now()
+  "time": now()
 }
-# -> { "id": 1, "time": "2023-09-21T10:39:26.401+02:00" }, { "id": 2, "time": "2023-09-21T10:39:26.401+02:00" }
+# -> { "id": 1, "time": 1714500000000 }, { "id": 2, "time": 1714500000000 }
 ```
 
 ### Object keys
@@ -588,7 +586,7 @@ You can specify negative indices to look back from the end of the input.
 ## Iterating values
 
 You can return all entries from an array or string by using the value iterator `value[]`.
-This can also be used on object to return all of it's values.
+This can also be used on an object to return all of its values.
 
 ```jpl
 ["a", "b", "c"] | .[]
@@ -698,5 +696,5 @@ This can also be useful if you want to apply an assignment to a part of the inpu
 
 - [Specification](spec.md)
 - [Builtin functions](builtins.md)
-  - [Date and time](builtins-date.md)
+- [Libraries](libraries.md)
 - [Operator priority](order.md)

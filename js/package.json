@@ -1,6 +1,6 @@
 {
-  "name": "jpli",
-  "version": "1.0.1",
+  "name": "@jplorg/jpl",
+  "version": "1.0.0",
   "description": "JPL interpreter",
   "main": "./lib/index.js",
   "exports": {
@@ -12,7 +12,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "jpl": "repl.js"
+    "jpl-repl": "repl.js"
   },
   "files": [
     "lib",
@@ -33,20 +33,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2manyvcos/jpl"
+    "url": "git+https://github.com/jplorg/jpl"
   },
   "keywords": [
     "jpl",
-    "jpli",
     "json",
     "cli"
   ],
   "author": "Aaron Burmeister",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/2manyvcos/jpl/issues"
+    "url": "https://github.com/jplorg/jpl/issues"
   },
-  "homepage": "https://github.com/2manyvcos/jpl",
+  "homepage": "https://github.com/jplorg/jpl",
   "devDependencies": {
     "@babel/cli": "^7.22.15",
     "@babel/core": "^7.24.4",
@@ -64,8 +63,5 @@
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5"
   },
-  "dependencies": {
-    "immer": "^10.0.2",
-    "luxon": "^3.4.3"
-  }
+  "dependencies": {}
 }

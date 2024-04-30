@@ -1,5 +1,9 @@
 export { applyArray, applyCombinations, applyObject } from './apply';
-export { default as compareStrings } from './compareStrings';
+export {
+  DEFINITION_VERSION,
+  DEFINITION_VERSION_MAJOR,
+  DEFINITION_VERSION_MINOR,
+} from './definition';
 export { adaptError, default as adaptErrors, adaptErrorsAsync } from './errors/adaptErrors';
 export { default as JPLErrorEnclosure } from './errors/enclosure';
 export { default as JPLError } from './errors/error';
@@ -16,7 +20,7 @@ export { default as JPLSyntaxError } from './errors/syntax';
 export { nativeFunction, orphanFunction, scopedFunction } from './functions';
 export { default as mux, muxAll, muxAsync, muxOne } from './mux';
 export * from './ops';
-export { default as RuntimeScope } from './runtimeScope';
+export { default as JPLRuntimeScope } from './runtimeScope';
 export {
   JPLType,
   assertType,

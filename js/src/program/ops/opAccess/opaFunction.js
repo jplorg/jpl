@@ -8,8 +8,8 @@ export default {
     const t = runtime.type(value);
     switch (t) {
       case 'function': {
-        const args = await runtime.muxAsync([params.args], (arg) =>
-          runtime.executeInstructions(arg, [input], scope),
+        const args = await runtime.muxAsync([params.args ?? []], (arg) =>
+          runtime.executeInstructions(arg ?? [], [input], scope),
         );
 
         return runtime.muxAll(args, async (...a) => {

@@ -1,16 +1,17 @@
 import { scopedFunction } from '../../library';
+import { call } from './utils';
 
 export default {
   /** { argNames: [string], pipe: [op] } */
   op(runtime, input, params, scope, next) {
-    return next(scopedFunction(params.argNames, params.pipe, scope), scope);
+    return next(scopedFunction(params.argNames ?? [], params.pipe ?? [], scope), scope);
   },
 
-  /** { argNames: [string], value: [op] } */
+  /** { argNames: [string], pipe: function } */
   map(runtime, params) {
     return {
       argNames: runtime.muxOne([params.argNames], (entry) => runtime.assertType(entry, 'string')),
-      value: runtime.assertType(params.value, 'array'),
+      pipe: call(params.pipe),
     };
   },
 };

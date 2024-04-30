@@ -1,5 +1,5 @@
-import { OPM_SUBTRACTION, OP_CALCULATION, OP_CONSTANT } from '../../../library';
-import { call } from '../utils';
+import { OPM_SUBTRACTION, OP_CALCULATION } from '../../../library';
+import { call, constant } from '../utils';
 
 export default {
   /** { pipe: [op] } */
@@ -9,8 +9,8 @@ export default {
         {
           op: OP_CALCULATION,
           params: {
-            pipe: [{ op: OP_CONSTANT, params: { value: target } }],
-            operations: [{ op: OPM_SUBTRACTION, params: { by: params.pipe } }],
+            pipe: constant(target),
+            operations: [{ op: OPM_SUBTRACTION, params: { by: params.pipe ?? [] } }],
           },
         },
       ],
@@ -20,10 +20,10 @@ export default {
     );
   },
 
-  /** { value: function } */
+  /** { pipe: function } */
   map(runtime, params) {
     return {
-      pipe: call(params.value),
+      pipe: call(params.pipe),
     };
   },
 };

@@ -1,4 +1,4 @@
-import RuntimeScope from './runtimeScope';
+import JPLRuntimeScope from './runtimeScope';
 
 function jplEnclosure(runtime, signal, next, input, ...args) {
   const { argNames, pipe, scope } = this;
@@ -21,7 +21,7 @@ function jplEnclosure(runtime, signal, next, input, ...args) {
  *
  * @param {string[]} argNames Names to bind the function arguments to
  * @param {object[]} instructions Instructions to execute
- * @param {RuntimeScope} scope Runtime scope to bind the function to
+ * @param {JPLRuntimeScope} scope Runtime scope to bind the function to
  */
 export function scopedFunction(argNames, instructions, scope) {
   return jplEnclosure.bind({ argNames, pipe: instructions, scope });
@@ -38,7 +38,7 @@ export function scopedFunction(argNames, instructions, scope) {
  * @param {{ vars: object? }} [presets] Optional scope presets
  */
 export function orphanFunction(argNames, instructions, presets) {
-  return scopedFunction(argNames, instructions, new RuntimeScope(presets));
+  return scopedFunction(argNames, instructions, new JPLRuntimeScope(presets));
 }
 
 /**
@@ -48,7 +48,7 @@ export function orphanFunction(argNames, instructions, presets) {
  * `next` must be called for each single result, which produces an array of results itself.
  * All resulting results must be returned as a single array.
  *
- * It is recommended to check the provided RuntimeSignal in asynchronous routines to stop the routine when execution has been canceled:
+ * It is recommended to check the provided JPLRuntimeSignal in asynchronous routines to stop the routine when execution has been canceled:
  * ```
  * signal.checkHealth();
  * ```

@@ -1,7 +1,7 @@
 /**
  * Sub operator for OP_ACCESS
  *
- * { value: function, optional: boolean }
+ * { pipe: function, optional: boolean }
  *
  * { pipe: [op], optional: boolean }
  */
