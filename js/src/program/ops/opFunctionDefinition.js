@@ -4,7 +4,7 @@ import { call } from './utils';
 export default {
   /** { argNames: [string], pipe: [op] } */
   op(runtime, input, params, scope, next) {
-    return next(scopedFunction(params.argNames, params.pipe, scope), scope);
+    return next(scopedFunction(params.argNames ?? [], params.pipe ?? [], scope), scope);
   },
 
   /** { argNames: [string], pipe: function } */

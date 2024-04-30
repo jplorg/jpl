@@ -2,7 +2,7 @@ import { OPA_FUNCTION, OP_ACCESS, OP_CONSTANT, assertType } from '../../library'
 
 /** Create OP_CONSTANT operation for the specified normalized value */
 export function constant(value) {
-  return [{ op: OP_CONSTANT, params: { value } }];
+  return [{ op: OP_CONSTANT, params: { value: value ?? null } }];
 }
 
 /** Create OPA_FUNCTION operation for the specified function */

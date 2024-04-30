@@ -9,11 +9,11 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.pipes.length) return next(true, scope);
+      if (from >= (params.pipes?.length ?? 0)) return next(true, scope);
 
       const pipe = params.pipes[from];
 
-      return runtime.executeInstructions(pipe, [input], scope, (output) => {
+      return runtime.executeInstructions(pipe ?? [], [input], scope, (output) => {
         if (!runtime.truthy(output)) return next(false, scope);
 
         return iter(from + 1);

@@ -24,7 +24,6 @@ var native = library.MergeMaps(
 		"trimStart":  funcTrimStart,
 		"type":       funcType,
 		"void":       funcVoid,
-		// "date":       nsDate, // TODO:
 	},
 	funcsMath,
 )

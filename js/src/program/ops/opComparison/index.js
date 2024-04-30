@@ -24,18 +24,20 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.comparisons.length) return next(value, scope);
+      if (from >= (params.comparisons?.length ?? 0)) return next(value, scope);
 
       const { op, params: opParams } = params.comparisons[from];
       const operator = opcs[op];
       if (!operator) throw new JPLFatalError(`invalid OPC '${op}'`);
 
-      return operator.op(runtime, input, value, opParams, scope, (output) =>
+      return operator.op(runtime, input, value, opParams ?? {}, scope, (output) =>
         iter(from + 1, output),
       );
     };
 
-    return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
+    return runtime.executeInstructions(params.pipe ?? [], [input], scope, (output) =>
+      iter(0, output),
+    );
   },
 
   /** { pipe: function, comparisons: [opc] } */

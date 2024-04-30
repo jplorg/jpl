@@ -23,9 +23,12 @@ export default {
         throw new JPLTypeError('cannot access fields of %s (%*<100v) (assignment)', tt, vt);
     }
 
-    const fields = await runtime.executeInstructions(params.pipe, [input], scope, (output) => [
-      output,
-    ]);
+    const fields = await runtime.executeInstructions(
+      params.pipe ?? [],
+      [input],
+      scope,
+      (output) => [output],
+    );
 
     const iter = async (from, source) => {
       // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.

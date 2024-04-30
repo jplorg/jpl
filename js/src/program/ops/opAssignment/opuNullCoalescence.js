@@ -8,7 +8,7 @@ export default {
       [
         {
           op: OP_NULL_COALESCENCE,
-          params: { pipes: [constant(target), params.pipe] },
+          params: { pipes: [constant(target), params.pipe ?? []] },
         },
       ],
       [input],

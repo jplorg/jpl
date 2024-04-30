@@ -7,7 +7,7 @@ export default {
     const value = runtime.unwrapValue(target);
     const tv = runtime.type(value);
 
-    return runtime.executeInstructions(params.pipe, [input], scope, (output) => {
+    return runtime.executeInstructions(params.pipe ?? [], [input], scope, (output) => {
       const field = runtime.unwrapValue(output);
       const tf = runtime.type(field);
       switch (tv) {

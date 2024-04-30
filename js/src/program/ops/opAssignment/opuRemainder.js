@@ -10,7 +10,7 @@ export default {
           op: OP_CALCULATION,
           params: {
             pipe: constant(target),
-            operations: [{ op: OPM_REMAINDER, params: { by: params.pipe } }],
+            operations: [{ op: OPM_REMAINDER, params: { by: params.pipe ?? [] } }],
           },
         },
       ],

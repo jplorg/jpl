@@ -14,18 +14,20 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.selectors.length) return next(value, scope);
+      if (from >= (params.selectors?.length ?? 0)) return next(value, scope);
 
       const { op, params: opParams } = params.selectors[from];
       const operator = opas[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}'`);
 
-      return operator.op(runtime, input, value, opParams, scope, (output) =>
+      return operator.op(runtime, input, value, opParams ?? {}, scope, (output) =>
         iter(from + 1, output),
       );
     };
 
-    return runtime.executeInstructions(params.pipe, [input], scope, (output) => iter(0, output));
+    return runtime.executeInstructions(params.pipe ?? [], [input], scope, (output) =>
+      iter(0, output),
+    );
   },
 
   /** { pipe: function, selectors: [opa] } */

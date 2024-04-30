@@ -60,7 +60,7 @@ class JPLRuntime {
 
     try {
       return await this.executeInstructions(
-        this.program.definition.instructions,
+        this.program.definition.instructions ?? [],
         inputs,
         scope,
         this.options.adjustResult,
@@ -84,7 +84,7 @@ class JPLRuntime {
       const operator = this.program.ops[op];
       if (!operator) throw new JPLFatalError(`invalid OP '${op}'`);
 
-      return operator.op(this, input, params, currentScope, (output, nextScope) =>
+      return operator.op(this, input, params ?? {}, currentScope, (output, nextScope) =>
         iter(from + 1, output, nextScope),
       );
     };
@@ -98,7 +98,7 @@ class JPLRuntime {
     if (!operator) throw new JPLFatalError(`invalid OP '${op}'`);
 
     const opParams = operator.map(this, params);
-    return this.muxAll([inputs], (input) => operator.op(this, input, opParams, scope, next));
+    return this.muxAll([inputs], (input) => operator.op(this, input, opParams ?? {}, scope, next));
   }
 
   /** Normalize the specified external value */

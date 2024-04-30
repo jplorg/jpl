@@ -1,7 +1,7 @@
 export default {
   /** { number: number } */
   op(runtime, input, params, scope, next) {
-    return next(params.number, scope);
+    return next(params.number ?? 0, scope);
   },
 
   /** { number: number } */

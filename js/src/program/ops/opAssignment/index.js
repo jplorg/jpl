@@ -34,24 +34,24 @@ export default {
 
       scope.signal.checkHealth();
 
-      if (from >= params.selectors.length) {
-        const { op, params: opParams } = params.assignment;
+      if (from >= (params.selectors?.length ?? 0)) {
+        const { op, params: opParams } = params.assignment ?? {};
         const operator = opus[op];
         if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
 
-        return operator.op(runtime, input, value, opParams, scope, (output) => [output]);
+        return operator.op(runtime, input, value, opParams ?? {}, scope, (output) => [output]);
       }
 
       const { op, params: opParams } = params.selectors[from];
       const operator = opasAssign[op];
       if (!operator) throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
 
-      return operator.op(runtime, input, value, opParams, scope, (output) =>
+      return operator.op(runtime, input, value, opParams ?? {}, scope, (output) =>
         iter(from + 1, output),
       );
     };
 
-    return runtime.executeInstructions(params.pipe, [input], scope, async (output) =>
+    return runtime.executeInstructions(params.pipe ?? [], [input], scope, async (output) =>
       runtime.muxAll([await iter(0, output)], (result) =>
         next(result === undefined ? output : result, scope),
       ),

@@ -1,7 +1,7 @@
 export default {
   /** { string: string } */
   op(runtime, input, params, scope, next) {
-    return next(params.string, scope);
+    return next(params.string ?? '', scope);
   },
 
   /** { string: string } */

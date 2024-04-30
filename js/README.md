@@ -19,7 +19,7 @@ import jpl from '@jplorg/jpl';
 The package provides a CLI REPL, which can be used as a language playground.
 
 ```sh
-> jpl-repl # or `npm --prefix js run repl`
+> jpl-repl # or `npm --prefix js start`
 
 Welcome to JPL v1.0.0.
 Type ":h" for more information.

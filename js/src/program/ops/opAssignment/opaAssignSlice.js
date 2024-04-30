@@ -10,8 +10,8 @@ export default {
   /** { from: [op], to: [op], optional: boolean } */
   async op(runtime, input, target, params, scope, next) {
     const [froms, tos] = await Promise.all([
-      runtime.executeInstructions(params.from, [input], scope),
-      runtime.executeInstructions(params.to, [input], scope),
+      runtime.executeInstructions(params.from ?? [], [input], scope),
+      runtime.executeInstructions(params.to ?? [], [input], scope),
     ]);
 
     const ranges = runtime.muxOne(
