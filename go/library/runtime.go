@@ -3,7 +3,7 @@ package library
 import (
 	"slices"
 
-	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/jpl"
 )
 
 // // Normalize the specified external value

@@ -1,9 +1,9 @@
 package gojpl
 
 import (
-	"github.com/2manyvcos/jpl/go/builtins"
-	"github.com/2manyvcos/jpl/go/interpreter"
-	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/builtins"
+	"github.com/jplorg/jpl/go/interpreter"
+	"github.com/jplorg/jpl/go/jpl"
 )
 
 var Options = &jpl.JPLInterpreterConfig{

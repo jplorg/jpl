@@ -1,7 +1,7 @@
 package jpl
 
 import (
-	"github.com/2manyvcos/jpl/go/definition"
+	"github.com/jplorg/jpl/go/definition"
 )
 
 type JPLInterpreterConfig struct {

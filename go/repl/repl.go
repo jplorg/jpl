@@ -13,10 +13,10 @@ import (
 	"os"
 	"path/filepath"
 
-	gojpl "github.com/2manyvcos/jpl/go"
-	"github.com/2manyvcos/jpl/go/jpl"
-	"github.com/2manyvcos/jpl/go/library"
 	"github.com/chzyer/readline"
+	gojpl "github.com/jplorg/jpl/go"
+	"github.com/jplorg/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/library"
 )
 
 var replKeys = []rune{':', '!'}

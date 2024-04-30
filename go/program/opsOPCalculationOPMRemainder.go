@@ -3,9 +3,9 @@ package program
 import (
 	"math"
 
-	"github.com/2manyvcos/jpl/go/definition"
-	"github.com/2manyvcos/jpl/go/jpl"
-	"github.com/2manyvcos/jpl/go/library"
+	"github.com/jplorg/jpl/go/definition"
+	"github.com/jplorg/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/library"
 )
 
 type opmRemainder struct{}

@@ -1,6 +1,6 @@
 package library
 
-import "github.com/2manyvcos/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/jpl"
 
 // Wrap error in a JPLExecutionError if it is not already a JPLError
 func AdaptError(err error) jpl.JPLError {

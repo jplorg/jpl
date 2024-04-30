@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2manyvcos/jpl"
+    "url": "git+https://github.com/jplorg/jpl"
   },
   "keywords": [
     "jpl",
@@ -44,9 +44,9 @@
   "author": "Aaron Burmeister",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/2manyvcos/jpl/issues"
+    "url": "https://github.com/jplorg/jpl/issues"
   },
-  "homepage": "https://github.com/2manyvcos/jpl",
+  "homepage": "https://github.com/jplorg/jpl",
   "devDependencies": {
     "@babel/cli": "^7.22.15",
     "@babel/core": "^7.24.4",

@@ -3,8 +3,8 @@ package builtins
 import (
 	"slices"
 
-	"github.com/2manyvcos/jpl/go/jpl"
-	"github.com/2manyvcos/jpl/go/library"
+	"github.com/jplorg/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/library"
 )
 
 func sortFn(a, b any) (int, jpl.JPLError) {

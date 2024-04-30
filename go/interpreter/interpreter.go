@@ -1,9 +1,9 @@
 package interpreter
 
 import (
-	"github.com/2manyvcos/jpl/go/definition"
-	"github.com/2manyvcos/jpl/go/jpl"
-	"github.com/2manyvcos/jpl/go/program"
+	"github.com/jplorg/jpl/go/definition"
+	"github.com/jplorg/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/program"
 )
 
 var defaultOptions = jpl.JPLInterpreterOptions{}

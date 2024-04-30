@@ -1,6 +1,6 @@
 package jpl
 
-import "github.com/2manyvcos/jpl/go/definition"
+import "github.com/jplorg/jpl/go/definition"
 
 type JPLInstructionParams struct {
 	After          string

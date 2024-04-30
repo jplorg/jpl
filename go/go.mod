@@ -1,4 +1,4 @@
-module github.com/2manyvcos/jpl/go
+module github.com/jplorg/jpl/go
 
 go 1.22.1
 

@@ -1,6 +1,6 @@
 package library
 
-import "github.com/2manyvcos/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/jpl"
 
 // A JPLPiper can be used as an IOMuxer.
 // For each argument, `JPLPiper.Pipe` is called and the results are combined into a single array.

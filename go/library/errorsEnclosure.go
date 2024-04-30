@@ -1,6 +1,6 @@
 package library
 
-import "github.com/2manyvcos/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/jpl"
 
 func NewErrorEnclosure(inner jpl.JPLError) jpl.JPLErrorEnclosure {
 	return errorEnclosure{inner}

@@ -1,6 +1,6 @@
 package library
 
-import "github.com/2manyvcos/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/jpl"
 
 func NewExecutionError(message string, name string) jpl.JPLExecutionError {
 	if name == "" {

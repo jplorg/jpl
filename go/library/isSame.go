@@ -3,7 +3,7 @@ package library
 import (
 	"reflect"
 
-	"github.com/2manyvcos/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/jpl"
 )
 
 // Check if both values are the same.
