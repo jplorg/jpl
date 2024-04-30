@@ -12,10 +12,6 @@
 - because of that, the whole codebase should be checked for wrong unicode usage
   -> template also doesn't handle this correctly (substring)
 
-## Cross compatibility (TODO:)
-
-- the JS implementation must be updated to be compatible with missing params, otherwise there won't be intercompatibility between Golang generated instructions and the JS runtime
-
 ## REPL
 
 - support multiline input
