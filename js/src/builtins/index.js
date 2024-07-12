@@ -122,6 +122,44 @@ func map(f): ([.[] | f()])
 | func all(cond): (allBy(func (): (.[]), cond))
 | func anyBy(f, cond): (not isEmpty(func (): (f() | cond() or void())))
 | func any(cond): (anyBy(func (): (.[]), cond))
+
+| func getPath(path): (
+  fields = (path | if type() == 'string' then . / '.' end)
+  | reduce->(fields, func (sum): sum[if type->(sum) == 'array' then toNumber() else toString() end], .)
+)
+| func updatePath(path, update): (
+  fields = (path | if type() == 'string' then (. / '.')[] |= (v = . | try toNumber() catch v) end)
+  | reduce->(
+    reverse->(fields),
+    func (sum): (
+      field = .
+      | func (): (
+        if type() == 'array'
+        then (
+          input = .
+          | try toNumber->(field) catch toString->(field)
+          | if type() == 'number'
+          then input[.] |= sum()
+          else {}[.] |= sum()
+          end
+        ) elif type() == 'object'
+        then (
+          .[toString->(field)] |= sum()
+        ) elif type->(field) == 'number'
+        then (
+          [][field] |= sum()
+        ) else (
+          {}[toString->(field)] |= sum()
+        )
+        end
+      )
+    ),
+    update
+  )->(.)
+)
+| func setPath(path, value): (
+  updatePath(path, func (): value)
+)
 `;
 
 const getBuiltins = createSingleton(async () => {

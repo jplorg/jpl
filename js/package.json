@@ -1,6 +1,6 @@
 {
   "name": "@jplorg/jpl",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JPL interpreter",
   "main": "./lib/index.js",
   "exports": {
