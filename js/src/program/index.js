@@ -75,6 +75,40 @@ class JPLProgram {
     const outputs = await runtime.execute(normalizedInputs);
     return runtime.stripJSON(outputs);
   };
+
+  /**
+   * Return a new program with the provided definition's instructions prepended to the program.
+   */
+  prepend = (programDefinition) => {
+    validateDefinition(programDefinition);
+
+    const mergedDefinition = {
+      version: DEFINITION_VERSION,
+      instructions: [...programDefinition.instructions, ...this.definition.instructions],
+    };
+
+    return new JPLProgram(mergedDefinition, {
+      program: this._options,
+      runtime: this._runtimeOptions,
+    });
+  };
+
+  /**
+   * Return a new program with the provided definition's instructions appended to the program.
+   */
+  append = (programDefinition) => {
+    validateDefinition(programDefinition);
+
+    const mergedDefinition = {
+      version: DEFINITION_VERSION,
+      instructions: [...this.definition.instructions, ...programDefinition.instructions],
+    };
+
+    return new JPLProgram(mergedDefinition, {
+      program: this._options,
+      runtime: this._runtimeOptions,
+    });
+  };
 }
 
 export default JPLProgram;
