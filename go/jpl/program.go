@@ -31,4 +31,10 @@ type JPLProgram interface {
 	// The program throws a JPLExecutionError for runtime failures.
 	// Other errors may be thrown when execution fails.
 	Run(inputs []any, options *JPLProgramConfig) ([]any, JPLError)
+
+	// Return a new program with the provided definition's instructions prepended to the program.
+	Prepend(programDefinition definition.JPLDefinition) (JPLProgram, JPLError)
+
+	// Return a new program with the provided definition's instructions appended to the program.
+	Append(programDefinition definition.JPLDefinition) (JPLProgram, JPLError)
 }

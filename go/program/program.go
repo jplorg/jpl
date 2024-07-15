@@ -106,3 +106,49 @@ func (p *program) Run(inputs []any, options *jpl.JPLProgramConfig) ([]any, jpl.J
 	}
 	return stripped.([]any), nil
 }
+
+func (p *program) Prepend(programDefinition definition.JPLDefinition) (jpl.JPLProgram, jpl.JPLError) {
+	if err := validateDefinition(programDefinition); err != nil {
+		return nil, err
+	}
+
+	originalInstructions := p.Definition().Instructions
+	additionalInstructions := programDefinition.Instructions
+
+	instructions := make(definition.Pipe, 0, len(originalInstructions)+len(additionalInstructions))
+	instructions = append(instructions, additionalInstructions...)
+	instructions = append(instructions, originalInstructions...)
+
+	mergedDefinition := definition.JPLDefinition{
+		Version:      definition.DEFINITION_VERSION,
+		Instructions: instructions,
+	}
+
+	return NewProgram(mergedDefinition, &jpl.JPLProgramConfig{
+		Program: p.options,
+		Runtime: p.runtimeOptions,
+	})
+}
+
+func (p *program) Append(programDefinition definition.JPLDefinition) (jpl.JPLProgram, jpl.JPLError) {
+	if err := validateDefinition(programDefinition); err != nil {
+		return nil, err
+	}
+
+	originalInstructions := p.Definition().Instructions
+	additionalInstructions := programDefinition.Instructions
+
+	instructions := make(definition.Pipe, 0, len(originalInstructions)+len(additionalInstructions))
+	instructions = append(instructions, originalInstructions...)
+	instructions = append(instructions, additionalInstructions...)
+
+	mergedDefinition := definition.JPLDefinition{
+		Version:      definition.DEFINITION_VERSION,
+		Instructions: instructions,
+	}
+
+	return NewProgram(mergedDefinition, &jpl.JPLProgramConfig{
+		Program: p.options,
+		Runtime: p.runtimeOptions,
+	})
+}
