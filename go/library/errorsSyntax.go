@@ -2,11 +2,15 @@ package library
 
 import "github.com/jplorg/jpl/go/jpl"
 
-func NewSyntaxError(message string) jpl.JPLSyntaxError {
-	return syntaxError(message)
+func NewSyntaxError(message string, src string, at int) jpl.JPLSyntaxError {
+	return syntaxError{message: message, src: src, at: at}
 }
 
-type syntaxError string
+type syntaxError struct {
+	message string
+	src     string
+	at      int
+}
 
 func (e syntaxError) Error() string {
 	return e.JPLErrorName() + ": " + e.JPLErrorMessage()
@@ -17,7 +21,13 @@ func (syntaxError) JPLErrorName() string {
 }
 
 func (e syntaxError) JPLErrorMessage() string {
-	return string(e)
+	return e.message
 }
 
-func (syntaxError) IsJPLSyntaxError() {}
+func (e syntaxError) Src() string {
+	return e.src
+}
+
+func (e syntaxError) At() int {
+	return e.at
+}

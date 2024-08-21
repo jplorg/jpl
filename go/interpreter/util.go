@@ -277,7 +277,7 @@ func errorUnexpectedToken(src string, i int, c *ParserContext, options errorOpti
 	}
 	_, description := highlightLocation(src, i, c, highlightOptions{})
 	errorMessage += "\n" + description
-	return library.NewSyntaxError(errorMessage)
+	return library.NewSyntaxError(errorMessage, src, i)
 }
 
 // Throw an error caused by a generic parser error at i
@@ -291,5 +291,5 @@ func errorGeneric(src string, i int, c *ParserContext, options errorOptions) jpl
 	}
 	_, description := highlightLocation(src, i, c, highlightOptions{})
 	errorMessage += "\n" + description
-	return library.NewSyntaxError(errorMessage)
+	return library.NewSyntaxError(errorMessage, src, i)
 }

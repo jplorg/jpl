@@ -22,11 +22,19 @@ import (
 var replKeys = []rune{':', '!'}
 var defaultReplKey = replKeys[0]
 
+const defaultPrompt = "> "
+const multilinePrompt = "… "
+
+var multilineInput *string
+
+var muted bool
 var keep bool
 var inputs []any
 var measureTime bool
 
 func main() {
+	muted = !readline.IsTerminal(int(os.Stdin.Fd()))
+
 	var historyFile string
 	if homeDir, err := os.UserHomeDir(); err == nil {
 		historyFile = filepath.Join(homeDir, ".jpl_repl_history")
@@ -38,7 +46,7 @@ func main() {
 		Stderr:          os.Stderr,
 		HistoryFile:     historyFile,
 		HistoryLimit:    50,
-		Prompt:          "> ",
+		Prompt:          defaultPrompt,
 		InterruptPrompt: "^C",
 	})
 	if err != nil {
@@ -47,8 +55,10 @@ func main() {
 	defer rl.Close()
 	rl.CaptureExitSignal()
 
-	fmt.Println("Welcome to JPL.")
-	fmt.Printf("Type \"%ch\" for more information.\n\n", defaultReplKey)
+	if !muted {
+		fmt.Println("Welcome to JPL.")
+		fmt.Printf("Type \"%ch\" for more information.\n\n", defaultReplKey)
+	}
 
 	gojpl.Options.Runtime.Vars["exit"] = library.NativeFunction(func(runtime jpl.JPLRuntime, input any, args ...any) ([]any, error) {
 		rl.Close()
@@ -63,6 +73,11 @@ func main() {
 	for {
 		line, err := rl.Readline()
 		if err == readline.ErrInterrupt {
+			if multilineInput != nil {
+				multilineInput = nil
+				rl.SetPrompt(defaultPrompt)
+				continue
+			}
 			if len(line) == 0 {
 				break
 			} else {
@@ -82,7 +97,11 @@ func handle(input string, rl *readline.Instance) {
 		inputs = []any{nil}
 	}
 
-	line := input
+	fullLine := input
+	if multilineInput != nil {
+		fullLine = *multilineInput + input
+	}
+	line := fullLine
 	t := []rune(strings.TrimLeftFunc(line, unicode.IsSpace))
 
 	if len(t) == 0 {
@@ -111,14 +130,24 @@ func handle(input string, rl *readline.Instance) {
 			readline.ClearScreen(rl)
 
 		case 'k':
-			keep = parseBool(line, !keep, keep, rl)
+			keep = parseBool(line, !keep, keep, "keep", rl)
 
 		case 't':
-			measureTime = parseBool(line, !measureTime, measureTime, rl)
+			measureTime = parseBool(line, !measureTime, measureTime, "time", rl)
 
 		case 'i':
+			// reset prompt after potential previous multiline input
+			multilineInput = nil
+			rl.SetPrompt(defaultPrompt)
 			program, err := gojpl.Parse(line, nil)
 			if err != nil {
+				if err, ok := err.(jpl.JPLSyntaxError); ok && err.At() >= len(err.Src()) {
+					// program is incomplete -> request additional input
+					ml := fullLine + "\n"
+					multilineInput = &ml
+					rl.SetPrompt(multilinePrompt)
+					return
+				}
 				printError(rl, err)
 				return
 			}
@@ -138,8 +167,18 @@ func handle(input string, rl *readline.Instance) {
 			printHelp(rl)
 		}
 	} else {
+		// reset prompt after potential previous multiline input
+		multilineInput = nil
+		rl.SetPrompt(defaultPrompt)
 		program, err := gojpl.Parse(line, nil)
 		if err != nil {
+			if err, ok := err.(jpl.JPLSyntaxError); ok && err.At() >= len(err.Src()) {
+				// program is incomplete -> request additional input
+				ml := fullLine + "\n"
+				multilineInput = &ml
+				rl.SetPrompt(multilinePrompt)
+				return
+			}
 			printError(rl, err)
 			return
 		}
@@ -167,12 +206,12 @@ func handle(input string, rl *readline.Instance) {
 		}
 		fmt.Fprintln(rl, strings.Join(outputs, ", "))
 		if measureTime {
-			fmt.Fprintf(rl, "-> took %vs\n", float64(diff)/1000)
+			fmt.Fprintf(rl, " -> took %vs\n", float64(diff)/1000)
 		}
 	}
 }
 
-func parseBool(input string, defaultValue, fallbackValue bool, rl *readline.Instance) bool {
+func parseBool(input string, defaultValue, fallbackValue bool, label string, rl *readline.Instance) bool {
 	b := strings.ToLower(strings.TrimSpace(input))
 	var v bool
 	if b == "" {
@@ -186,9 +225,9 @@ func parseBool(input string, defaultValue, fallbackValue bool, rl *readline.Inst
 		return fallbackValue
 	}
 	if v {
-		fmt.Fprintln(rl, " -> on")
+		fmt.Fprintf(rl, " -> %s on\n", label)
 	} else {
-		fmt.Fprintln(rl, " -> off")
+		fmt.Fprintf(rl, " -> %s off\n", label)
 	}
 	return v
 }
