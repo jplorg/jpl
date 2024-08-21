@@ -27,8 +27,8 @@ func map(f): ([.[] | f()])
   | i(i)
 )
 | func range(from, to, step): (
-  t = type->(from) | if t != "number" then error->("cannot use \\(t) as a number") end
-  | t = type->(to) | if t != "number" then error->("cannot use \\(t) as a number") end
+  t = type->(from) | if t != "number" then error->("cannot use \(t) as a number") end
+  | t = type->(to) | if t != "number" then error->("cannot use \(t) as a number") end
   | s = (step | if . != 0 and . != null then abs() else 1 end)
   | while->(
     from,

@@ -16,7 +16,8 @@ type JPLErrorEnclosure interface {
 // JPL error type for syntax errors
 type JPLSyntaxError interface {
 	JPLError
-	IsJPLSyntaxError()
+	Src() string
+	At() int
 }
 
 // JPL error type for unrecoverable errors

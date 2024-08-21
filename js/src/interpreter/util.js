@@ -224,7 +224,7 @@ export function errorUnexpectedToken(src, i, c, { operator, message } = {}) {
   if (operator) errorMessage += ` while parsing ${operator}`;
   if (message) errorMessage += `: ${message}`;
   errorMessage += `\n${highlightLocation(src, i, c).value}`;
-  throw new JPLSyntaxError(errorMessage);
+  throw new JPLSyntaxError(errorMessage, src, i);
 }
 
 /** Throw an error caused by a generic parser error at i */
@@ -233,5 +233,5 @@ export function errorGeneric(src, i, c, { operator, message } = {}) {
   if (operator) errorMessage += ` while parsing ${operator}`;
   if (message) errorMessage += `: ${message}`;
   errorMessage += `\n${highlightLocation(src, i, c).value}`;
-  throw new JPLSyntaxError(errorMessage);
+  throw new JPLSyntaxError(errorMessage, src, i);
 }

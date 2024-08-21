@@ -9,17 +9,23 @@ const pkg = require('@jplorg/jpl/package.json');
 
 const replKeys = [':', '!'];
 const defaultReplKey = replKeys[0];
+const defaultPrompt = '> ';
+const multilinePrompt = '… ';
+
+let multilineInput;
 
 const homeDir = os.homedir();
 const historyFile = homeDir ? path.join(homeDir, '.jpl_repl_history') : undefined;
 
+const muted = !process.stdin.isTTY;
+
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: muted ? undefined : process.stdout,
   history: readHistory(),
   historySize: 50,
   removeHistoryDuplicates: true,
-  prompt: '> ',
+  prompt: defaultPrompt,
 });
 
 function readHistory() {
@@ -53,6 +59,13 @@ rl.on('close', () => {
 });
 
 rl.on('SIGINT', () => {
+  if (multilineInput != null) {
+    multilineInput = null;
+    rl.clearLine();
+    rl.setPrompt(defaultPrompt);
+    rl.prompt();
+    return undefined;
+  }
   if (rl.cursor === 0) return process.exit(0);
   process.stdout.write(`\nTo exit, press Ctrl+C again or type ${defaultReplKey}e`);
   rl.clearLine();
@@ -67,8 +80,10 @@ let measureTime;
 main();
 
 async function main() {
-  console.log(`Welcome to JPL v${pkg.version}.`);
-  console.log(`Type "${defaultReplKey}h" for more information.\n`);
+  if (!muted) {
+    console.log(`Welcome to JPL v${pkg.version}.`);
+    console.log(`Type "${defaultReplKey}h" for more information.\n`);
+  }
 
   const options = await jpl.getOptions();
   options.runtime.vars.exit = jpl.nativeFunction(() => {
@@ -81,7 +96,6 @@ async function main() {
 
   rl.prompt();
 
-  // eslint-disable-next-line no-restricted-syntax
   for await (const line of rl) {
     rl.pause();
     await handle(line);
@@ -92,7 +106,8 @@ async function main() {
 async function handle(input) {
   if (!keep || inputs.length === 0) inputs = [null];
 
-  let line = input;
+  const fullLine = (multilineInput ?? '') + input;
+  let line = fullLine;
   const t = line.trimStart();
 
   if (!t) {
@@ -119,17 +134,28 @@ async function handle(input) {
         break;
 
       case 'k':
-        keep = parseBool(line, !keep) ?? keep;
+        keep = parseBool(line, !keep, 'keep') ?? keep;
         break;
 
       case 't':
-        measureTime = parseBool(line, !measureTime) ?? measureTime;
+        measureTime = parseBool(line, !measureTime, 'time') ?? measureTime;
         break;
 
       case 'i':
+        // reset prompt after potential previous multiline input
+        multilineInput = null;
+        rl.setPrompt(defaultPrompt);
         try {
-          console.log(JSON.stringify((await jpl.parse(line)).definition, null, 2));
+          const program = await jpl.parse(line);
+          console.log(JSON.stringify(program.definition, null, 2));
         } catch (err) {
+          if (jpl.JPLSyntaxError.is(err) && err.at >= err.src.length) {
+            // program is incomplete -> request additional input
+            multilineInput = fullLine + '\n';
+            rl.setPrompt(multilinePrompt);
+            rl.prompt();
+            return undefined;
+          }
           if (jpl.JPLSyntaxError.is(err)) console.log(`${err.name ?? 'JPLError'}: ${err.message}`);
           else console.log(err.stack);
         }
@@ -145,6 +171,9 @@ async function handle(input) {
         printHelp();
     }
   } else {
+    // reset prompt after potential previous multiline input
+    multilineInput = null;
+    rl.setPrompt(defaultPrompt);
     try {
       const program = await jpl.parse(line);
       let before;
@@ -153,8 +182,15 @@ async function handle(input) {
       inputs = await program.run(inputs);
       if (measureTime) diff = Date.now() - before;
       console.log(inputs.map((output) => JSON.stringify(output, null, 2)).join(', '));
-      if (measureTime) console.log(`-> took ${diff / 1000}s`);
+      if (measureTime) console.log(` -> took ${diff / 1000}s`);
     } catch (err) {
+      if (jpl.JPLSyntaxError.is(err) && err.at >= err.src.length) {
+        // program is incomplete -> request additional input
+        multilineInput = fullLine + '\n';
+        rl.setPrompt(multilinePrompt);
+        rl.prompt();
+        return undefined;
+      }
       if (jpl.JPLSyntaxError.is(err) || jpl.JPLExecutionError.is(err))
         console.log(`${err.name ?? 'JPLError'}: ${err.message}`);
       else console.log(err.stack);
@@ -165,14 +201,14 @@ async function handle(input) {
   return undefined;
 }
 
-function parseBool(input, defaultValue) {
+function parseBool(input, defaultValue, label) {
   const b = input.trim().toLowerCase();
   let v;
   if (b.length === 0) v = defaultValue;
   else if (b === 'on' || ['true', 'yes', 'enabled'].some((e) => e.startsWith(b))) v = true;
   else if (b === 'off' || ['false', 'no', 'disabled'].some((e) => e.startsWith(b))) v = false;
   if (typeof v === 'boolean') {
-    console.log(` -> ${v ? 'on' : 'off'}`);
+    console.log(` -> ${label} ${v ? 'on' : 'off'}`);
     return v;
   }
   console.log(`Error: invalid boolean ${b}`);

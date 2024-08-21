@@ -17,7 +17,7 @@ export function applyProgramDefaults(options = {}, defaults = {}) {
 function validateDefinition(programDefinition) {
   const version = programDefinition?.version;
   const [, major, minor] =
-    typeof version === 'string' ? /^(\d+)\.(\d+)?$/g.exec(version) ?? [] : [];
+    typeof version === 'string' ? (/^(\d+)\.(\d+)?$/g.exec(version) ?? []) : [];
 
   if (!major || !minor || !Array.isArray(programDefinition.instructions)) {
     throw new JPLFatalError('invalid program definition');
