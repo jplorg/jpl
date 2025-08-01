@@ -25,5 +25,9 @@ var funcTrimEnd = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSign
 		return next.Pipe(alteredValue)
 	}
 
-	return nil, nil
+	u, err := library.UnwrapValue(input)
+	if err != nil {
+		return nil, err
+	}
+	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot be trimmed", string(t), u))
 })
