@@ -1,7 +1,5 @@
 {
-  "presets": [
-    "@babel/preset-env",
-  ],
+  "presets": ["@babel/preset-env"],
   "targets": {
     // "browsers": "> 0.5%, not dead, not op_mini all",
     "node": "current"
