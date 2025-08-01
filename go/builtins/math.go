@@ -25,7 +25,7 @@ func unwrapNumber(v any) (float64, jpl.JPLError) {
 type alterFunc = func(runtime jpl.JPLRuntime, value float64, args ...any) (any, jpl.JPLError)
 
 func funcMath(alter alterFunc) jpl.JPLFunc {
-	return func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+	return enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 		t, err := library.Type(input)
 		if err != nil {
 			return nil, err
@@ -44,7 +44,7 @@ func funcMath(alter alterFunc) jpl.JPLFunc {
 			return nil, err
 		}
 		return next.Pipe(alteredValue)
-	}
+	})
 }
 
 var funcsMath = map[string]any{

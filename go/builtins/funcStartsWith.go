@@ -7,7 +7,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcStartsWith jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcStartsWith = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	value, err := library.UnwrapValue(input)
 	if err != nil {
 		return nil, err
@@ -39,4 +39,4 @@ var funcStartsWith jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRunt
 	}
 
 	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot start with %s (%*<100v)", string(t), value, string(tt), token))
-}
+})

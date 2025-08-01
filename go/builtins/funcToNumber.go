@@ -7,7 +7,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcToNumber jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcToNumber = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	value, err := library.UnwrapValue(input)
 	if err != nil {
 		return nil, err
@@ -36,4 +36,4 @@ var funcToNumber jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntim
 	}
 
 	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot be parsed as a number", string(t), value))
-}
+})

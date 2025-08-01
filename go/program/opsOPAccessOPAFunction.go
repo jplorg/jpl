@@ -41,12 +41,12 @@ func (opaFunction) OP(runtime jpl.JPLRuntime, input any, target any, params defi
 			var err error
 			if params.Bound {
 				if len(a) == 0 {
-					results, err = value.(jpl.JPLFunc)(runtime, scope.Signal(), fnNext, nil)
+					results, err = value.(jpl.JPLFunc).Call(runtime, scope.Signal(), fnNext, nil)
 				} else {
-					results, err = value.(jpl.JPLFunc)(runtime, scope.Signal(), fnNext, a[0], a[1:]...)
+					results, err = value.(jpl.JPLFunc).Call(runtime, scope.Signal(), fnNext, a[0], a[1:]...)
 				}
 			} else {
-				results, err = value.(jpl.JPLFunc)(runtime, scope.Signal(), fnNext, input, a...)
+				results, err = value.(jpl.JPLFunc).Call(runtime, scope.Signal(), fnNext, input, a...)
 			}
 			if err != nil {
 				if errorEnclosure, ok := err.(jpl.JPLErrorEnclosure); ok {

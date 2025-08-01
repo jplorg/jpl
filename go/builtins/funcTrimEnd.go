@@ -8,7 +8,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcTrimEnd jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcTrimEnd = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	t, err := library.Type(input)
 	if err != nil {
 		return nil, err
@@ -26,4 +26,4 @@ var funcTrimEnd jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntime
 	}
 
 	return nil, nil
-}
+})

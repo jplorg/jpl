@@ -1,6 +1,8 @@
 package jpl
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Generic type for handling special formatting on values.
 //
@@ -42,5 +44,17 @@ type JPLType interface {
 	json.Marshaler
 }
 
-// Shordhand type for JPL functions
-type JPLFunc = func(runtime JPLRuntime, signal JPLRuntimeSignal, next JPLPiper, input any, args ...any) ([]any, error)
+// Type for JPL functions
+type JPLFunc interface {
+	// Call the function
+	Call(runtime JPLRuntime, signal JPLRuntimeSignal, next JPLPiper, input any, args ...any) ([]any, error)
+
+	// Return whether the specified JPLFunc refers to the same value as the receiver, meaning that both instances are interchangeable.
+	// `other` is always expected to be of the same type than the receiver.
+	//
+	// For a JPLFunc that is defined as a pointer, both pointers can be simply compared, e.g.
+	// `func (f *someFunc) IsSame(other JPLFunc) bool { return t == other }`
+	//
+	// However, comparing two functions directly is not allowed in Golang, so it is required to embed them into something like a struct or similar.
+	IsSame(other JPLFunc) bool
+}
