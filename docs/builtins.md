@@ -212,6 +212,18 @@ Trims whitespace from the end of the input string.
 
 Example: `" Hello, World\n" | trimEnd()` -> `" Hello, World"`
 
+## `toUpperCase()`
+
+Converts the input string to upper case.
+
+Example: `"Hello, world" | toUpperCase()` -> `"HELLO, WORLD"`
+
+## `toLowerCase()`
+
+Converts the input string to to lower case.
+
+Example: `"Hello, world" | toLowerCase()` -> `"hello, world"`
+
 ## `toNumber()`
 
 Parses the input string as a number.

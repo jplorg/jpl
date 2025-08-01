@@ -7,7 +7,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcTrim jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcTrim = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	t, err := library.Type(input)
 	if err != nil {
 		return nil, err
@@ -24,5 +24,9 @@ var funcTrim jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSig
 		return next.Pipe(alteredValue)
 	}
 
-	return nil, nil
-}
+	u, err := library.UnwrapValue(input)
+	if err != nil {
+		return nil, err
+	}
+	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot be trimmed", string(t), u))
+})

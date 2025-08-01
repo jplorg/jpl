@@ -2,13 +2,12 @@ package builtins
 
 import (
 	"strings"
-	"unicode"
 
 	"github.com/jplorg/jpl/go/jpl"
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcTrimEnd = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcToLowerCase = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	t, err := library.Type(input)
 	if err != nil {
 		return nil, err
@@ -17,7 +16,7 @@ var funcTrimEnd = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSign
 	switch t {
 	case jpl.JPLT_STRING:
 		alteredValue, err := library.AlterValue(input, jpl.JPLModifierFunc(func(value any) (any, jpl.JPLError) {
-			return strings.TrimRightFunc(value.(string), unicode.IsSpace), nil
+			return strings.ToLower(value.(string)), nil
 		}))
 		if err != nil {
 			return nil, err
@@ -29,5 +28,5 @@ var funcTrimEnd = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSign
 	if err != nil {
 		return nil, err
 	}
-	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot be trimmed", string(t), u))
+	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot be converted to lower case", string(t), u))
 })

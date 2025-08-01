@@ -5,7 +5,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcLength jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcLength = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	value, err := library.UnwrapValue(input)
 	if err != nil {
 		return nil, err
@@ -32,4 +32,4 @@ var funcLength jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeS
 	}
 
 	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) has no length", string(t), value))
-}
+})

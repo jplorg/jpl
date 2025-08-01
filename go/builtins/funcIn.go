@@ -5,7 +5,7 @@ import (
 	"github.com/jplorg/jpl/go/library"
 )
 
-var funcIn jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
+var funcIn = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
 	key, err := library.UnwrapValue(input)
 	if err != nil {
 		return nil, err
@@ -44,4 +44,4 @@ var funcIn jpl.JPLFunc = func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSigna
 	}
 
 	return nil, library.ThrowAny(library.NewTypeError("%s (%*<100v) cannot have %s (%*<100v) as key", string(tv), value, string(tk), key))
-}
+})

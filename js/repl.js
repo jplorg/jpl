@@ -37,7 +37,7 @@ function readHistory() {
       .split(/\r?\n|\r/)
       .filter(Boolean)
       .reverse();
-  } catch (err) {
+  } catch {
     return [];
   }
 }
@@ -48,7 +48,7 @@ if (historyFile) {
       fs.writeFileSync(historyFile, history.filter(Boolean).reverse().join('\n') + '\n', {
         mode: 0o600,
       });
-    } catch (err) {
+    } catch {
       // ignore
     }
   });

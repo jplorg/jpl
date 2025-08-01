@@ -18,10 +18,10 @@ func IsSame(a, b any) bool {
 		return aOk && bOk && reflect.TypeOf(a) == reflect.TypeOf(b) && aType.IsSame(bType)
 	}
 
-	_, aOk = a.(jpl.JPLFunc)
-	_, bOk = b.(jpl.JPLFunc)
+	aFunc, aOk := a.(jpl.JPLFunc)
+	bFunc, bOk := b.(jpl.JPLFunc)
 	if aOk || bOk {
-		return aOk && bOk && reflect.ValueOf(a).Pointer() == reflect.ValueOf(b).Pointer()
+		return aOk && bOk && reflect.TypeOf(a) == reflect.TypeOf(b) && aFunc.IsSame(bFunc)
 	}
 
 	_, aOk = a.(map[string]any)
