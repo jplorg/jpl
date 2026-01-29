@@ -21,6 +21,9 @@ func (opaAssignIter) OP(runtime jpl.JPLRuntime, input any, target any, params de
 		return nil, err
 	}
 	switch tt {
+	case jpl.JPLT_NULL:
+		return []any{unchanged{}}, nil
+
 	case jpl.JPLT_OBJECT:
 		items := library.ObjectEntries(vt.(map[string]any))
 		outputs, err := library.MuxOne([][]*library.ObjectEntry[any]{items}, jpl.IOMuxerFunc[*library.ObjectEntry[any], []*library.ObjectEntry[any]](func(args ...*library.ObjectEntry[any]) ([]*library.ObjectEntry[any], jpl.JPLError) {

@@ -16,6 +16,9 @@ export default {
       const tf = runtime.type(from);
       const tt = runtime.type(to);
       switch (tv) {
+        case 'null':
+          return next(null);
+
         case 'array':
           if (['number', 'null'].includes(tf) && ['number', 'null'].includes(tt)) {
             return next(value.slice(Math.trunc(from ?? 0), Math.trunc(to ?? value.length)));

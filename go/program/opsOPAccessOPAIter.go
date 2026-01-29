@@ -19,6 +19,9 @@ func (opaIter) OP(runtime jpl.JPLRuntime, input any, target any, params definiti
 		return nil, err
 	}
 	switch t {
+	case jpl.JPLT_NULL:
+		return nil, nil
+
 	case jpl.JPLT_OBJECT:
 		return library.MuxAll([][]any{library.GetMapValues(value.(map[string]any))}, library.NewPiperMuxer(next))
 

@@ -48,6 +48,9 @@ func (opaSlice) OP(runtime jpl.JPLRuntime, input any, target any, params definit
 			return nil, err
 		}
 		switch tv {
+		case jpl.JPLT_NULL:
+			return next.Pipe(nil)
+
 		case jpl.JPLT_ARRAY:
 			if (tf == jpl.JPLT_NUMBER || tf == jpl.JPLT_NULL) && (tt == jpl.JPLT_NUMBER || tt == jpl.JPLT_NULL) {
 				v := value.([]any)
