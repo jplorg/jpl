@@ -290,30 +290,29 @@ Returns nothing.
 
 Example: `[1, 2, 3] | map(void)` -> `[]`
 
-## `hasContent()`
-
-Returns `true` if the provided input is neither `null`, a function, nor an empty array, object or string, `false` otherwise.
-
 ## `now()`
 
 Returns the number of milliseconds elapsed since midnight, January 1, 1970 Universal Coordinated Time (UTC).
 
 ## Type selectors
 
-The following type selectors return only those inputs that match specific types.
+The following functions are used to match their inputs to specific types.
+For each type there are two functions available:
+`isTYPE()` returns a boolean indicating if the input matches the specific type.
+`TYPEs()` returns only those inputs that match the specific type.
 
-- `arrays()` - arrays
-- `objects()` - objects
-- `iterables()` - arrays and objects
-- `scalars()` - anything but arrays and objects
-- `booleans()` - booleans
-- `numbers()` - numbers
-- `strings()` - strings
-- `nulls()` - null
-- `functions()` - functions
-- `nullLikes()` - null and functions
-- `values()` - anything but null and functions
-- `contents()` - anything but null, functions, empty arrays, empty objects and empty strings
+- `isArray()`, `arrays()` - arrays
+- `isObject()`, `objects()` - objects
+- `isIterable()`, `iterables()` - arrays and objects
+- `isScalar()`, `scalars()` - anything but arrays and objects
+- `isBoolean()`, `booleans()` - booleans
+- `isNumber()`, `numbers()` - numbers
+- `isString()`, `strings()` - strings
+- `isNull()`, `nulls()` - null
+- `isFunction()`, `functions()` - functions
+- `isNullLike()`, `nullLikes()` - null and functions
+- `isValue()`, `values()` - anything but null and functions
+- `isContent()`, `contents()` - anything but null, functions, empty arrays, empty objects and empty strings
 
 Example: `[1, true, "test", {}] | map(func(): (numbers, strings)())` -> `[1, "test"]`
 

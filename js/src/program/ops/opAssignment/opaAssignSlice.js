@@ -33,6 +33,9 @@ export default {
       const ts = runtime.type(start);
       const te = runtime.type(end);
       switch (tv) {
+        case 'null':
+          return iter(from + 1, source);
+
         case 'array':
           if (['number', 'null'].includes(ts) && ['number', 'null'].includes(te)) {
             return runtime.muxAll(

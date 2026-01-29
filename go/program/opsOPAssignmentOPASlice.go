@@ -76,6 +76,9 @@ func (opaAssignSlice) OP(runtime jpl.JPLRuntime, input any, target any, params d
 			return nil, err
 		}
 		switch tv {
+		case jpl.JPLT_NULL:
+			return iter(from+1, source)
+
 		case jpl.JPLT_ARRAY:
 			if (ts == jpl.JPLT_NUMBER || ts == jpl.JPLT_NULL) && (te == jpl.JPLT_NUMBER || te == jpl.JPLT_NULL) {
 				v := v.([]any)

@@ -182,7 +182,7 @@ null ?? void()
 # -> <nothing>
 ```
 
-There are also the builtins `hasContent()` and `contents()`, which also omit other empty values than `null`.
+There are also the builtins `isContent()` and `contents()`, which also omit other empty values than `null`.
 
 ## Combining expressions
 

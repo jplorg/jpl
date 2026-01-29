@@ -61,8 +61,8 @@ func map(f): ([.[] | f()])
 | func nullLikes(): (select(isNullLike))
 | func isValue(): (not contains->(["null", "function"], type()))
 | func values(): (select(isValue))
-| func hasContent(): (isValue() and not contains->([[], {}, ""], .))
-| func contents(): (select(hasContent))
+| func isContent(): (isValue() and not contains->([[], {}, ""], .))
+| func contents(): (select(isContent))
 
 
 | func toEntries(): (o = . | keys() | map(func (): ({ key: ., value: o[.] })))

@@ -6,6 +6,9 @@ export default {
     const value = runtime.unwrapValue(target);
     const t = runtime.type(value);
     switch (t) {
+      case 'null':
+        return [];
+
       case 'object':
         return runtime.muxAll([Object.values(value)], next);
 

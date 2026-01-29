@@ -6,6 +6,9 @@ export default {
     const vt = runtime.unwrapValue(target);
     const tt = runtime.type(vt);
     switch (tt) {
+      case 'null':
+        return [undefined];
+
       case 'object': {
         const items = Object.entries(vt);
         const outputs = await runtime.muxAsync([items], async (item) =>
