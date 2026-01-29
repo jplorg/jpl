@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
+	library "github.com/jplorg/jpl/go/v2/library"
 )
 
 const setAZ = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

@@ -3,8 +3,8 @@ package builtins
 import (
 	"math"
 
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	"github.com/jplorg/jpl/go/v2/jpl"
+	"github.com/jplorg/jpl/go/v2/library"
 )
 
 func unwrapNumber(v any) (float64, jpl.JPLError) {

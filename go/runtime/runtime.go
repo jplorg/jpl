@@ -1,9 +1,9 @@
 package runtime
 
 import (
-	"github.com/jplorg/jpl/go/definition"
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	definition "github.com/jplorg/jpl/go/v2/definition"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
+	library "github.com/jplorg/jpl/go/v2/library"
 )
 
 var defaultOptions = jpl.JPLRuntimeOptions{}

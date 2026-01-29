@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import jpl "github.com/jplorg/jpl/go/v2/jpl"
 
 // Multiplex the specified array of arguments by calling cb for all possible combinations of arguments.
 //

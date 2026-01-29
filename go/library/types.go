@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jplorg/jpl/go/jpl"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
 )
 
 func NewType(value any) (jpl.JPLType, jpl.JPLError) {

@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import jpl "github.com/jplorg/jpl/go/v2/jpl"
 
 func format(value any, replacements []any) (string, jpl.JPLError) {
 	if len(replacements) > 0 {

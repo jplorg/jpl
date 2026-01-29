@@ -1,8 +1,8 @@
 package program
 
 import (
-	"github.com/jplorg/jpl/go/definition"
-	"github.com/jplorg/jpl/go/jpl"
+	"github.com/jplorg/jpl/go/v2/definition"
+	"github.com/jplorg/jpl/go/v2/jpl"
 )
 
 type opNumber struct{}

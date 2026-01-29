@@ -1,8 +1,8 @@
 package program
 
 import (
-	"github.com/jplorg/jpl/go/definition"
-	"github.com/jplorg/jpl/go/jpl"
+	definition "github.com/jplorg/jpl/go/v2/definition"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
 )
 
 var ops = map[definition.JPLOP]jpl.JPLOPHandler{

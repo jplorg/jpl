@@ -3,8 +3,8 @@ package builtins
 import (
 	"encoding/json"
 
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	"github.com/jplorg/jpl/go/v2/jpl"
+	"github.com/jplorg/jpl/go/v2/library"
 )
 
 var funcFromJSON = enclose(func(runtime jpl.JPLRuntime, signal jpl.JPLRuntimeSignal, next jpl.JPLPiper, input any, args ...any) ([]any, error) {
