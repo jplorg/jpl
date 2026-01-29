@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/v2/jpl"
 
 func NewRuntimeScope(presets *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntimeScope {
 	if presets == nil {

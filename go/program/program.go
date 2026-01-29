@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/jplorg/jpl/go/definition"
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
-	"github.com/jplorg/jpl/go/runtime"
+	definition "github.com/jplorg/jpl/go/v2/definition"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
+	library "github.com/jplorg/jpl/go/v2/library"
+	runtime "github.com/jplorg/jpl/go/v2/runtime"
 )
 
 var defaultOptions = jpl.JPLProgramOptions{}

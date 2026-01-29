@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/v2/jpl"
 
 func NewFatalError(message string) jpl.JPLFatalError {
 	return fatalError(message)

@@ -1,8 +1,8 @@
 package interpreter
 
 import (
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
+	library "github.com/jplorg/jpl/go/v2/library"
 )
 
 // Create an orphan JPL function from the specified source program string.

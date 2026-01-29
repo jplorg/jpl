@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/v2/jpl"
 
 func NewRuntimeSignal(parent jpl.JPLRuntimeSignal) jpl.JPLRuntimeSignal {
 	return &runtimeSignal{

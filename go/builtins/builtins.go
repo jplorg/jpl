@@ -1,9 +1,9 @@
 package builtins
 
 import (
-	"github.com/jplorg/jpl/go/interpreter"
-	"github.com/jplorg/jpl/go/jpl"
-	"github.com/jplorg/jpl/go/library"
+	interpreter "github.com/jplorg/jpl/go/v2/interpreter"
+	jpl "github.com/jplorg/jpl/go/v2/jpl"
+	library "github.com/jplorg/jpl/go/v2/library"
 )
 
 const builtins = `

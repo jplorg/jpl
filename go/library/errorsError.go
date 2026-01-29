@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import "github.com/jplorg/jpl/go/v2/jpl"
 
 func NewError(message string, name string) jpl.JPLError {
 	return jplError{message: message, name: name}

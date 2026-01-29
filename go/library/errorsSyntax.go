@@ -1,6 +1,6 @@
 package library
 
-import "github.com/jplorg/jpl/go/jpl"
+import jpl "github.com/jplorg/jpl/go/v2/jpl"
 
 func NewSyntaxError(message string, src string, at int) jpl.JPLSyntaxError {
 	return syntaxError{message: message, src: src, at: at}

@@ -1,6 +1,6 @@
 package jpl
 
-import "github.com/jplorg/jpl/go/definition"
+import definition "github.com/jplorg/jpl/go/v2/definition"
 
 type JPLOPHandler interface {
 	OP(runtime JPLRuntime, input any, params definition.JPLInstructionParams, scope JPLRuntimeScope, next JPLScopedPiper) ([]any, JPLError)

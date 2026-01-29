@@ -1,8 +1,6 @@
 package jpl
 
-import (
-	"github.com/jplorg/jpl/go/definition"
-)
+import "github.com/jplorg/jpl/go/v2/definition"
 
 type JPLInterpreterConfig struct {
 	Interpreter JPLInterpreterOptions

@@ -8,7 +8,7 @@ package main
 import (
   "fmt"
 
-  gojpl "github.com/jplorg/jpl/go"
+  gojpl "github.com/jplorg/jpl/go/v2"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 The package provides a CLI REPL, which can be used as a language playground.
 
 ```sh
-> jpl-repl # or `go run github.com/jplorg/jpl/go/jpl-repl`
+> jpl-repl # or `go run github.com/jplorg/jpl/go/v2/jpl-repl`
 
 Welcome to JPL.
 Type ":h" for more information.

@@ -1,8 +1,6 @@
 package builtins
 
-import (
-	"github.com/jplorg/jpl/go/library"
-)
+import "github.com/jplorg/jpl/go/v2/library"
 
 var native = library.MergeMaps(
 	map[string]any{
