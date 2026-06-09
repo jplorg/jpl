@@ -1,0 +1,43 @@
+import type JPLRuntimeSignal from '@/library/runtimeSignal';
+import type JPLRuntime from '@/runtime';
+import { JPLTypeError } from '../library';
+
+export default function builtin(
+  runtime: JPLRuntime,
+  _signal: JPLRuntimeSignal,
+  next: (output: unknown) => Promise<unknown[]> | unknown[],
+  input: unknown,
+  arg0: unknown,
+): Promise<unknown[]> | unknown[] {
+  const key = runtime.unwrapValue(input);
+  const tk = runtime.type(key);
+
+  const value = runtime.unwrapValue(arg0 ?? null);
+  const tv = runtime.type(value);
+
+  switch (tv) {
+    case 'array':
+      if (tk === 'number')
+        return next(
+          (key as number) >= 0 && (key as number) < (value as unknown[]).length,
+        );
+      break;
+
+    case 'object':
+      if (tk === 'string')
+        return next(
+          Object.hasOwn(value as Record<string, unknown>, key as string),
+        );
+      break;
+
+    default:
+  }
+
+  throw new JPLTypeError(
+    '%s (%*<100v) cannot have %s (%*<100v) as key',
+    tv,
+    value,
+    tk,
+    key,
+  );
+}

@@ -13,14 +13,14 @@ type JPLInstructionParams struct {
 	Ifs            []JPLIfThen
 	Interpolations []JPLInterpolation
 	Name           string
+	Number         float64
 	Operations     []JPLOperation
 	Pipe           JPLFunc
 	Pipes          []JPLFunc
 	Selectors      []JPLSelector
+	String         string
 	Try            JPLFunc
 	Value          any
-	String         string
-	Number         float64
 }
 
 type JPLComparison struct {
