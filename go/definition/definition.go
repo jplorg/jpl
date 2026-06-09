@@ -5,8 +5,8 @@ const DEFINITION_VERSION_MINOR = 0
 const DEFINITION_VERSION = "1.0"
 
 type JPLDefinition struct {
-	Version      string           `json:"version"`
-	Instructions []JPLInstruction `json:"instructions"`
+	Version      string `json:"version"`
+	Instructions Pipe   `json:"instructions"`
 }
 
 type Pipe = []JPLInstruction
@@ -27,14 +27,14 @@ type JPLInstructionParams struct {
 	Ifs            []JPLIfThen        `json:"ifs,omitempty"`
 	Interpolations []JPLInterpolation `json:"interpolations,omitempty"`
 	Name           string             `json:"name,omitempty"`
+	Number         float64            `json:"number,omitempty"`
 	Operations     []JPLOperation     `json:"operations,omitempty"`
 	Pipe           Pipe               `json:"pipe,omitempty"`
 	Pipes          []Pipe             `json:"params,omitempty"`
 	Selectors      []JPLSelector      `json:"selectors,omitempty"`
+	String         string             `json:"string,omitempty"`
 	Try            Pipe               `json:"try,omitempty"`
 	Value          any                `json:"value,omitempty"`
-	String         string             `json:"string,omitempty"`
-	Number         float64            `json:"number,omitempty"`
 }
 
 type JPLComparison struct {

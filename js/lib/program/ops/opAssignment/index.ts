@@ -1,0 +1,152 @@
+import {
+  JPLFatalError,
+  OPA_FIELD,
+  OPA_ITER,
+  OPA_SLICE,
+  OPU_ADDITION,
+  OPU_DIVISION,
+  OPU_MULTIPLICATION,
+  OPU_NULL_COALESCENCE,
+  OPU_REMAINDER,
+  OPU_SET,
+  OPU_SUBTRACTION,
+  OPU_UPDATE,
+  type JPLRuntimeScope,
+} from '@/library';
+import type {
+  JPLAssignmentParams,
+  JPLInstructionParams,
+  JPLSelectorParams,
+} from '@/library/definition';
+import type { JPLOPSubHandler } from '@/program/handler';
+import type {
+  UserJPLAssignmentParams,
+  UserJPLInstructionParams,
+  UserJPLSelectorParams,
+} from '@/program/params';
+import type JPLRuntime from '@/runtime';
+import { call } from '../utils';
+import opaAssignField from './opaAssignField';
+import opaAssignIter from './opaAssignIter';
+import opaAssignSlice from './opaAssignSlice';
+import opuAddition from './opuAddition';
+import opuDivision from './opuDivision';
+import opuMultiplication from './opuMultiplication';
+import opuNullCoalescence from './opuNullCoalescence';
+import opuRemainder from './opuRemainder';
+import opuSet from './opuSet';
+import opuSubtraction from './opuSubtraction';
+import opuUpdate from './opuUpdate';
+
+export default {
+  /** { pipe: [op], selectors: [opa], assignment: [opu] } */
+  op(
+    runtime: JPLRuntime,
+    input: unknown,
+    params: JPLInstructionParams,
+    scope: JPLRuntimeScope,
+    next: (
+      output: unknown,
+      scope: JPLRuntimeScope,
+    ) => Promise<unknown[]> | unknown[],
+  ): Promise<unknown[]> {
+    const iter = async (from: number, value: unknown): Promise<unknown[]> => {
+      // Call stack decoupling - This is necessary as some browsers (i.e. Safari) have very limited call stack sizes which result in stack overflow exceptions in certain situations.
+      await undefined;
+
+      scope.signal.checkHealth();
+
+      if (from >= (params.selectors?.length ?? 0)) {
+        const { op, params: opParams } = params.assignment! ?? {};
+        const operator = opus[op];
+        if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
+
+        return operator.op(
+          runtime,
+          input,
+          value,
+          opParams ?? {},
+          scope,
+          (output: unknown) => [output],
+        );
+      }
+
+      const { op, params: opParams } = params.selectors![from];
+      const operator = opasAssign[op];
+      if (!operator)
+        throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
+
+      return operator.op(
+        runtime,
+        input,
+        value,
+        opParams ?? {},
+        scope,
+        (output: unknown) => iter(from + 1, output),
+      );
+    };
+
+    return runtime.executeInstructions(
+      params.pipe ?? [],
+      [input],
+      scope,
+      async (output) =>
+        runtime.muxAll([await iter(0, output)], (result) =>
+          next(result === undefined ? output : result, scope),
+        ),
+    );
+  },
+
+  /** { pipe: function, selectors: [opa], assignment: opu } */
+  map(
+    runtime: JPLRuntime,
+    params: UserJPLInstructionParams,
+  ): JPLInstructionParams {
+    return {
+      pipe: call(params.pipe),
+      selectors: runtime.muxOne(
+        [params.selectors!],
+        ({ op, params: opParams }) => {
+          const operator = opasAssign[op];
+          if (!operator)
+            throw new JPLFatalError(`invalid OPA '${op}' (assignment)`);
+
+          return {
+            op: runtime.assertType(op, 'string'),
+            params: operator.map(runtime, opParams),
+          };
+        },
+      ),
+      assignment: (({ op, params: opParams }) => {
+        const operator = opus[op];
+        if (!operator) throw new JPLFatalError(`invalid OPU '${op}'`);
+
+        return {
+          op: runtime.assertType(op, 'string'),
+          params: operator.map(runtime, opParams),
+        };
+      })(params.assignment!),
+    };
+  },
+};
+
+const opasAssign: {
+  [op: string]: JPLOPSubHandler<JPLSelectorParams, UserJPLSelectorParams>;
+} = {
+  [OPA_FIELD]: opaAssignField,
+  [OPA_ITER]: opaAssignIter,
+  [OPA_SLICE]: opaAssignSlice,
+};
+
+const opus: {
+  [op: string]: JPLOPSubHandler<JPLAssignmentParams, UserJPLAssignmentParams>;
+} = {
+  [OPU_ADDITION]: opuAddition,
+  [OPU_DIVISION]: opuDivision,
+  [OPU_MULTIPLICATION]: opuMultiplication,
+  [OPU_NULL_COALESCENCE]: opuNullCoalescence,
+  [OPU_REMAINDER]: opuRemainder,
+  [OPU_SET]: opuSet,
+  [OPU_SUBTRACTION]: opuSubtraction,
+  [OPU_UPDATE]: opuUpdate,
+};

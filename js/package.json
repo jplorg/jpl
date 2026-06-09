@@ -1,65 +1,82 @@
 {
   "name": "@jplorg/jpl",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "JPL interpreter",
-  "main": "./lib/index.js",
-  "exports": {
-    ".": {
-      "import": "./src/index.js",
-      "require": "./lib/index.js",
-      "default": "./lib/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "bin": {
-    "jpl-repl": "repl.js"
-  },
-  "files": [
-    "lib",
-    "src",
-    "repl.js"
-  ],
-  "scripts": {
-    "prebuild": "npm run build:clean",
-    "build:clean": "rimraf ./lib",
-    "build": "babel src -d lib",
-    "lint": "eslint",
-    "prepare": "npm run lint && npm run build",
-    "preversion": "git diff HEAD --name-only --exit-code || (echo -\\> unclean working directory && exit 1)",
-    "postversion": "cross-env git commit -am$npm_package_version",
-    "prettify": "prettier . --write",
-    "start": "npm run build >/dev/null && ./repl.js",
-    "repl": "./repl.js"
+  "license": "MIT",
+  "author": {
+    "name": "Aaron Burmeister"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jplorg/jpl"
+    "url": "git+https://github.com/jplorg/jpl.git"
   },
+  "bugs": {
+    "url": "https://github.com/jplorg/jpl/issues"
+  },
+  "homepage": "https://github.com/jplorg/jpl",
+  "type": "module",
   "keywords": [
     "jpl",
     "json",
     "cli"
   ],
-  "author": "Aaron Burmeister",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jplorg/jpl/issues"
+  "files": [
+    "dist",
+    "repl.ts"
+  ],
+  "types": "./dist/types/main.d.ts",
+  "main": "./dist/esm/main.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/main.d.ts",
+        "default": "./dist/esm/main.js"
+      }
+    },
+    "./package.json": "./package.json",
+    "./main": null,
+    "./*": {
+      "import": {
+        "types": "./dist/types/*",
+        "default": "./dist/esm/*"
+      }
+    }
   },
-  "homepage": "https://github.com/jplorg/jpl",
+  "bin": {
+    "jpl-repl": "./repl.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b ./tsconfig-build.json && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "prettify": "prettier . --write",
+    "preview": "vite preview",
+    "postversion": "git commit -am$npm_package_version",
+    "prepublishOnly": "npm run build",
+    "start": "npm run build >/dev/null && ./repl.ts",
+    "repl": "./repl.ts"
+  },
   "devDependencies": {
-    "@babel/cli": "^7.28.6",
-    "@babel/core": "^7.28.6",
-    "@babel/eslint-parser": "^7.28.6",
-    "@babel/preset-env": "^7.28.6",
-    "@babel/preset-react": "^7.28.5",
-    "cross-env": "^10.1.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-unused-imports": "^4.3.0",
-    "globals": "^17.2.0",
-    "prettier": "^3.8.1",
-    "rimraf": "^6.1.2"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.2",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0",
+    "unplugin-dts": "^1.0.1",
+    "vite": "^8.0.12"
   }
 }

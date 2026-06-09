@@ -1,48 +1,61 @@
+/* eslint-disable import-x/no-named-as-default-member */
+
 import js from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import unusedImportsPlugin from 'eslint-plugin-unused-imports';
+import { importX } from 'eslint-plugin-import-x';
+import prettier from 'eslint-plugin-prettier/recommended';
+import reactHooks from 'eslint-plugin-react-hooks';
+import { reactRefresh } from 'eslint-plugin-react-refresh';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-export default [
+export default defineConfig([
+  globalIgnores(['dist']),
   js.configs.recommended,
-  eslintPluginPrettierRecommended,
-
-  { ignores: ['lib/*'] },
-  { files: ['src/**/*.{js,jsx}'] },
+  tseslint.configs.recommended,
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
+  prettier,
   {
-    linterOptions: {
-      reportUnusedDisableDirectives: 'warn',
-    },
+    files: ['lib/**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.es2022,
+        // ...globals.es2022,
       },
     },
-    plugins: {
-      'unused-imports': unusedImportsPlugin,
-      import: importPlugin,
-    },
-    rules: {
-      'no-unused-vars': ['error', { ignoreRestSiblings: true }],
-      // 'no-use-before-define': 'error',
-      'arrow-body-style': 'error',
-      'unused-imports/no-unused-imports': 'error',
-      'import/no-unresolved': 'error',
-      'import/no-duplicates': 'error',
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'internal', 'parent', ['sibling', 'index']],
-          alphabetize: { order: 'asc', orderImportKind: 'asc' },
-          'newlines-between': 'never',
-        },
-      ],
-      'import/newline-after-import': 'error',
+  },
+  {
+    files: ['demo/**/*.{ts,tsx}'],
+    extends: [reactHooks.configs.flat.recommended, reactRefresh.configs.vite()],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.browser,
     },
   },
-];
+  {
+    files: ['lib/repl.ts'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.node,
+    },
+  },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          enableAutofixRemoval: { imports: true },
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+]);
