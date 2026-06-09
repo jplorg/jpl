@@ -6,13 +6,15 @@ import JPLInterpreter, {
   type JPLInterpreterOptions,
 } from './interpreter';
 import parseFunction from './interpreter/parseFunction';
-import JPLProgram, {
+import type JPLProgram from './program';
+import {
   applyProgramDefaults,
   type JPLOPHandler,
   type JPLOPSubHandler,
   type JPLProgramConfig,
   type JPLProgramOptions,
 } from './program';
+import type JPLRuntime from './runtime';
 import {
   applyRuntimeDefaults,
   type JPLRuntimeConfig,
@@ -62,12 +64,15 @@ export {
   parse,
   parseFunction,
   run,
+  type JPLInterpreter,
   type JPLInterpreterConfig,
   type JPLInterpreterOptions,
   type JPLOPHandler,
   type JPLOPSubHandler,
+  type JPLProgram,
   type JPLProgramConfig,
   type JPLProgramOptions,
+  type JPLRuntime,
   type JPLRuntimeConfig,
   type JPLRuntimeOptions,
 };
