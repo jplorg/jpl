@@ -1,5 +1,4 @@
-import { type JPLRuntimeScope } from '@/library';
-import type { JPLInstructionParams } from '@/library/definition';
+import type { JPLInstructionParams, JPLRuntimeScope } from '@/library';
 import type { UserJPLInstructionParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
 

@@ -2,7 +2,7 @@ import {
   orphanFunction,
   type JPLFunc,
   type JPLRuntimeScopeConfig,
-} from '../library';
+} from '@/library';
 import systemInterpreter from './system';
 
 /**

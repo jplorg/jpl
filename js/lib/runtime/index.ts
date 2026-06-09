@@ -1,14 +1,11 @@
-import type { Pipe } from '@/library/definition';
-import type JPLProgram from '@/program';
-import type { UserJPLInstructionParams } from '@/program/params';
-import applyDefaults from '../applyDefaults';
+import applyDefaults from '@/applyDefaults';
 import {
-  JPLFatalError,
-  JPLRuntimeScope,
-  JPLType,
   adaptErrorsAsync,
   applyObject,
   assertType,
+  JPLFatalError,
+  JPLRuntimeScope,
+  JPLType,
   mux,
   muxAll,
   muxAsync,
@@ -20,7 +17,10 @@ import {
   typeOrder,
   unwrap,
   type JPLRuntimeScopeConfig,
-} from '../library';
+  type Pipe,
+} from '@/library';
+import type JPLProgram from '@/program';
+import type { UserJPLInstructionParams } from '@/program/params';
 
 export type JPLRuntimeConfig = {
   runtime?: JPLRuntimeOptions;

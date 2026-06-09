@@ -1,4 +1,4 @@
-import { displayValue, normalize, template } from '../types';
+import { displayValue, normalize, template } from '@/library/types';
 import JPLExecutionError from './execution';
 
 function format(value: unknown, replacements: unknown[]): string {

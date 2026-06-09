@@ -4,19 +4,17 @@ import {
   OPA_FUNCTION,
   OPA_ITER,
   OPA_SLICE,
+  type JPLInstructionParams,
   type JPLRuntimeScope,
+  type JPLSelectorParams,
 } from '@/library';
-import type {
-  JPLInstructionParams,
-  JPLSelectorParams,
-} from '@/library/definition';
 import type { JPLOPSubHandler } from '@/program/handler';
+import { call } from '@/program/ops/utils';
 import type {
   UserJPLInstructionParams,
   UserJPLSelectorParams,
 } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 import opaField from './opaField';
 import opaFunction from './opaFunction';
 import opaIter from './opaIter';

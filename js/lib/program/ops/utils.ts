@@ -1,5 +1,10 @@
-import { OPA_FUNCTION, OP_ACCESS, OP_CONSTANT, assertType } from '@/library';
-import type { Pipe } from '@/library/definition';
+import {
+  OPA_FUNCTION,
+  OP_ACCESS,
+  OP_CONSTANT,
+  assertType,
+  type Pipe,
+} from '@/library';
 
 /** Create OP_CONSTANT operation for the specified normalized value */
 export function constant(value: unknown): Pipe {

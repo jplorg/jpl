@@ -1,7 +1,10 @@
-import type { JPLInstructionParams } from '@/library/definition';
+import {
+  JPLTypeError,
+  type JPLInstructionParams,
+  type JPLRuntimeScope,
+} from '@/library';
+import type { UserJPLInstructionParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { JPLTypeError, type JPLRuntimeScope } from '../../library';
-import type { UserJPLInstructionParams } from '../params';
 import { call } from './utils';
 
 export default {

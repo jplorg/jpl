@@ -1,8 +1,12 @@
-import { OPM_ADDITION, OP_CALCULATION, type JPLRuntimeScope } from '@/library';
-import type { JPLAssignmentParams } from '@/library/definition';
+import {
+  OPM_ADDITION,
+  OP_CALCULATION,
+  type JPLAssignmentParams,
+  type JPLRuntimeScope,
+} from '@/library';
+import { call, constant } from '@/program/ops/utils';
 import type { UserJPLAssignmentParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call, constant } from '../utils';
 
 export default {
   /** { pipe: [op] } */

@@ -1,5 +1,9 @@
 import {
+  type JPLAssignmentParams,
   JPLFatalError,
+  type JPLInstructionParams,
+  type JPLRuntimeScope,
+  type JPLSelectorParams,
   OPA_FIELD,
   OPA_ITER,
   OPA_SLICE,
@@ -11,21 +15,15 @@ import {
   OPU_SET,
   OPU_SUBTRACTION,
   OPU_UPDATE,
-  type JPLRuntimeScope,
 } from '@/library';
-import type {
-  JPLAssignmentParams,
-  JPLInstructionParams,
-  JPLSelectorParams,
-} from '@/library/definition';
-import type { JPLOPSubHandler } from '@/program/handler';
+import type { JPLOPSubHandler } from '@/program';
+import { call } from '@/program/ops/utils';
 import type {
   UserJPLAssignmentParams,
   UserJPLInstructionParams,
   UserJPLSelectorParams,
 } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 import opaAssignField from './opaAssignField';
 import opaAssignIter from './opaAssignIter';
 import opaAssignSlice from './opaAssignSlice';

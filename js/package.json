@@ -33,14 +33,7 @@
         "default": "./dist/esm/main.js"
       }
     },
-    "./package.json": "./package.json",
-    "./main": null,
-    "./*": {
-      "import": {
-        "types": "./dist/types/*",
-        "default": "./dist/esm/*"
-      }
-    }
+    "./package.json": "./package.json"
   },
   "bin": {
     "jpl-repl": "./repl.ts"

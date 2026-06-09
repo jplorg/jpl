@@ -1,5 +1,5 @@
+import { JPLTypeError, type JPLFunc } from '@/library';
 import type JPLRuntime from '@/runtime';
-import { JPLTypeError, type JPLFunc } from '../library';
 
 function unwrapNumber(runtime: JPLRuntime, v: unknown): number {
   const t = runtime.type(v);

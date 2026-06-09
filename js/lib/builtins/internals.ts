@@ -1,4 +1,4 @@
-import { nativeFunction } from '../library';
+import { nativeFunction } from '@/library';
 
 export const sortEntries = nativeFunction(async (runtime, input) => [
   await runtime.alterValue(input, (value) =>

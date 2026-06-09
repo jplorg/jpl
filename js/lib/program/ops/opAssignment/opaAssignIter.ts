@@ -2,8 +2,8 @@ import {
   JPLTypeError,
   applyCombinations,
   type JPLRuntimeScope,
+  type JPLSelectorParams,
 } from '@/library';
-import type { JPLSelectorParams } from '@/library/definition';
 import type { UserJPLSelectorParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
 

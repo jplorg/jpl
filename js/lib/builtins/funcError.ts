@@ -1,6 +1,5 @@
-import type JPLRuntimeSignal from '@/library/runtimeSignal';
+import { JPLRuntimeError, type JPLRuntimeSignal } from '@/library';
 import type JPLRuntime from '@/runtime';
-import { JPLRuntimeError } from '../library';
 
 export default function builtin(
   _runtime: JPLRuntime,

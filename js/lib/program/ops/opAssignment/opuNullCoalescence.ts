@@ -1,8 +1,11 @@
-import { OP_NULL_COALESCENCE, type JPLRuntimeScope } from '@/library';
-import type { JPLAssignmentParams } from '@/library/definition';
+import {
+  OP_NULL_COALESCENCE,
+  type JPLAssignmentParams,
+  type JPLRuntimeScope,
+} from '@/library';
+import { call, constant } from '@/program/ops/utils';
 import type { UserJPLAssignmentParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call, constant } from '../utils';
 
 export default {
   /** { pipe: [op] } */

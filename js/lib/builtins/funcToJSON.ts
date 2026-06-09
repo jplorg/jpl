@@ -1,4 +1,4 @@
-import type JPLRuntimeSignal from '@/library/runtimeSignal';
+import { type JPLRuntimeSignal } from '@/library';
 import type JPLRuntime from '@/runtime';
 
 export default function builtin(
