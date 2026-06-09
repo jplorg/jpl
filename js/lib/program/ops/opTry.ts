@@ -1,9 +1,9 @@
 import {
   JPLErrorEnclosure,
   JPLExecutionError,
+  type JPLInstructionParams,
   type JPLRuntimeScope,
 } from '@/library';
-import type { JPLInstructionParams } from '@/library/definition';
 import type { UserJPLInstructionParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
 import { call } from './utils';

@@ -1,11 +1,10 @@
-import type { JPLDefinition, Pipe } from '@/library/definition';
-import applyDefaults from '../applyDefaults';
-import { DEFINITION_VERSION } from '../library';
+import applyDefaults from '@/applyDefaults';
+import { DEFINITION_VERSION, type JPLDefinition, type Pipe } from '@/library';
 import JPLProgram, {
   applyProgramDefaults,
   type JPLProgramOptions,
-} from '../program';
-import { applyRuntimeDefaults, type JPLRuntimeOptions } from '../runtime';
+} from '@/program';
+import { applyRuntimeDefaults, type JPLRuntimeOptions } from '@/runtime';
 import { parseEntrypoint } from './parse';
 
 export type JPLInterpreterConfig = {

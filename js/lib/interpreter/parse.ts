@@ -1,6 +1,13 @@
 /* eslint-disable prefer-const */
 
 import {
+  type JPLAssignment,
+  type JPLComparison,
+  type JPLField,
+  type JPLIfThen,
+  type JPLInterpolation,
+  type JPLOperation,
+  type JPLSelector,
   OPA_FIELD,
   OPA_FUNCTION,
   OPA_ITER,
@@ -48,17 +55,8 @@ import {
   OP_VARIABLE,
   OP_VARIABLE_DEFINITION,
   OP_VOID,
+  type Pipe,
 } from '@/library';
-import type {
-  JPLAssignment,
-  JPLComparison,
-  JPLField,
-  JPLIfThen,
-  JPLInterpolation,
-  JPLOperation,
-  JPLSelector,
-  Pipe,
-} from '@/library/definition';
 import type JPLInterpreter from '.';
 import {
   eot,

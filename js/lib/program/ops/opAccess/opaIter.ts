@@ -1,5 +1,8 @@
-import { JPLTypeError, type JPLRuntimeScope } from '@/library';
-import type { JPLSelectorParams } from '@/library/definition';
+import {
+  JPLTypeError,
+  type JPLRuntimeScope,
+  type JPLSelectorParams,
+} from '@/library';
 import type { UserJPLSelectorParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
 

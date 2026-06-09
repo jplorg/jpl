@@ -1,24 +1,22 @@
 import {
+  type JPLComparisonParams,
   JPLFatalError,
+  type JPLInstructionParams,
+  type JPLRuntimeScope,
   OPC_EQUAL,
   OPC_GREATER,
   OPC_GREATEREQUAL,
   OPC_LESS,
   OPC_LESSEQUAL,
   OPC_UNEQUAL,
-  type JPLRuntimeScope,
 } from '@/library';
-import type {
-  JPLComparisonParams,
-  JPLInstructionParams,
-} from '@/library/definition';
 import type { JPLOPSubHandler } from '@/program/handler';
+import { call } from '@/program/ops/utils';
 import type {
   UserJPLComparisonParams,
   UserJPLInstructionParams,
 } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 import opcEqual from './opcEqual';
 import opcGreater from './opcGreater';
 import opcGreaterEqual from './opcGreaterEqual';

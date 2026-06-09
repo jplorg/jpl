@@ -1,12 +1,12 @@
 import {
   JPLTypeError,
   JPLZeroDivisionError,
+  type JPLOperationParams,
   type JPLRuntimeScope,
 } from '@/library';
-import type { JPLOperationParams } from '@/library/definition';
+import { call } from '@/program/ops/utils';
 import type { UserJPLOperationParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 
 export default {
   /** { by: [op] } */

@@ -4,8 +4,8 @@ import {
   adaptError,
   type JPLFunc,
   type JPLRuntimeScope,
+  type JPLSelectorParams,
 } from '@/library';
-import type { JPLSelectorParams } from '@/library/definition';
 import { call } from '@/program/ops/utils';
 import type { UserJPLSelectorParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';

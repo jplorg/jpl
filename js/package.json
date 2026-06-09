@@ -1,6 +1,6 @@
 {
   "name": "@jplorg/jpl",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "JPL interpreter",
   "license": "MIT",
   "author": {
@@ -33,14 +33,7 @@
         "default": "./dist/esm/main.js"
       }
     },
-    "./package.json": "./package.json",
-    "./main": null,
-    "./*": {
-      "import": {
-        "types": "./dist/types/*",
-        "default": "./dist/esm/*"
-      }
-    }
+    "./package.json": "./package.json"
   },
   "bin": {
     "jpl-repl": "./repl.ts"
@@ -71,7 +64,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
-    "prettier": "^3.8.3",
+    "prettier": "^3.8.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "typescript": "^6.0.3",

@@ -1,8 +1,7 @@
-import type { JPLRuntimeScope } from '@/library';
-import type { JPLComparisonParams } from '@/library/definition';
+import type { JPLComparisonParams, JPLRuntimeScope } from '@/library';
+import { call } from '@/program/ops/utils';
 import type { UserJPLComparisonParams } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 
 export default {
   /** { by: [op] } */

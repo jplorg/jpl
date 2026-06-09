@@ -24,8 +24,8 @@ import {
   OP_VARIABLE,
   OP_VARIABLE_DEFINITION,
   OP_VOID,
-} from '../../library';
-import type { JPLOPHandler } from '../handler';
+} from '@/library';
+import type { JPLOPHandler } from '@/program/handler';
 import opAccess from './opAccess';
 import opAnd from './opAnd';
 import opArrayConstructor from './opArrayConstructor';

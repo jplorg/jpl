@@ -5,19 +5,17 @@ import {
   OPM_MULTIPLICATION,
   OPM_REMAINDER,
   OPM_SUBTRACTION,
+  type JPLInstructionParams,
+  type JPLOperationParams,
   type JPLRuntimeScope,
 } from '@/library';
-import type {
-  JPLInstructionParams,
-  JPLOperationParams,
-} from '@/library/definition';
 import type { JPLOPSubHandler } from '@/program/handler';
+import { call } from '@/program/ops/utils';
 import type {
   UserJPLInstructionParams,
   UserJPLOperationParams,
 } from '@/program/params';
 import type JPLRuntime from '@/runtime';
-import { call } from '../utils';
 import opmAddition from './opmAddition';
 import opmDivision from './opmDivision';
 import opmMultiplication from './opmMultiplication';

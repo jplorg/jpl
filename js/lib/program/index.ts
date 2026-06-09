@@ -1,15 +1,15 @@
-import type { JPLDefinition } from '@/library/definition';
-import applyDefaults from '../applyDefaults';
+import applyDefaults from '@/applyDefaults';
 import {
   DEFINITION_VERSION,
   DEFINITION_VERSION_MAJOR,
   DEFINITION_VERSION_MINOR,
   JPLFatalError,
-} from '../library';
+  type JPLDefinition,
+} from '@/library';
 import JPLRuntime, {
   applyRuntimeDefaults,
   type JPLRuntimeOptions,
-} from '../runtime';
+} from '@/runtime';
 import type { JPLOPHandler } from './handler';
 import ops from './ops';
 

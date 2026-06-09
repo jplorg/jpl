@@ -15,4 +15,5 @@ export { default as mux } from './mux';
 export * from './ops';
 export * from './runtimeScope';
 export { default as JPLRuntimeScope } from './runtimeScope';
+export { default as JPLRuntimeSignal } from './runtimeSignal';
 export * from './types';

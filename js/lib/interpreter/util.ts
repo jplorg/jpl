@@ -1,4 +1,4 @@
-import { JPLSyntaxError } from '../library';
+import { JPLSyntaxError } from '@/library';
 import type { ParserContext } from './parse';
 
 const setAZ = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

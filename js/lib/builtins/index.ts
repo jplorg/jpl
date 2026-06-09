@@ -1,6 +1,6 @@
-import createSingleton from '../createSingleton';
-import systemInterpreter from '../interpreter/system';
-import { applyObject } from '../library';
+import createSingleton from '@/createSingleton';
+import systemInterpreter from '@/interpreter/system';
+import { applyObject } from '@/library';
 import * as internals from './internals';
 import * as native from './native';
 
