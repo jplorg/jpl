@@ -126,10 +126,7 @@ export type JPLComparisonParams = { by: Pipe };
 
 export type JPLSelector = {
   op:
-    | typeof OPA_FIELD
-    | typeof OPA_FUNCTION
-    | typeof OPA_ITER
-    | typeof OPA_SLICE;
+    typeof OPA_FIELD | typeof OPA_FUNCTION | typeof OPA_ITER | typeof OPA_SLICE;
   params: JPLSelectorParams;
 };
 
