@@ -61,10 +61,7 @@ export type UserJPLComparisonParams = { by: JPLFunc };
 
 export type UserJPLSelector = {
   op:
-    | typeof OPA_FIELD
-    | typeof OPA_FUNCTION
-    | typeof OPA_ITER
-    | typeof OPA_SLICE;
+    typeof OPA_FIELD | typeof OPA_FUNCTION | typeof OPA_ITER | typeof OPA_SLICE;
   params: UserJPLSelectorParams;
 };
 

@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import dts from 'unplugin-dts/vite';
 import { defineConfig } from 'vite';
-import packages from './package.json';
+import packages from './package.json' with { type: 'json' };
 
 type Packages = {
   dependencies?: Record<string, unknown>;
