@@ -38,6 +38,9 @@ type JPLRuntime interface {
 	// Return the runtime's program
 	Program() JPLProgram
 
+	// Return the runtime's root scope
+	RootScope() JPLRuntimeScope
+
 	// Create a new orphan scope
 	CreateScope(presets *JPLRuntimeScopeConfig) JPLRuntimeScope
 

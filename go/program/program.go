@@ -86,9 +86,12 @@ func (p *program) Run(inputs []any, options *jpl.JPLProgramConfig) ([]any, jpl.J
 		options = new(jpl.JPLProgramConfig)
 	}
 
-	r := runtime.NewRuntime(p, &jpl.JPLRuntimeConfig{
+	r, err := runtime.NewRuntime(p, &jpl.JPLRuntimeConfig{
 		Runtime: jpl.ApplyRuntimeDefaults(options.Runtime, p.runtimeOptions),
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	normalizedInputs, err := library.NormalizeValues(inputs, "program inputs")
 	if err != nil {

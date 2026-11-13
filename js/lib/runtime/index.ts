@@ -49,11 +49,24 @@ export function applyRuntimeDefaults(
 export default class JPLRuntime {
   #options;
   #program;
+  #rootScope;
 
   constructor(program: JPLProgram, options?: JPLRuntimeConfig) {
     this.#options = applyRuntimeDefaults(options?.runtime, defaultOptions);
 
     this.#program = program;
+
+    this.#rootScope = this.createScope({
+      vars: Object.fromEntries(
+        this.muxOne(
+          [Object.entries(this.options.vars!)],
+          ([name, value]: [string, unknown]) => [
+            name,
+            this.normalizeValue(value),
+          ],
+        ),
+      ),
+    });
   }
 
   /** Return the runtime's options */
@@ -66,33 +79,26 @@ export default class JPLRuntime {
     return this.#program;
   }
 
+  /** Return the runtime's root scope */
+  get rootScope() {
+    return this.#rootScope;
+  }
+
   /** Create a new orphan scope */
   createScope = (presets?: JPLRuntimeScopeConfig): JPLRuntimeScope =>
     new JPLRuntimeScope(presets);
 
   /** Execute a new dedicated program */
   execute = async (inputs: unknown[]): Promise<unknown[]> => {
-    const scope = this.createScope({
-      vars: Object.fromEntries(
-        this.muxOne(
-          [Object.entries(this.options.vars!)],
-          ([name, value]: [string, unknown]) => [
-            name,
-            this.normalizeValue(value),
-          ],
-        ),
-      ),
-    });
-
     try {
       return await this.executeInstructions(
         this.program.definition.instructions ?? [],
         inputs,
-        scope,
+        this.rootScope,
         this.options.adjustResult,
       );
     } finally {
-      scope.signal.exit();
+      this.rootScope.signal.exit();
     }
   };
 
