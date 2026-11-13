@@ -31,6 +31,13 @@ func NewRuntime(program jpl.JPLProgram, options *jpl.JPLRuntimeConfig) (jpl.JPLR
 		Vars: library.ObjectFromEntries(varEntries),
 	})
 
+	if signal := r.Options().Signal; signal != nil {
+		go func() {
+			<-signal
+			r.rootScope.Signal().Exit()
+		}()
+	}
+
 	return r, nil
 }
 
