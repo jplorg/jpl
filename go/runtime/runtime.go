@@ -8,22 +8,38 @@ import (
 
 var defaultOptions = jpl.JPLRuntimeOptions{}
 
-func NewRuntime(program jpl.JPLProgram, options *jpl.JPLRuntimeConfig) jpl.JPLRuntime {
+func NewRuntime(program jpl.JPLProgram, options *jpl.JPLRuntimeConfig) (jpl.JPLRuntime, jpl.JPLError) {
 	if options == nil {
 		options = new(jpl.JPLRuntimeConfig)
 	}
 
-	return &runtime{
+	r := &runtime{
 		options: jpl.ApplyRuntimeDefaults(options.Runtime, defaultOptions),
 
 		program: program,
 	}
+
+	varEntries, err := library.MuxOne([][]*library.ObjectEntry[any]{library.ObjectEntries(r.Options().Vars)}, jpl.IOMuxerFunc[*library.ObjectEntry[any], *library.ObjectEntry[any]](func(args ...*library.ObjectEntry[any]) (result *library.ObjectEntry[any], err jpl.JPLError) {
+		result = args[0]
+		result.Value, err = library.NormalizeValue(result.Value)
+		return
+	}))
+	if err != nil {
+		return nil, err
+	}
+	r.rootScope = r.CreateScope(&jpl.JPLRuntimeScopeConfig{
+		Vars: library.ObjectFromEntries(varEntries),
+	})
+
+	return r, nil
 }
 
 type runtime struct {
 	options jpl.JPLRuntimeOptions
 
 	program jpl.JPLProgram
+
+	rootScope jpl.JPLRuntimeScope
 }
 
 func (r *runtime) Options() jpl.JPLRuntimeOptions {
@@ -34,29 +50,21 @@ func (r *runtime) Program() jpl.JPLProgram {
 	return r.program
 }
 
+func (r *runtime) RootScope() jpl.JPLRuntimeScope {
+	return r.rootScope
+}
+
 func (r *runtime) CreateScope(presets *jpl.JPLRuntimeScopeConfig) jpl.JPLRuntimeScope {
 	return library.NewRuntimeScope(presets)
 }
 
 func (r *runtime) Execute(inputs []any) ([]any, jpl.JPLError) {
-	varEntries, err := library.MuxOne([][]*library.ObjectEntry[any]{library.ObjectEntries(r.Options().Vars)}, jpl.IOMuxerFunc[*library.ObjectEntry[any], *library.ObjectEntry[any]](func(args ...*library.ObjectEntry[any]) (result *library.ObjectEntry[any], err jpl.JPLError) {
-		result = args[0]
-		result.Value, err = library.NormalizeValue(result.Value)
-		return
-	}))
-	if err != nil {
-		return nil, err
-	}
-	scope := r.CreateScope(&jpl.JPLRuntimeScopeConfig{
-		Vars: library.ObjectFromEntries(varEntries),
-	})
-
-	defer scope.Signal().Exit()
+	defer r.rootScope.Signal().Exit()
 
 	return r.ExecuteInstructions(
 		r.Program().Definition().Instructions,
 		inputs,
-		scope,
+		r.rootScope,
 		r.Options().AdjustResult,
 	)
 }
