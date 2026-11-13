@@ -1,6 +1,8 @@
 package jpl
 
-import "github.com/jplorg/jpl/go/v2/definition"
+import (
+	"github.com/jplorg/jpl/go/v2/definition"
+)
 
 type JPLRuntimeConfig struct {
 	Runtime JPLRuntimeOptions
@@ -10,6 +12,8 @@ type JPLRuntimeOptions struct {
 	Vars map[string]any
 
 	AdjustResult JPLScopedPiper
+
+	Signal <-chan struct{}
 }
 
 func ApplyRuntimeDefaults(options JPLRuntimeOptions, defaults JPLRuntimeOptions) (result JPLRuntimeOptions) {
@@ -25,6 +29,25 @@ func ApplyRuntimeDefaults(options JPLRuntimeOptions, defaults JPLRuntimeOptions)
 		result.AdjustResult = options.AdjustResult
 	} else {
 		result.AdjustResult = defaults.AdjustResult
+	}
+
+	if options.Signal != nil || defaults.Signal != nil {
+		if options.Signal != nil && defaults.Signal != nil {
+			signal := make(chan struct{})
+			go func() {
+				select {
+				case <-options.Signal:
+				case <-defaults.Signal:
+				}
+
+				close(signal)
+			}()
+			result.Signal = signal
+		} else if options.Signal != nil {
+			result.Signal = options.Signal
+		} else {
+			result.Signal = defaults.Signal
+		}
 	}
 
 	return

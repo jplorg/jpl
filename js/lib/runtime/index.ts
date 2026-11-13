@@ -32,6 +32,7 @@ export type JPLRuntimeOptions = {
     result: unknown,
     scope: JPLRuntimeScope,
   ) => Promise<unknown[]> | unknown[];
+  signal?: AbortSignal;
 };
 
 const defaultOptions: JPLRuntimeOptions = {
@@ -42,7 +43,12 @@ export function applyRuntimeDefaults(
   options: JPLRuntimeOptions = {},
   defaults: JPLRuntimeOptions = {},
 ): JPLRuntimeOptions {
-  return applyDefaults(options, defaults, 'vars');
+  return {
+    ...applyDefaults(options, defaults, 'vars'),
+    signal: AbortSignal.any(
+      [options.signal, defaults.signal].filter((entry) => entry != null),
+    ),
+  };
 }
 
 /** JPL runtime */
@@ -66,6 +72,11 @@ export default class JPLRuntime {
           ],
         ),
       ),
+    });
+
+    if (this.options.signal?.aborted) this.#rootScope.signal.exit();
+    this.options.signal?.addEventListener('abort', () => {
+      this.#rootScope.signal.exit();
     });
   }
 
