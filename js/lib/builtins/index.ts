@@ -149,7 +149,7 @@ func map(f): ([.[] | f()])
           input = .
           | try toNumber->(field) catch toString->(field)
           | if type() == 'number'
-          then input[.] |= sum()
+          then (input)[.] |= sum()
           else {}[.] |= sum()
           end
         ) elif type() == 'object'
