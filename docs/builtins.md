@@ -294,6 +294,22 @@ Example: `[1, 2, 3] | map(void)` -> `[]`
 
 Returns the number of milliseconds elapsed since midnight, January 1, 1970 Universal Coordinated Time (UTC).
 
+## `getPath(path)`
+
+Returns the value obtained from the provided input by following `path`. `path` can either be a dot separated path `string` or an `array` of path segments.
+
+## `updatePath(path, update)`
+
+Updates a value in the provided input with the `update` function by following `path`. `path` can either be a dot separated path `string` or an `array` of path segments.
+If an intermediate node needs to be created and the corresponding path segment is a `number`, an `array` is created, otherwise an `object`. An `object` with a numeric key can be created by using an `array` as `path` with the corresponding path segment set to a `string`.
+Existing `array`s and `object`s are persisted if possible by automatically converting keys respectively.
+
+## `setPath(path, value)`
+
+Sets `value` in the provided input by following `path`. `path` can either be a dot separated path `string` or an `array` of path segments.
+If an intermediate node needs to be created and the corresponding path segment is a `number`, an `array` is created, otherwise an `object`. An `object` with a numeric key can explicitely be created by using an `array` as `path` with the corresponding path segment set to a `string`.
+Existing `array`s and `object`s are persisted if possible by automatically converting keys respectively.
+
 ## Type selectors
 
 The following functions are used to match their inputs to specific types.
